@@ -29,7 +29,7 @@ export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExp
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   resolveRootSelection?: (actor: TActor, characters: readonly TActor[]) => RuntimeRootSelectionEntry | undefined;
   defaultP2Selection?: RuntimeP2SelectionOptions;
-  teamMode?: string;
+  teamMode?: string | ((actor: TActor) => string | undefined);
   roundDecision?: ExpressionContext["roundDecision"] | ((actor: TActor) => ExpressionContext["roundDecision"] | undefined);
 };
 
@@ -57,7 +57,9 @@ export class RuntimeActiveExpressionContextWorld {
       animTimeRemaining: input.animTimeRemaining(input.actor),
       animElemTime: (elementNumber) => input.animElemTime(input.actor, elementNumber),
       inGuardDist: () => input.inGuardDist(input.actor, input.opponent),
-      ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
+      ...(resolveActiveTeamMode(input.teamMode, input.actor) === undefined
+        ? {}
+        : { teamMode: resolveActiveTeamMode(input.teamMode, input.actor) }),
       ...(input.roundDecision === undefined ? {} : { roundDecision: input.roundDecision }),
     });
   }
@@ -67,4 +69,11 @@ export class RuntimeActiveExpressionContextWorld {
   ): (request: RuntimeActiveExpressionContextRequest<TActor>) => ExpressionContext {
     return (request) => this.create({ ...input, ...request });
   }
+}
+
+function resolveActiveTeamMode<TActor>(
+  teamMode: RuntimeActiveExpressionContextFactoryInput<TActor>["teamMode"],
+  actor: TActor,
+): string | undefined {
+  return typeof teamMode === "function" ? teamMode(actor) : teamMode;
 }

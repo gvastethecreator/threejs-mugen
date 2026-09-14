@@ -31,6 +31,7 @@ export type RuntimeControllerExpressionBindings = Pick<
   | "animElemNo"
   | "animLength"
   | "animPlayerNo"
+  | "teamMode"
   | "roundDecision"
   | "clsnVar"
   | "opponentClsnVar"
@@ -153,6 +154,7 @@ export function createRuntimeControllerExpressionContext(
     animElemNo: context.animElemNo,
     animLength: context.animLength,
     animPlayerNo: context.animPlayerNo,
+    teamMode: context.teamMode,
     roundDecision: context.roundDecision,
     clsnVar: context.clsnVar,
     opponentClsnVar: context.opponentClsnVar,

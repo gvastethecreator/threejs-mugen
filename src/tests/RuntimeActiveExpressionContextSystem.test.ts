@@ -63,6 +63,34 @@ describe("RuntimeActiveExpressionContextWorld", () => {
     expect(guardReads).toEqual([{ actorId: "p1", opponentId: "p2" }]);
   });
 
+  it("keeps TeamMode and roundDecision local to each factory", () => {
+    const world = new RuntimeActiveExpressionContextWorld();
+    const singleActor = runtimeActor("p1");
+    const turnsActor = runtimeActor("p3");
+    const opponent = runtimeActor("p2");
+    const shared = {
+      nextRandom: () => 0,
+      animTimeRemaining: () => 0,
+      animElemTime: () => undefined,
+      inGuardDist: () => false,
+    };
+    const single = world.createFactory({
+      ...shared,
+      teamMode: () => "single",
+      roundDecision: () => ({ settled: true, win: true, lose: false }),
+    });
+    const turns = world.createFactory({
+      ...shared,
+      teamMode: () => "turns",
+      roundDecision: () => ({ settled: false }),
+    });
+
+    expect(evaluateExpression("TeamMode = Single", single({ actor: singleActor, opponent, owner: singleActor }))).toBe(1);
+    expect(evaluateExpression("TeamMode = Turns", turns({ actor: turnsActor, opponent, owner: turnsActor }))).toBe(1);
+    expect(evaluateExpression("Win", single({ actor: singleActor, opponent, owner: singleActor }))).toBe(1);
+    expect(evaluateExpression("Win", turns({ actor: turnsActor, opponent, owner: turnsActor }))).toBe(0);
+  });
+
   it("projects AnimLength from the live actor action into active contexts", () => {
     const world = new RuntimeActiveExpressionContextWorld();
     const actor = runtimeActor("p1");

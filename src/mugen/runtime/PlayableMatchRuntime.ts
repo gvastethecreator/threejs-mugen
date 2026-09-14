@@ -440,8 +440,10 @@ const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWor
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 /** Active match profile for free helpers that cannot close over the instance. */
 let activeMatchRuntimeProfile: RuntimeCompatibilityProfile = "unknown";
-let activeTeamMode = "single";
-let activeRoundDecision: ((actor: FighterMatchState) => ExpressionContext["roundDecision"] | undefined) | undefined;
+const matchExpressionOwnership = new WeakMap<FighterMatchState, {
+  teamMode: string;
+  roundDecision: (actor: FighterMatchState) => ExpressionContext["roundDecision"] | undefined;
+}>();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
@@ -756,8 +758,6 @@ export class PlayableMatchRuntime {
     });
     this.socdResolution = this.socdResolutionAuthority.resolution;
     this.teamRoundMode = options.teamMode ?? "single";
-    activeTeamMode = this.teamRoundMode;
-    activeRoundDecision = (actor) => this.actorRoundDecision(actor);
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
     this.helperResourceShareContractEnabled = options.helperResourceShareContractEnabled === true;
@@ -807,6 +807,8 @@ export class PlayableMatchRuntime {
       hitEffectWorld: this.hitEffectWorld,
       contactWorld: this.contactWorld,
     });
+    this.bindMatchExpressionOwnership(this.p1);
+    this.bindMatchExpressionOwnership(this.p2);
     this.reserveRoots = this.runtimeProfile === "ikemen-go"
       ? options.reserveFighters?.slice(0, 6).map((definition, index) => {
           const playerNumber = index + 3;
@@ -1758,8 +1760,6 @@ export class PlayableMatchRuntime {
   }
 
   step(input: MatchInput, options: MatchStepOptions = {}): MugenSnapshot {
-    activeTeamMode = this.teamRoundMode;
-    activeRoundDecision = (actor) => this.actorRoundDecision(actor);
     const result = matchStepWorld.step({
       playing: this.playing,
       frameClock: this.frameClock,
@@ -4580,13 +4580,20 @@ export class PlayableMatchRuntime {
     return projection.matchOver ? projection : undefined;
   }
 
+  private bindMatchExpressionOwnership(fighter: FighterMatchState): void {
+    matchExpressionOwnership.set(fighter, {
+      teamMode: this.teamRoundMode,
+      roundDecision: (actor) => this.actorRoundDecision(actor),
+    });
+  }
+
   private createFighterState(
     id: string,
     definition: DemoFighterDefinition,
     start: { x: number; y: number; z?: number; facing: 1 | -1 },
     identity: Pick<FighterMatchState, "playerId" | "playerNo"> = {},
   ): FighterMatchState {
-    return fighterStateWorld.create({
+    const fighter = fighterStateWorld.create({
       id,
       ...identity,
       definition,
@@ -4604,6 +4611,8 @@ export class PlayableMatchRuntime {
       hitEffectWorld: this.hitEffectWorld,
       contactWorld: this.contactWorld,
     });
+    this.bindMatchExpressionOwnership(fighter);
+    return fighter;
   }
 
   private recordEnvColorEvent(
@@ -9994,8 +10003,8 @@ function activeExpressionContextFactory(
     animTimeRemaining: getAnimTimeRemaining,
     animElemTime: getAnimElemTime,
     inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
-    teamMode: activeTeamMode,
-    roundDecision: (actor) => activeRoundDecision?.(actor),
+    teamMode: (actor) => matchExpressionOwnership.get(actor)?.teamMode ?? "single",
+    roundDecision: (actor) => matchExpressionOwnership.get(actor)?.roundDecision(actor),
   });
 }
 

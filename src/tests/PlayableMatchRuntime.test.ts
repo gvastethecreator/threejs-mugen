@@ -5473,6 +5473,81 @@ value = 321
     expect(internals.actorRoundDecision(internals.p1).settled).toBe(false);
   });
 
+  it("keeps TeamMode and round flags owned by each match instance", () => {
+    const single = new PlayableMatchRuntime(
+      createImportedFixture({
+        id: "owned-single",
+        withStateMove: false,
+        passiveVarSet: { trigger: "1", index: 0, value: "TeamMode = Turns" },
+      }),
+      createImportedFixture({ id: "owned-single-p2", withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", teamMode: "single" },
+    );
+    const turns = new PlayableMatchRuntime(
+      createImportedFixture({
+        id: "owned-turns",
+        withStateMove: false,
+        passiveVarSet: { trigger: "1", index: 0, value: "TeamMode = Turns" },
+      }),
+      createImportedFixture({ id: "owned-turns-p2", withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", teamMode: "turns" },
+    );
+
+    for (let frame = 0; frame < 24; frame += 1) {
+      single.step({ p1: new Set(), p2: new Set() }, { force: true });
+      turns.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(single.getSnapshot().actors[0]?.runtime.vars[0]).toBe(0);
+    expect(turns.getSnapshot().actors[0]?.runtime.vars[0]).toBe(1);
+
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const settled = new PlayableMatchRuntime(
+      createImportedFixture({ id: "owned-ko", withStateMove: false, hitDefDamage: 2000 }),
+      createImportedFixture({ id: "owned-ko-p2", withStateMove: false, hitDefDamage: 0 }),
+      closeStage,
+      {
+        runtimeProfile: "ikemen-go",
+        teamMode: "single",
+        roundTiming: { overHitTimeFrames: 1, postKoPhase4StartFrames: 4, winPoseFrames: 2, postKoFrames: 8 },
+      },
+    );
+    const fighting = new PlayableMatchRuntime(
+      createImportedFixture({ id: "owned-fight", withStateMove: false }),
+      createImportedFixture({ id: "owned-fight-p2", withStateMove: false }),
+      trainingStage,
+      { runtimeProfile: "ikemen-go", teamMode: "turns" },
+    );
+    const settledInternals = settled as unknown as {
+      actorRoundDecision: (actor: { id: string }) => { settled: boolean; win?: boolean };
+      p1: { id: string };
+      p2: { runtime: { life: number } };
+    };
+    const fightingInternals = fighting as unknown as {
+      actorRoundDecision: (actor: { id: string }) => { settled: boolean; win?: boolean };
+      p1: { id: string };
+    };
+    settledInternals.p2.runtime.life = 0;
+    settled.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 40; frame += 1) {
+      const snapshot = settled.step({ p1: new Set(), p2: new Set() }, { force: true });
+      if ((snapshot.round?.roundPhase ?? 0) >= 3) break;
+    }
+    fighting.step({ p1: new Set(), p2: new Set() });
+    expect(settledInternals.actorRoundDecision(settledInternals.p1)).toMatchObject({ settled: true, win: true });
+    expect(fightingInternals.actorRoundDecision(fightingInternals.p1).settled).toBe(false);
+    settled.reset();
+    expect(turns.getSnapshot().actors[0]?.runtime.vars[0]).toBe(1);
+    expect(fightingInternals.actorRoundDecision(fightingInternals.p1).settled).toBe(false);
+  });
+
   it("resets stage background time between rounds only when resetBG is enabled", () => {
     const resetStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: true };
     const continuingStage = { ...bgCtrlLabStage, resetBackgroundBetweenRounds: false };
