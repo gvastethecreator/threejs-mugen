@@ -440,6 +440,27 @@ function parseControllerNumber(value: string | undefined): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+export function resolveStageZOffsetLink(
+  stage: Pick<StageSnapshot, "id" | "displayName" | "floorY" | "zOffset" | "zOffsetLink" | "layers" | "bgControllers" | "camera">,
+  tick: number,
+): { floorY: number; unsupported?: string } {
+  const linkId = stage.zOffsetLink;
+  if (linkId === undefined || !Number.isFinite(linkId) || linkId < 0) {
+    return { floorY: stage.floorY };
+  }
+  const target = stage.layers?.find((layer) => layer.controlId === linkId);
+  if (!target) {
+    return { floorY: stage.floorY, unsupported: "zoffsetlink target missing" };
+  }
+  const authoredStartY = target.startY ?? 0;
+  const resolved = resolveStageLayerForTick(target, stage, tick);
+  const resolvedStartY = resolved?.startY ?? authoredStartY;
+  if (!Number.isFinite(resolvedStartY)) {
+    return { floorY: stage.floorY, unsupported: "zoffsetlink target missing" };
+  }
+  return { floorY: stage.floorY + authoredStartY - resolvedStartY };
+}
+
 export function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
   return layer.type?.trim().toLowerCase() === "parallax";
 }

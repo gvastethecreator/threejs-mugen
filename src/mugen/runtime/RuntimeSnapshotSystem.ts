@@ -16,7 +16,6 @@ import type {
   StageSnapshot,
 } from "./types";
 import type { RuntimeEffectSnapshotGroups } from "./EffectLifecycleSystem";
-import { runtimeStageZOffsetLink } from "./RuntimeStageGameSpaceSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 
 const frameWorld = new RuntimeFrameWorld();
@@ -142,12 +141,12 @@ export class RuntimeSnapshotWorld {
       zoom: input.stage.camera.zoom,
       ...(input.cameraShake ? { shake: input.cameraShake } : {}),
     };
-    const linkedFloor = runtimeStageZOffsetLink(input.stage, input.backgroundTick ?? 0, camera);
     return {
       id: input.stage.id,
       displayName: input.stage.displayName,
-      floorY: linkedFloor.floorY,
+      floorY: input.stage.floorY,
       zOffset: input.stage.zOffset,
+      ...(input.stage.zOffsetLink === undefined ? {} : { zOffsetLink: input.stage.zOffsetLink }),
       bounds: input.stage.bounds,
       camera,
       ...(input.envColor ? { envColor: input.envColor } : {}),

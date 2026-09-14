@@ -17,6 +17,7 @@ import {
   resolvePresentationOrder,
 } from "./PresentationOrder";
 import { TextureStore } from "./TextureStore";
+import { resolveStageZOffsetLink } from "./stageProjection";
 import type { MugenRenderer } from "./types";
 
 export class ThreeMugenRenderer implements MugenRenderer {
@@ -115,7 +116,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   }
 
   async render(snapshot: MugenSnapshot): Promise<void> {
-    const floorY = snapshot.stage.floorY ?? 0;
+    const floorY = resolveStageZOffsetLink(snapshot.stage, snapshot.stage.backgroundTick ?? snapshot.tick).floorY;
     this.axis.update({
       width: this.size.width,
       height: this.size.height,

@@ -814,6 +814,7 @@ export type StageSnapshot = {
   displayName?: string;
   floorY: number;
   zOffset?: number;
+  zOffsetLink?: number;
   bounds?: MugenStageDefinition["bounds"];
   camera: {
     x: number;

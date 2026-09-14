@@ -16,6 +16,7 @@ import {
   projectStageSpriteLayer,
   resolveStageLayerForTick,
   resolveStageLayerScale,
+  resolveStageZOffsetLink,
   type StageSpritePlacement,
   type StageSpritePlacementUv,
 } from "./stageProjection";
@@ -151,7 +152,7 @@ export class AxisRenderer {
         this.group.add(createRect(0, y, options.width * 2, 1, this.materials.grid, -1));
       }
     }
-    const floorY = options.stage.floorY ?? 0;
+    const floorY = resolveStageZOffsetLink(options.stage, options.stage.backgroundTick ?? options.tick).floorY;
     this.group.add(createRect(0, floorY, stageWidth, 2, this.materials.floor, 0));
     if (options.showAxis) {
       this.group.add(createRect(0, floorY, 100, 2, this.materials.axisX, 1));

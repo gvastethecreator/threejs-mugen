@@ -373,7 +373,7 @@ export class FightScreenAnnouncementRenderer {
   }
 
   async update(snapshot: MugenSnapshot, viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">): Promise<void> {
-    this.globalPaletteFx = snapshot.stage.allPalFx;
+    this.globalPaletteFx = snapshot.stage?.allPalFx;
     const selection = resolveFightScreenAnnouncementSelection(snapshot.round, this.display);
     const baseDiagnostics: FightScreenAnnouncementDiagnostics = {
       active: selection?.track.phase === "active",
@@ -639,7 +639,7 @@ export class FightScreenAnnouncementRenderer {
     this.mesh.visible = true;
     this.mesh.material.map = this.textures.getTexture(sprite, "fight-screen");
     const primaryPaletteFx = resolveFightScreenPaletteFx(selection.asset.paletteFx, frameTick);
-    applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx, 1, snapshot.stage.allPalFx);
+    applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx, 1, snapshot.stage?.allPalFx);
     this.mesh.material.blending = isAdditiveBlend(animationFrame.frame.blend) ? THREE.AdditiveBlending : THREE.NormalBlending;
     applyThreePresentationOrder(this.mesh, this.mesh.material, primaryPresentationOrder);
     this.mesh.material.needsUpdate = true;

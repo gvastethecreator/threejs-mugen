@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
-import { runtimeStageGameSpace, runtimeStageZOffsetLink } from "../mugen/runtime/RuntimeStageGameSpaceSystem";
+import { resolveStageZOffsetLink } from "../game/render/stageProjection";
+import { runtimeStageGameSpace } from "../mugen/runtime/RuntimeStageGameSpaceSystem";
 
 describe("RuntimeStageGameSpaceSystem", () => {
   it("derives Elecbyte game-space dimensions from stage localcoord and inverse zoom", () => {
@@ -62,11 +63,20 @@ describe("RuntimeStageGameSpaceSystem", () => {
       layers: [platform],
     } satisfies MugenStageDefinition;
 
-    const rest = runtimeStageZOffsetLink(stage, 0);
-    const first = runtimeStageZOffsetLink(stage, 2);
-    const second = runtimeStageZOffsetLink(stage, 2);
-    const missing = runtimeStageZOffsetLink({ ...stage, zOffsetLink: 99 }, 2);
-    const unlinked = runtimeStageZOffsetLink({ ...stage, zOffsetLink: undefined }, 2);
+    const snapshot = {
+      id: stage.id,
+      displayName: stage.displayName,
+      floorY: stage.floorY,
+      zOffset: stage.zOffset,
+      zOffsetLink: stage.zOffsetLink,
+      camera: { x: 0, y: 0, zoom: 1 },
+      layers: stage.layers,
+    };
+    const rest = resolveStageZOffsetLink(snapshot, 0);
+    const first = resolveStageZOffsetLink(snapshot, 2);
+    const second = resolveStageZOffsetLink(snapshot, 2);
+    const missing = resolveStageZOffsetLink({ ...snapshot, zOffsetLink: 99 }, 2);
+    const unlinked = resolveStageZOffsetLink({ ...snapshot, zOffsetLink: undefined }, 2);
 
     expect(rest).toEqual({ floorY: 0 });
     expect(first.floorY).toBeCloseTo(-10);
