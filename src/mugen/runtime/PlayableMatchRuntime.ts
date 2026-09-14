@@ -7007,6 +7007,29 @@ function runActiveStateControllers(
                   return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
                 }
               : undefined,
+          resolveProjectileLethal:
+            effect === "projectile"
+              ? (key) => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = key === "kill" ? operation?.killExpression : operation?.guardKillExpression;
+                  if (expression === undefined) return undefined;
+                  const resolved = resolveDispatchFloat(
+                    undefined,
+                    expression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                }
+              : undefined,
           resolveProjectileAnimation:
             effect === "projectile"
               ? () => {

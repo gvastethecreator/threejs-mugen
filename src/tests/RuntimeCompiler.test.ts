@@ -4674,6 +4674,27 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile kill and guard.kill expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      kill: "var(0)",
+      "guard.kill": "Time + 0.5",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      killExpression: "var(0)",
+      guardKillExpression: "Time + 0.5",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      kill: "0",
+      "guard.kill": "0.5",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      kill: false,
+      guardKill: true,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], { kill: "var(" })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], { "guard.kill": "1,2" })).operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       projmisstime: "var(0) + 2",

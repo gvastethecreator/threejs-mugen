@@ -2086,6 +2086,39 @@ describe("EffectActorSystem", () => {
     expect(spawnRuntimeHelperProjectileActor(store, helper, controllerIr, { rootState })?.forceStand).toBeUndefined();
   });
 
+  it("resolves Helper Projectile kill and guard.kill in the helper caller context, not the root", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    helper.vars[0] = 0.5;
+    helper.vars[1] = 0;
+    const rootState = actor("p1", "Root", { vars: [0, 1] }).runtime;
+    const controllerIr = compileControllerIr(controller("Projectile", {
+      projanim: "920",
+      projid: "8870",
+      kill: "var(0)",
+      "guard.kill": "var(1)",
+    }));
+
+    const projectile = spawnRuntimeHelperProjectileActor(store, helper, controllerIr, { rootState });
+
+    expect(projectile).toMatchObject({
+      kill: true,
+      guardKill: false,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+    helper.vars[0] = 0;
+    helper.vars[1] = 1;
+    expect(projectile).toMatchObject({ kill: true, guardKill: false });
+  });
+
   it("resolves Helper Projectile p2facing in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

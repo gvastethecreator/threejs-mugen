@@ -42,6 +42,26 @@ Allowed: these local expression, spawn, and contact behaviors. Not established:
 upstream differential parity, nested Helper contact coverage, full fall recovery
 timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 
+## Fresh Projectile `kill` / `guard.kill`
+
+A fresh root or Helper Projectile evaluates authored `kill` and `guard.kill`
+expressions once in the creator context. Omitted fields keep the source default
+true. Explicit zero is false and is not replaced by that default. A missing or
+non-finite expression result is not treated as authored true. Later creator
+Time/var changes do not rewrite the stored flags. Accepted hit and guard contact
+use those stored flags.
+
+This adapts boolean `evalB` lethal cases from Ikemen-GO
+`149402fa8b50a64e9af8316772e0cd266025133a`, `src/bytecode.go` `hitDef.runSub`
+and Projectile `Run` delegation. Local compiler, spawn, Helper, and imported
+root-contact tests cover stored flags. `fall.kill` remains the separate deferred
+fall-damage flag from issues 393–396. ModifyProjectile keeps its existing
+mutation path.
+
+Allowed: this local compilation, spawn-once storage, Helper-versus-root caller,
+and hit/guard KO policy. Not established: nested Helper contact, teams,
+rollback, or full MUGEN/Ikemen compatibility.
+
 ## Fresh Projectile `forcestand` / `forcecrouch`
 
 A fresh root or Helper Projectile evaluates authored `forcestand` and

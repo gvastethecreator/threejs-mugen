@@ -703,6 +703,8 @@ export type ProjectileControllerOp = {
   airJuggle?: number;
   kill?: boolean;
   guardKill?: boolean;
+  killExpression?: string;
+  guardKillExpression?: string;
   attr?: string;
   hitFlag?: string;
   /** First `pausetime` value: Projectile-local pause after hit contact. */
@@ -4076,7 +4078,10 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const downBounceValue = optionalFloatExpressionParam(controller, "down.bounce");
   const forceStandValue = optionalFloatExpressionParam(controller, "forcestand");
   const forceCrouchValue = optionalFloatExpressionParam(controller, "forcecrouch");
+  const killValue = optionalFloatExpressionParam(controller, "kill");
+  const guardKillValue = optionalFloatExpressionParam(controller, "guard.kill");
   if (forceStandValue === false || forceCrouchValue === false) return undefined;
+  if (killValue === false || guardKillValue === false) return undefined;
   if (downBounceValue === false) return undefined;
   if (forceNoFallValue === false) return undefined;
   if (
@@ -4283,6 +4288,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     airJuggle: firstNumber(findParam(controller, "air.juggle")),
     kill: booleanNumber(findParam(controller, "kill")),
     guardKill: booleanNumber(findParam(controller, "guard.kill")),
+    ...(typeof killValue === "string" ? { killExpression: killValue } : {}),
+    ...(typeof guardKillValue === "string" ? { guardKillExpression: guardKillValue } : {}),
     attr: stripMugenString(findParam(controller, "attr")),
     hitFlag: staticHitFlagParam(findParam(controller, "hitflag")),
     hitPause: (typeof pauseTime?.[0] === "number" ? pauseTime[0] : undefined) ?? firstNumber(pauseTimeRaw) ?? 0,

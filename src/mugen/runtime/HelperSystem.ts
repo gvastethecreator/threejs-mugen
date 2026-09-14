@@ -2012,10 +2012,14 @@ export function resolveRuntimeHelperFloatParam(
 export function resolveRuntimeHelperFloatScalarParam(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  key: "down.bounce" | "forcestand" | "forcecrouch" | "forcenofall" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
+  key: "down.bounce" | "forcestand" | "forcecrouch" | "forcenofall" | "kill" | "guard.kill" | "down.velocity" | "guard.velocity" | "airguard.velocity" | "snap" | "ground.cornerpush.veloff" | "air.cornerpush.veloff" | "down.cornerpush.veloff" | "guard.cornerpush.veloff" | "airguard.cornerpush.veloff" | "sparkangle" | "guard.sparkangle",
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   const operation = controller.operation;
+  if ((key === "kill" || key === "guard.kill") && operation?.kind === "projectile") {
+    const expression = key === "kill" ? operation.killExpression : operation.guardKillExpression;
+    return expression === undefined ? undefined : resolveHelperFloat(helper, expression, options);
+  }
   if (key === "down.bounce" || key === "forcestand" || key === "forcecrouch" || key === "forcenofall") {
     if (operation?.kind === "projectile" && key !== "forcenofall") {
       const expression = key === "down.bounce" ? operation.downBounceExpression

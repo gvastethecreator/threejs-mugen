@@ -10903,6 +10903,46 @@ value = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
   });
 
+  it("applies fresh Projectile kill and guard.kill expressions at spawn to hit and guard contact", () => {
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const resolve = (lethal: string, holdingBack: boolean) => {
+      const attacker = createImportedFixture({
+        id: `dynamic-projectile-lethal-${lethal}-${holdingBack ? "guard" : "hit"}`,
+        withStateMove: false,
+        withProjectile: true,
+        projectileHitDefParams: `
+damage = 2000,2000
+guardflag = HL
+kill = ${lethal}
+guard.kill = ${lethal}
+`,
+      });
+      const effectActorWorld = new RuntimeEffectActorWorld();
+      const runtime = new PlayableMatchRuntime(attacker, demoFighters[1]!, closeStage, { effectActorWorld });
+      let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(holdingBack ? ["B"] : []) });
+      const projectile = effectActorWorld.projectiles("p1")[0];
+      for (let frame = 0; frame < 12; frame += 1) {
+        snapshot = runtime.step({ p1: new Set(), p2: new Set(holdingBack ? ["B"] : []) });
+      }
+      return { projectile, life: snapshot.actors[1]?.runtime.life, snapshot };
+    };
+
+    const spawnOnce = resolve("Time + 0.5", false);
+    expect(spawnOnce.projectile).toMatchObject({ kill: true, guardKill: true });
+    expect(spawnOnce.life).toBe(0);
+    const zeroGuard = resolve("Time", true);
+    expect(zeroGuard.projectile).toMatchObject({ kill: false, guardKill: false });
+    expect(zeroGuard.life).toBe(1);
+    const lethalGuard = resolve("Time + 0.5", true);
+    expect(lethalGuard.life).toBe(0);
+  });
+
   it("evaluates fresh Projectile posture once and consumes it only on accepted contact", () => {
     const attacker = createImportedFixture({
       id: "dynamic-projectile-posture-root",

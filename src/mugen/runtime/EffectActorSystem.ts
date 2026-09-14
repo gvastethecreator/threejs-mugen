@@ -796,6 +796,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveForceNoFall: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "forcenofall", options),
     resolveDownBounce: () => resolveRuntimeHelperFloatScalarParam(helper, controller, "down.bounce", options),
     resolvePosture: (key) => resolveRuntimeHelperFloatScalarParam(helper, controller, key, options),
+    resolveLethal: (key) => resolveRuntimeHelperFloatScalarParam(helper, controller, key, options),
   });
 }
 

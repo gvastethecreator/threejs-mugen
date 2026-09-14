@@ -1231,6 +1231,63 @@ describe("ProjectileSystem", () => {
     expect(omitted).not.toHaveProperty("forceCrouch");
   });
 
+  it("resolves Projectile kill and guard.kill once and does not treat a missing result as true", () => {
+    const source = controller({ projanim: "1005", kill: "var(0)", "guard.kill": "var(1)" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.killExpression).toBe("var(0)");
+    expect(operation.guardKillExpression).toBe("var(1)");
+    const values: Record<"kill" | "guard.kill", number> = { kill: 0.5, "guard.kill": 0 };
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-lethal",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveLethal: (key) => values[key],
+    });
+    const projectile = spawn();
+    values.kill = 0;
+    values["guard.kill"] = -0.5;
+    expect(projectile).toMatchObject({ kill: true, guardKill: false });
+    expect(spawn()).toMatchObject({ kill: false, guardKill: true });
+    values.kill = Number.NaN;
+    values["guard.kill"] = 0.5;
+    expect(spawn()).toMatchObject({ kill: false, guardKill: true });
+    const omitted = createRuntimeProjectile({
+      serialId: "p1-projectile-lethal-omitted",
+      controller: controller({ projanim: "1005" }),
+      operation: compileControllerIr(controller({ projanim: "1005" })).operation as ProjectileControllerOp,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    expect(omitted).toMatchObject({ kill: true, guardKill: true });
+    for (const value of [0.5, -0.5, 0]) {
+      const literal = controller({ projanim: "1005", kill: String(value), "guard.kill": String(value) });
+      expect(createRuntimeProjectile({
+        serialId: `p1-projectile-lethal-${value}`,
+        controller: literal,
+        operation: compileControllerIr(literal).operation as ProjectileControllerOp,
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos: { x: 0, y: 0 },
+        fallbackFacing: 1,
+      })).toMatchObject({ kill: value !== 0, guardKill: value !== 0 });
+    }
+  });
+
   it("preserves literal Projectile fall fractions and explicit zero", () => {
     for (const value of [0.5, -0.5, 0]) {
       const source = controller({ projanim: "1005", fall: String(value),

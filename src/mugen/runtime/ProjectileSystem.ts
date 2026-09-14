@@ -417,6 +417,7 @@ export type RuntimeProjectileSpawnInput = {
   resolveForceNoFall?: () => number | undefined;
   resolveDownBounce?: () => number | undefined;
   resolvePosture?: (key: "forcestand" | "forcecrouch") => number | undefined;
+  resolveLethal?: (key: "kill" | "guard.kill") => number | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -1004,8 +1005,17 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const guardSpark = operation?.guardSpark ?? staticRuntimeProjectileSparkRef(findControllerParam(input.controller, "guard.sparkno"));
   const guardSparkAngle = operation?.guardSparkAngle ?? firstNumber(findControllerParam(input.controller, "guard.sparkangle"));
   const sparkXy = operation?.sparkXy ?? projectileZeroDefaultPair(findControllerParam(input.controller, "sparkxy"));
-  const kill = operation?.kill ?? (firstNumber(findControllerParam(input.controller, "kill")) ?? 1) !== 0;
-  const guardKill = operation?.guardKill ?? (firstNumber(findControllerParam(input.controller, "guard.kill")) ?? 1) !== 0;
+  const resolveLethal = (key: "kill" | "guard.kill"): boolean => {
+    const expression = key === "kill" ? operation?.killExpression : operation?.guardKillExpression;
+    if (expression === undefined) {
+      const literal = key === "kill" ? operation?.kill : operation?.guardKill;
+      return literal ?? (firstNumber(findControllerParam(input.controller, key)) ?? 1) !== 0;
+    }
+    const value = input.resolveLethal?.(key);
+    return value !== undefined && Number.isFinite(value) ? value !== 0 : false;
+  };
+  const kill = resolveLethal("kill");
+  const guardKill = resolveLethal("guard.kill");
   const attackDepth =
     operation?.attackDepth ??
     normalizedNumberPair(findControllerParam(input.controller, "attack.depth")) ??
