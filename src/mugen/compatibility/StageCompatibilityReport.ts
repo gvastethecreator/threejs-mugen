@@ -25,6 +25,11 @@ export type StageBackgroundLayerReport = {
     offsetX: number;
     offsetY: number;
   };
+  sinusoid?: MugenStageLayer["sinusoid"];
+  parallaxWidth?: MugenStageLayer["parallaxWidth"];
+  parallaxXScale?: MugenStageLayer["parallaxXScale"];
+  projected: boolean;
+  targetedByUnsupportedControllers: string[];
   tiled: boolean;
   trans?: {
     mode: string;
@@ -89,6 +94,16 @@ export type StageCompatibilityReport = {
     sff: boolean;
     music: boolean;
   };
+  audio: {
+    fileFound: boolean;
+    bytesLoaded: boolean;
+    pcmWav: boolean;
+    playbackObserved: false;
+  };
+  zOffsetLink?: {
+    controlId: number;
+    resolved: boolean;
+  };
   backgrounds: {
     total: number;
     withSpriteRefs: number;
@@ -136,8 +151,10 @@ export function createStageCompatibilityReport(stagePackage: MugenStagePackage):
   const renderedSprites = withSpriteRefs.filter((ref) => spriteKeys.has(`${ref.spriteGroup}:${ref.spriteIndex}`));
   const tiled = stagePackage.stage.layers.filter((layer) => layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
   const clipped = stagePackage.stage.layers.filter((layer) => layer.clip);
-  const layers = stagePackage.stage.layers.map((layer, index) => describeBackgroundLayer(stagePackage, layer, index, spriteKeys));
   const controllers = summarizeStageBackgroundControllers(stagePackage.stage);
+  const layers = stagePackage.stage.layers.map((layer, index) =>
+    describeBackgroundLayer(stagePackage, layer, index, spriteKeys, controllers.items),
+  );
   const unsupported = collectUnsupportedStageFeatures(stagePackage);
   const warnings = stagePackage.diagnostics
     .filter((diagnostic) => diagnostic.severity === "warning")
@@ -154,6 +171,15 @@ export function createStageCompatibilityReport(stagePackage: MugenStagePackage):
       sff: Boolean(stagePackage.files.sprite),
       music: Boolean(stagePackage.files.music),
     },
+    audio: describeStageAudio(stagePackage),
+    ...(stagePackage.stage.zOffsetLink === undefined
+      ? {}
+      : {
+          zOffsetLink: {
+            controlId: stagePackage.stage.zOffsetLink,
+            resolved: stagePackage.stage.layers.some((layer) => layer.controlId === stagePackage.stage.zOffsetLink),
+          },
+        }),
     backgrounds: {
       total: stagePackage.stage.layers.length,
       withSpriteRefs: withSpriteRefs.length,
@@ -234,10 +260,17 @@ function describeBackgroundLayer(
   layer: MugenStageLayer,
   order: number,
   spriteKeys: Set<string>,
+  controllers: readonly StageBackgroundControllerReport[],
 ): StageBackgroundLayerReport {
   const rawSection = getLayerRawSection(stagePackage, layer);
   const type = (layer.type ?? (layer.actionNo !== undefined ? "anim" : "normal")).toLowerCase();
   const unsupported = collectUnsupportedLayerFeatures(rawSection, type, layer);
+  const targetedByUnsupportedControllers = controllers
+    .filter((controller) => controller.status === "unsupported" && controller.targetLayers.includes(layer.id))
+    .map((controller) => controller.type);
+  const blockingGeometry =
+    unsupported.some((item) => item.startsWith("type:") || item === "tile+parallax" || item === "clip+parallax") ||
+    (isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer));
   const base = {
     id: layer.id,
     order,
@@ -267,6 +300,10 @@ function describeBackgroundLayer(
       : {}),
     ...(layer.positionLink ? { positionLink: layer.positionLink } : {}),
     ...(layer.sinusoid ? { sinusoid: layer.sinusoid } : {}),
+    ...(layer.parallaxWidth ? { parallaxWidth: layer.parallaxWidth } : {}),
+    ...(layer.parallaxXScale ? { parallaxXScale: layer.parallaxXScale } : {}),
+    projected: false,
+    targetedByUnsupportedControllers,
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
     ...(layer.clip ? { clip: layer.clip } : {}),
@@ -299,9 +336,14 @@ function describeBackgroundLayer(
     }
     return {
       ...base,
-      status: "animated",
+      status: blockingGeometry ? "unsupported" : "animated",
+      projected: !blockingGeometry,
       action: { id: layer.actionNo, frames: action.frames.length, decodedFrames, missingFrameRefs: uniqueStrings(missingFrameRefs) },
-      ...(missingFrameRefs.length > 0 ? { fallback: "Animated BG renders decoded frames and falls back when undecoded frames are active" } : {}),
+      ...(blockingGeometry
+        ? { fallback: "Animated BG sprite decoded but the layer combination has no bounded render path" }
+        : missingFrameRefs.length > 0
+          ? { fallback: "Animated BG renders decoded frames and falls back when undecoded frames are active" }
+          : {}),
     };
   }
 
@@ -321,13 +363,20 @@ function describeBackgroundLayer(
     }
     return {
       ...base,
-      status: decoded ? "rendered" : "missing",
+      status: decoded ? (blockingGeometry ? "unsupported" : "rendered") : "missing",
+      projected: decoded && !blockingGeometry,
       sprite: {
         group: layer.spriteGroup,
         index: layer.spriteIndex,
         decoded,
       },
-      ...(decoded ? {} : { fallback: `Stage sprite ${layer.spriteGroup}:${layer.spriteIndex} was not decoded` }),
+      ...(decoded && !blockingGeometry
+        ? {}
+        : {
+            fallback: decoded
+              ? "Decoded sprite has no bounded render path for this BG combination"
+              : `Stage sprite ${layer.spriteGroup}:${layer.spriteIndex} was not decoded`,
+          }),
     };
   }
 
@@ -451,12 +500,6 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   if (hasKey(rawSection, "mask")) {
     unsupported.push("mask color-key semantics");
   }
-  if (hasKey(rawSection, "velocity")) {
-    unsupported.push("velocity");
-  }
-  if (hasKey(rawSection, "positionlink")) {
-    unsupported.push("positionlink");
-  }
   if ((hasKey(rawSection, "sin.x") || hasKey(rawSection, "sin.y")) && !layer.sinusoid) {
     unsupported.push("static sinusoid");
   }
@@ -479,6 +522,25 @@ function hasKey(values: Record<string, string>, key: string): boolean {
 
 function hasLayerScale(layer: MugenStageLayer): boolean {
   return Boolean(layer.scaleStart || layer.scaleDelta || layer.yScaleStart !== undefined || layer.yScaleDelta !== undefined || layer.zoomDelta);
+}
+
+function describeStageAudio(stagePackage: MugenStagePackage): StageCompatibilityReport["audio"] {
+  const bytes = stagePackage.music?.bytes;
+  return {
+    fileFound: Boolean(stagePackage.files.music),
+    bytesLoaded: Boolean(bytes && bytes.byteLength > 0),
+    pcmWav: Boolean(bytes && isRiffWave(bytes)),
+    playbackObserved: false,
+  };
+}
+
+function isRiffWave(bytes: ArrayBuffer): boolean {
+  if (bytes.byteLength < 12) {
+    return false;
+  }
+  const header = new Uint8Array(bytes, 0, 12);
+  const ascii = (offset: number) => String.fromCharCode(...header.subarray(offset, offset + 4));
+  return ascii(0) === "RIFF" && ascii(8) === "WAVE";
 }
 
 function isSupportedStageLayerType(type: string): boolean {

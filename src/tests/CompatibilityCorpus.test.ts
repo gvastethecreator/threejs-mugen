@@ -194,6 +194,7 @@ function stageJourneyInput(): StageCompatibilityJourneyInput {
     stage: "Training Room",
     loaded: true,
     files: { def: true, sff: true, music: false },
+    audio: { fileFound: false, bytesLoaded: false, pcmWav: false, playbackObserved: false },
     backgrounds: {
       total: 2,
       withSpriteRefs: 2,

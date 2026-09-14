@@ -104,6 +104,7 @@ describe("createStageCompatibilityReport", () => {
 
     expect(report.stage).toBe("Report Temple");
     expect(report.files).toEqual({ def: true, sff: true, music: false });
+    expect(report.audio).toEqual({ fileFound: false, bytesLoaded: false, pcmWav: false, playbackObserved: false });
     expect(report.backgrounds).toMatchObject({
       total: 4,
       withSpriteRefs: 4,
@@ -131,6 +132,8 @@ describe("createStageCompatibilityReport", () => {
           zoomDelta: { x: 0.5, y: 0.5 },
         },
         unsupported: ["mask color-key semantics"],
+        projected: true,
+        targetedByUnsupportedControllers: [],
       }),
       expect.objectContaining({
         section: "BG Animated",
@@ -139,12 +142,15 @@ describe("createStageCompatibilityReport", () => {
         controlId: 20,
         action: { id: 10, frames: 2, decodedFrames: 2, missingFrameRefs: [] },
         positionLink: { targetId: expect.stringContaining("BG Wall"), offsetX: 2, offsetY: 3 },
+        projected: true,
+        targetedByUnsupportedControllers: ["zoomdelta"],
       }),
       expect.objectContaining({
         section: "BG Missing",
         status: "missing",
         sprite: { group: 9, index: 9, decoded: false },
         fallback: "Stage sprite 9:9 was not decoded",
+        projected: false,
       }),
       expect.objectContaining({
         section: "BG Parallax",
@@ -156,6 +162,7 @@ describe("createStageCompatibilityReport", () => {
           legacyYScale: { start: 100, delta: 1.2 },
         },
         unsupported: [],
+        projected: false,
       }),
     ]);
     expect(report.backgrounds.controllers).toMatchObject({
@@ -299,14 +306,49 @@ tile = 1,0
       section: "BG Floor",
       status: "rendered",
       type: "parallax",
+      parallaxWidth: { top: 200, bottom: 80 },
+      projected: true,
       unsupported: [],
     });
     expect(report.backgrounds.layers[1]).toMatchObject({
       section: "BG Tiled",
       status: "unsupported",
+      projected: false,
+      sprite: { group: 0, index: 0, decoded: true },
       unsupported: ["tile+parallax"],
       fallback: "Parallax tile or clip combinations are not rendered as trapezoids",
     });
     expect(report.unsupported.map((item) => item.feature)).toContain("parallax tile or clip");
+  });
+
+  it("keeps a found music file distinct from audible playback", () => {
+    const definition = parseStageDef(`
+[BGDef]
+spr = floor.sff
+[Music]
+bgmusic = floor.wav
+[BG Floor]
+type = normal
+spriteno = 0,0
+`, "stages/music.def");
+    const wav = new Uint8Array(12);
+    wav.set([0x52, 0x49, 0x46, 0x46], 0);
+    wav.set([0x57, 0x41, 0x56, 0x45], 8);
+    const report = createStageCompatibilityReport({
+      sourceName: "music.zip",
+      defPath: "stages/music.def",
+      definition,
+      stage: stageDefToRuntime(definition, "music"),
+      files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
+      music: { path: "stages/floor.wav", bytes: wav.buffer, loop: true, volume: 100 },
+      diagnostics: [],
+    });
+    expect(report.files.music).toBe(true);
+    expect(report.audio).toEqual({
+      fileFound: true,
+      bytesLoaded: true,
+      pcmWav: true,
+      playbackObserved: false,
+    });
   });
 });
