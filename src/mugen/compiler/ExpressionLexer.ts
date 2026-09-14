@@ -4,6 +4,7 @@ export type ExpressionLexToken =
   | { type: "identifier"; value: string }
   | { type: "operator"; value: string }
   | { type: "paren"; value: "(" | ")" }
+  | { type: "bracket"; value: "[" | "]" }
   | { type: "comma"; value: "," }
   | { type: "invalid"; value: string };
 
@@ -13,7 +14,7 @@ export type TokenizedMugenExpression = {
 };
 
 const expressionTokenPattern =
-  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||!=|<=|>=|[=<>+\-*/!])|([()])|(,))/gy;
+  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||!=|<=|>=|[=<>+\-*/!])|([()])|([\[\]])|(,))/gy;
 
 export function tokenizeMugenExpression(expression: string): TokenizedMugenExpression {
   const tokens: ExpressionLexToken[] = [];
@@ -45,6 +46,8 @@ export function tokenizeMugenExpression(expression: string): TokenizedMugenExpre
     } else if (match[5] !== undefined) {
       tokens.push({ type: "paren", value: match[5] as "(" | ")" });
     } else if (match[6] !== undefined) {
+      tokens.push({ type: "bracket", value: match[6] as "[" | "]" });
+    } else if (match[7] !== undefined) {
       tokens.push({ type: "comma", value: "," });
     }
   }
@@ -56,17 +59,20 @@ export function isMalformedMugenExpression(lexed: TokenizedMugenExpression): boo
     return true;
   }
   const tokens = lexed.tokens;
-  let depth = 0;
+  let groupDepth = 0;
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
     if (!token) {
       continue;
     }
-    if (token.type === "paren" && token.value === "(") {
-      depth += 1;
-    } else if (token.type === "paren" && token.value === ")") {
-      depth -= 1;
-      if (depth < 0) {
+    if ((token.type === "paren" && token.value === "(") || (token.type === "bracket" && token.value === "[")) {
+      groupDepth += 1;
+      if (token.type === "bracket" && !rangeContainsComma(tokens, index)) {
+        return true;
+      }
+    } else if ((token.type === "paren" && token.value === ")") || (token.type === "bracket" && token.value === "]")) {
+      groupDepth -= 1;
+      if (groupDepth < 0) {
         return true;
       }
     }
@@ -75,7 +81,7 @@ export function isMalformedMugenExpression(lexed: TokenizedMugenExpression): boo
       return true;
     }
   }
-  if (depth !== 0) {
+  if (groupDepth !== 0) {
     return true;
   }
   const first = tokens[0];
@@ -84,6 +90,24 @@ export function isMalformedMugenExpression(lexed: TokenizedMugenExpression): boo
   }
   const last = tokens[tokens.length - 1];
   return last?.type === "operator";
+}
+
+function rangeContainsComma(tokens: ExpressionLexToken[], openIndex: number): boolean {
+  let depth = 0;
+  for (let index = openIndex; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if ((token?.type === "bracket" && token.value === "[") || (token?.type === "paren" && token.value === "(")) {
+      depth += 1;
+    } else if ((token?.type === "bracket" && token.value === "]") || (token?.type === "paren" && token.value === ")")) {
+      depth -= 1;
+      if (depth === 0) {
+        return false;
+      }
+    } else if (token?.type === "comma" && depth === 1) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function adjacentValueTokens(left: ExpressionLexToken, right: ExpressionLexToken): boolean {
@@ -98,7 +122,8 @@ function isValueEndToken(token: ExpressionLexToken): boolean {
     token.type === "number" ||
     token.type === "string" ||
     token.type === "identifier" ||
-    (token.type === "paren" && token.value === ")")
+    (token.type === "paren" && token.value === ")") ||
+    (token.type === "bracket" && token.value === "]")
   );
 }
 
@@ -107,6 +132,7 @@ function isValueStartToken(token: ExpressionLexToken): boolean {
     token.type === "number" ||
     token.type === "string" ||
     token.type === "identifier" ||
-    (token.type === "paren" && token.value === "(")
+    (token.type === "paren" && token.value === "(") ||
+    (token.type === "bracket" && token.value === "[")
   );
 }

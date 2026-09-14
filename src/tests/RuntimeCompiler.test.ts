@@ -100,6 +100,10 @@ time = 20
     const juxtaposition = compileExpression("1 2");
     const unterminatedParen = compileExpression("(1");
     const missingOperand = compileExpression("1 +");
+    const closedRange = compileExpression("2 = [2,4]");
+    const mixedRange = compileExpression("2 = (2,4]");
+    const dynamicRange = compileExpression("Time != [var(0),var(1))");
+    const malformedRange = compileExpression("2 = [2");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -277,6 +281,11 @@ time = 20
     expect(unterminatedParen.unsupportedFeatures).toEqual(["malformed expression"]);
     expect(missingOperand.supportLevel).toBe("unsupported");
     expect(missingOperand.unsupportedFeatures).toEqual(["malformed expression"]);
+    expect(closedRange.supportLevel).toBe("executable");
+    expect(mixedRange.supportLevel).toBe("executable");
+    expect(dynamicRange.supportLevel).toBe("executable");
+    expect(malformedRange.supportLevel).toBe("unsupported");
+    expect(malformedRange.unsupportedFeatures).toEqual(["malformed expression"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

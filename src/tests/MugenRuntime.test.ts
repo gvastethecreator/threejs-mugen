@@ -40,6 +40,24 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("GetHitVar(fall.recover)", { self, getHitVar: (name) => (name === "fall.recover" ? 1 : 0) })).toBe(1);
     expect(evaluateExpression("animelem = 1", { self })).toBe(1);
     expect(evaluateExpression('command = "x"', { self, commandActive: (name) => name === "x" })).toBe(1);
+    expect(evaluateExpression("2 = [2,4]", { self })).toBe(1);
+    expect(evaluateExpression("2 = (2,4]", { self })).toBe(0);
+    expect(evaluateExpression("4 = [2,4)", { self })).toBe(0);
+    const rangeSelf = expressionSelf({ vars: [2, 4] });
+    expect(evaluateExpression("2 = [var(0),var(1))", { self: rangeSelf })).toBe(1);
+    expect(evaluateExpression("2 != [var(0),var(1))", { self: rangeSelf })).toBe(0);
+    expect(evaluateExpression("4 != [var(0),var(1))", { self: rangeSelf })).toBe(1);
+    const randomDraws: number[] = [];
+    expect(
+      evaluateExpression("Random = [0,999]", {
+        self,
+        random: () => {
+          randomDraws.push(0.25);
+          return 0.25;
+        },
+      }),
+    ).toBe(1);
+    expect(randomDraws).toEqual([0.25]);
   });
 });
 

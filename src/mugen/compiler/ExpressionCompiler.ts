@@ -9,15 +9,6 @@ export function normalizeMugenExpression(expression: string): string {
   normalized = normalized.replace(/\b(p2bodydist|p2dist)\s+([xy])\b/gi, (_match, base: string, axis: string) => {
     return `${base}${axis}`.toLowerCase();
   });
-  normalized = normalized.replace(
-    /([A-Za-z_][A-Za-z0-9_.]*(?:\([^()[\]]*\))?)\s*(=|!=)\s*\[\s*(-?(?:\d+(?:\.\d+)?|\.\d+))\s*,\s*(-?(?:\d+(?:\.\d+)?|\.\d+))\s*\]/gi,
-    (_match, left: string, operator: string, min: string, max: string) => {
-      if (operator === "!=") {
-        return `((${left} < ${min}) || (${left} > ${max}))`;
-      }
-      return `((${left} >= ${min}) && (${left} <= ${max}))`;
-    },
-  );
   normalized = normalizeLegacyProjectileContactTriggers(normalized);
   return normalized;
 }
@@ -59,9 +50,6 @@ export function compileExpression(expression: string): ExpressionIr {
 
   for (const feature of redirect.unsupportedFeatures) {
     unsupportedFeatures.add(feature);
-  }
-  if (/[\[\]]/.test(withoutStrings)) {
-    unsupportedFeatures.add("range syntax");
   }
   if (isMalformedMugenExpression(tokenizeMugenExpression(normalized))) {
     unsupportedFeatures.add("malformed expression");

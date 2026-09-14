@@ -540,13 +540,96 @@ class ExpressionParser {
     let left = this.parseComparison();
     while (true) {
       if (this.matchOperator("=")) {
-        left = this.compareEquality(left, this.parseComparison(), false);
+        left = this.parseEqualityRight(left, false);
       } else if (this.matchOperator("!=")) {
-        left = this.compareEquality(left, this.parseComparison(), true);
+        left = this.parseEqualityRight(left, true);
       } else {
         return left;
       }
     }
+  }
+
+  private parseEqualityRight(left: ExpressionValue, negated: boolean): ExpressionValue {
+    const range = this.tryParseRange();
+    if (range) {
+      return this.compareRange(left, range.min, range.max, range.minInclusive, range.maxInclusive, negated);
+    }
+    return this.compareEquality(left, this.parseComparison(), negated);
+  }
+
+  private tryParseRange():
+    | { min: ExpressionValue; max: ExpressionValue; minInclusive: boolean; maxInclusive: boolean }
+    | undefined {
+    if (!this.looksLikeRange()) {
+      return undefined;
+    }
+    const open = this.advance();
+    const minInclusive = open?.type === "bracket" && open.value === "[";
+    const min = this.parseOr();
+    if (!this.matchComma()) {
+      this.malformed = true;
+      return { min, max: 0, minInclusive, maxInclusive: true };
+    }
+    const max = this.parseOr();
+    const close = this.peek();
+    if (close?.type === "bracket" && close.value === "]") {
+      this.cursor += 1;
+      return { min, max, minInclusive, maxInclusive: true };
+    }
+    if (close?.type === "paren" && close.value === ")") {
+      this.cursor += 1;
+      return { min, max, minInclusive, maxInclusive: false };
+    }
+    this.malformed = true;
+    return { min, max, minInclusive, maxInclusive: true };
+  }
+
+  private looksLikeRange(): boolean {
+    const open = this.peek();
+    if (open?.type === "bracket" && open.value === "[") {
+      return true;
+    }
+    if (!(open?.type === "paren" && open.value === "(")) {
+      return false;
+    }
+    let depth = 0;
+    for (let index = this.cursor; index < this.tokens.length; index += 1) {
+      const token = this.tokens[index];
+      if (!token) {
+        break;
+      }
+      if ((token.type === "paren" && token.value === "(") || (token.type === "bracket" && token.value === "[")) {
+        depth += 1;
+      } else if ((token.type === "paren" && token.value === ")") || (token.type === "bracket" && token.value === "]")) {
+        depth -= 1;
+        if (depth === 0) {
+          return false;
+        }
+      } else if (token.type === "comma" && depth === 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private compareRange(
+    value: ExpressionValue,
+    min: ExpressionValue,
+    max: ExpressionValue,
+    minInclusive: boolean,
+    maxInclusive: boolean,
+    negated: boolean,
+  ): ExpressionValue {
+    if (isFailedRedirect(value) || isFailedRedirect(min) || isFailedRedirect(max)) {
+      return failedRedirectMarker;
+    }
+    const tested = numeric(value);
+    const low = numeric(min);
+    const high = numeric(max);
+    const minPass = minInclusive ? tested >= low : tested > low;
+    const maxPass = maxInclusive ? tested <= high : tested < high;
+    const inRange = minPass && maxPass;
+    return negated ? (inRange ? 0 : 1) : inRange ? 1 : 0;
   }
 
   private compareEquality(left: ExpressionValue, right: ExpressionValue, negated: boolean): ExpressionValue {
