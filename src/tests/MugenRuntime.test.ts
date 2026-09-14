@@ -116,6 +116,11 @@ describe("MugenRuntime frame selection", () => {
       () => undefined,
     );
     expect(floored.pos.x).toBe(1);
+    expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 0 })).toBe(1);
+    expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 4 })).toBe(1);
+    expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 8 })).toBe(1);
+    expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 1 })).toBe(0);
+    expect(evaluateExpression("TimeMod = 4, <= 1", { self: expressionSelf(), stateTime: 1 })).toBe(1);
   });
 });
 

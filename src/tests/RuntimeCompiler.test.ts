@@ -112,6 +112,8 @@ time = 20
     const logs = compileExpression("Log(2,8)");
     const rounding = compileExpression("Floor(-1.2)");
     const logArity = compileExpression("Log(8)");
+    const timeMod = compileExpression("TimeMod = 4, 0");
+    const timeModBad = compileExpression("TimeMod = 0, 0");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -302,6 +304,9 @@ time = 20
     expect(logs.supportLevel).toBe("executable");
     expect(rounding.supportLevel).toBe("executable");
     expect(logArity.supportLevel).toBe("executable");
+    expect(timeMod.supportLevel).toBe("executable");
+    expect(timeMod.normalized).toBe("((Time % 4) = 0)");
+    expect(timeModBad.supportLevel).toBe("unsupported");
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

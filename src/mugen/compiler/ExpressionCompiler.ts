@@ -9,8 +9,23 @@ export function normalizeMugenExpression(expression: string): string {
   normalized = normalized.replace(/\b(p2bodydist|p2dist)\s+([xy])\b/gi, (_match, base: string, axis: string) => {
     return `${base}${axis}`.toLowerCase();
   });
+  normalized = normalizeLegacyTimeModTriggers(normalized);
   normalized = normalizeLegacyProjectileContactTriggers(normalized);
   return normalized;
+}
+
+function normalizeLegacyTimeModTriggers(expression: string): string {
+  return expression.replace(
+    /\btimemod\s*=\s*(-?\d+)\s*,\s*((?:<=|>=|!=|=|<|>)\s*)?(-?(?:\d+(?:\.\d+)?|\.\d+))/gi,
+    (_match, divisorRaw: string, operatorRaw: string | undefined, remainderRaw: string) => {
+      const divisor = Number(divisorRaw);
+      if (!Number.isInteger(divisor) || divisor <= 0) {
+        return _match;
+      }
+      const operator = (operatorRaw ?? "=").trim();
+      return `((Time % ${divisor}) ${operator} ${remainderRaw})`;
+    },
+  );
 }
 
 function normalizeLegacyProjectileContactTriggers(expression: string): string {
