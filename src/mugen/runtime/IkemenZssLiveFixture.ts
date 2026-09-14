@@ -63,6 +63,12 @@ export function createIkemenZssMalformedFixtureVfs(): VirtualFileSystem {
   return vfs;
 }
 
+export function createIkemenZssMalformedGrantedFixtureVfs(): VirtualFileSystem {
+  const vfs = createIkemenZssLiveFixtureVfs("direct");
+  vfs.addFile("chars/mugen-lite-journey/live.zss", text(MALFORMED_GRANTED_ZSS));
+  return vfs;
+}
+
 export function createMugenProfileZssFixtureVfs(mode: IkemenZssFixtureMode = "direct"): VirtualFileSystem {
   const vfs = createIkemenZssLiveFixtureVfs(mode);
   const root = "chars/mugen-lite-journey";
@@ -302,6 +308,11 @@ if time >= 2 {
 const MALFORMED_ZSS = `[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
 let localCounter = 1;
 posAdd{x: 999; y: 0;}
+`;
+
+const MALFORMED_GRANTED_ZSS = `[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
+changeAnim{value: 200;}
+projectile{projanim: 200; velocity: ;}
 `;
 
 const HITPAUSE_CNS = `[Statedef 200]

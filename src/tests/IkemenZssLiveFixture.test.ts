@@ -5,6 +5,7 @@ import {
   IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST,
   createIkemenZssLiveFixtureVfs,
   createIkemenZssMalformedFixtureVfs,
+  createIkemenZssMalformedGrantedFixtureVfs,
   createMugenProfileZssFixtureVfs,
 } from "../mugen/runtime/IkemenZssLiveFixture";
 import {
@@ -167,6 +168,39 @@ describe("IKEMEN ZSS live fixture", () => {
       compiled: { sourcePaths: [], stateIds: [], controllers: 0 },
       blocked: { count: 1, features: ["ZSS grammar source"] },
     });
+  });
+
+  it("fails a granted ChangeAnim plus malformed Projectile closed, then a fresh valid load is not stale", async () => {
+    const loader = new MugenCharacterLoader();
+    const blocked = await loader.load(
+      IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      createIkemenZssMalformedGrantedFixtureVfs(),
+    );
+
+    expect(blocked.states.find((state) => state.id === 0)).toBeUndefined();
+    expect(blocked.runtimeProgram?.states.some((state) => state.id === 0)).toBe(false);
+    expect(blocked.compatibility.zss).toMatchObject({
+      compiled: { sourcePaths: [], stateIds: [], controllers: 0 },
+      blocked: { count: 1, features: ["ZSS grammar source"] },
+    });
+    expect(blocked.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          format: "zss",
+          severity: "error",
+          file: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath,
+          message: expect.stringContaining("invalid parameter list"),
+        }),
+      ]),
+    );
+
+    const valid = await loader.load(
+      IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      createIkemenZssLiveFixtureVfs(),
+    );
+    expect(valid.states.find((state) => state.id === 0)).toBeDefined();
+    expect(valid.compatibility.zss?.compiled.controllers).toBeGreaterThan(0);
+    expect(valid.compatibility.zss?.blocked.count).toBe(0);
   });
 
   it("executes the direct ZSS source through the ZIP loader and real match runtime", async () => {

@@ -86,4 +86,24 @@ posAdd{x: 99;}
       }),
     ]);
   });
+
+  it("fails the whole source when a granted projectile block is malformed after a valid ChangeAnim", () => {
+    const parsed = parseZss(`
+[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
+changeAnim{value: 200;}
+projectile{projanim: 200; velocity: ;}
+`, "chars/zss/blocked-granted.zss");
+
+    expect(parsed.zss.status).toBe("blocked");
+    expect(parsed.states).toEqual([]);
+    expect(parsed.controllers).toEqual([]);
+    expect(parsed.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: "error",
+        format: "zss",
+        file: "chars/zss/blocked-granted.zss",
+        message: expect.stringContaining("invalid parameter list"),
+      }),
+    ]);
+  });
 });
