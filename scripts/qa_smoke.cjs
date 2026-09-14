@@ -3677,6 +3677,7 @@ async function inspectPackageZip(packagePath) {
     evidenceEnvelopesProjectScope: evidenceEnvelopes.project?.scope,
     evidenceEnvelopesHasPackage: evidenceEnvelopes.envelopes?.some((envelope) => envelope.subject?.kind === "package") ?? false,
     evidenceEnvelopesPackageFreshness: evidenceEnvelopes.envelopes?.find((envelope) => envelope.subject?.kind === "package")?.observation?.freshness?.state,
+    evidenceEnvelopesPackageRevision: evidenceEnvelopes.envelopes?.find((envelope) => envelope.subject?.kind === "package")?.revisions?.source,
     hasProjectReleaseDecision: files.includes("studio/project-release-decision.json"),
     manifestListsProjectReleaseDecision: manifest.files?.some((file) => file.path === "studio/project-release-decision.json" && file.required === true) ?? false,
     projectReleaseDecisionSchema: projectReleaseDecision.schemaVersion,
@@ -5523,8 +5524,12 @@ function assertSmoke(diagnostics) {
   if (
     studioBuild.importedFixtureLoaded &&
     ((studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.length ?? 0) < 2 ||
-      studioBuild.studioEvidenceEnvelopeDocument?.summary?.current < 2 ||
-      studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.some((envelope) => envelope.subject?.kind === "package" && envelope.observation?.freshness?.state !== "current"))
+      !studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.some((envelope) => envelope.subject?.kind === "package") ||
+      studioBuild.studioEvidenceEnvelopeDocument?.envelopes?.some((envelope) =>
+        envelope.subject?.kind === "package" && (
+          envelope.observation?.freshness?.state !== "current" ||
+          String(envelope.revisions?.source ?? "").toLowerCase() !== String(studioBuild.packageAnalysisV1?.source?.package?.digest ?? "").toLowerCase()
+        )))
   ) {
     failures.push("studio-build: imported package EvidenceEnvelope was not current and revision-bound");
   }
@@ -5661,7 +5666,7 @@ function assertSmoke(diagnostics) {
     studioBuild.importedFixtureLoaded &&
     (!studioBuild.downloadedPackage?.evidenceEnvelopesHasPackage ||
       studioBuild.downloadedPackage?.evidenceEnvelopesPackageFreshness !== "current" ||
-      studioBuild.downloadedPackage?.evidenceEnvelopesCurrent < 2)
+      String(studioBuild.downloadedPackage?.evidenceEnvelopesPackageRevision ?? "").toLowerCase() !== String(studioBuild.downloadedPackage?.packageAnalysisSourceDigest ?? "").toLowerCase())
   ) {
     failures.push("studio-build: downloaded package did not preserve current package EvidenceEnvelope facts");
   }

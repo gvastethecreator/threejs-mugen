@@ -4,6 +4,8 @@ import { parseEvidenceEnvelope } from "../app/EvidenceEnvelope";
 import {
   assessStudioEvidenceEnvelopeDocument,
   createStudioEvidenceEnvelopeDocument,
+  packageEnvelopeSourceRevision,
+  parseStudioEvidenceEnvelopeDocument,
   STUDIO_EVIDENCE_ENVELOPE_DOCUMENT_SCHEMA,
 } from "../app/StudioEvidenceEnvelope";
 import type { PackageAnalysisV1Result } from "../mugen/compatibility/PackageAnalysis";
@@ -85,7 +87,15 @@ describe("StudioEvidenceEnvelope", () => {
     expect(document.project).toEqual({ id: "project:test", revision: "3", scope: "saved" });
     expect(document.summary).toEqual({ total: 2, current: 2, stale: 0, missing: 0, unknown: 0 });
     expect(document.envelopes.every((envelope) => parseEvidenceEnvelope(envelope).envelope)).toBe(true);
+    expect(packageEnvelopeSourceRevision(document)).toBe("b".repeat(64));
     expect(assessStudioEvidenceEnvelopeDocument(document)).toMatchObject({ status: "ok", state: "exportable", canExport: true });
+
+    const exported = JSON.parse(JSON.stringify({ ...document, generatedAt: "2099-01-01T00:00:00.000Z" })) as unknown;
+    const reopened = parseStudioEvidenceEnvelopeDocument(exported);
+    expect(reopened.diagnostics).toEqual([]);
+    expect(packageEnvelopeSourceRevision(reopened.document!)).toBe("b".repeat(64));
+    expect(reopened.document?.envelopes.find((envelope) => envelope.subject.kind === "package")?.observation.freshness.state).toBe("current");
+    expect(reopened.document?.summary).toEqual(document.summary);
   });
 
   it("keeps session scope and source freshness visible instead of promoting stale facts", () => {
@@ -103,5 +113,32 @@ describe("StudioEvidenceEnvelope", () => {
     expect(document.summary).toEqual({ total: 2, current: 1, stale: 1, missing: 0, unknown: 0 });
     expect(document.diagnostics).toContain("Package analysis source revision does not match the linked source package.");
     expect(assessStudioEvidenceEnvelopeDocument(document)).toMatchObject({ status: "warn", state: "partial", canExport: true });
+
+    const later = createStudioEvidenceEnvelopeDocument({
+      generatedAt: "2099-01-01T00:00:00.000Z",
+      projectId: "project:test",
+      gates: [createGate()],
+      packageAnalysis: createPackageAnalysis(),
+      currentPackageRevision: "d".repeat(64),
+      currentPackageAvailable: true,
+      now: Date.parse("2099-01-01T00:00:00.000Z"),
+    });
+    expect(later.envelopes.find((envelope) => envelope.subject.kind === "package")?.observation.freshness.state).toBe("stale");
+
+    const reopened = parseStudioEvidenceEnvelopeDocument(JSON.parse(JSON.stringify({
+      ...later,
+      generatedAt: "2100-01-01T00:00:00.000Z",
+      summary: { ...later.summary, current: later.summary.total, stale: 0 },
+    })));
+    expect(reopened.diagnostics).toContain("Studio evidence envelope document summary does not match envelope freshness");
+    expect(reopened.document).toBeUndefined();
+
+    const preserved = parseStudioEvidenceEnvelopeDocument(JSON.parse(JSON.stringify({
+      ...later,
+      generatedAt: "2100-01-01T00:00:00.000Z",
+    })));
+    expect(preserved.diagnostics).toEqual([]);
+    expect(preserved.document?.envelopes.find((envelope) => envelope.subject.kind === "package")?.observation.freshness.state).toBe("stale");
+    expect(packageEnvelopeSourceRevision(preserved.document!)).toBe("b".repeat(64));
   });
 });

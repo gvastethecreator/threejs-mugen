@@ -5,6 +5,7 @@ import {
 import {
   createGateEvidenceEnvelope,
   createPackageAnalysisEvidenceEnvelope,
+  parseEvidenceEnvelope,
   sha256StableJson,
   type EvidenceEnvelope,
   type EvidenceEnvelopeFreshnessState,
@@ -46,6 +47,11 @@ export type StudioEvidenceEnvelopeAssessment = {
   blockedBy: string[];
 };
 
+export type StudioEvidenceEnvelopeParseResult = {
+  document?: StudioEvidenceEnvelopeDocument;
+  diagnostics: string[];
+};
+
 export function createStudioEvidenceEnvelopeDocument(input: {
   generatedAt: string;
   projectId: string;
@@ -84,14 +90,7 @@ export function createStudioEvidenceEnvelopeDocument(input: {
     ...(projectRevision ? [] : ["Project storage revision is unavailable; this envelope set is session-scoped."]),
     ...(packageFreshness?.diagnostics ?? []),
   ];
-  const summary = envelopes.reduce(
-    (counts, envelope) => {
-      counts.total += 1;
-      counts[envelope.observation.freshness.state] += 1;
-      return counts;
-    },
-    { total: 0, current: 0, stale: 0, missing: 0, unknown: 0 },
-  );
+  const sorted = envelopes.sort((left, right) => left.id.localeCompare(right.id));
   return {
     schemaVersion: STUDIO_EVIDENCE_ENVELOPE_DOCUMENT_SCHEMA,
     generatedAt: input.generatedAt,
@@ -101,10 +100,56 @@ export function createStudioEvidenceEnvelopeDocument(input: {
       scope: projectRevision ? "saved" : "session",
     },
     producer: STUDIO_EVIDENCE_ENVELOPE_PRODUCER,
-    summary,
-    envelopes: envelopes.sort((left, right) => left.id.localeCompare(right.id)),
+    summary: summarizeEnvelopes(sorted),
+    envelopes: sorted,
     diagnostics: [...new Set(diagnostics)].sort((left, right) => left.localeCompare(right)),
   };
+}
+
+export function parseStudioEvidenceEnvelopeDocument(value: unknown): StudioEvidenceEnvelopeParseResult {
+  const diagnostics: string[] = [];
+  if (!isRecord(value)) {
+    return { diagnostics: ["Studio evidence envelope document must be an object"] };
+  }
+  if (value.schemaVersion !== STUDIO_EVIDENCE_ENVELOPE_DOCUMENT_SCHEMA) {
+    diagnostics.push("Studio evidence envelope document schema is unsupported");
+  }
+  if (!isIsoDate(value.generatedAt)) diagnostics.push("Studio evidence envelope document generatedAt is invalid");
+  const project = parseProject(value.project, diagnostics);
+  const producer = parseProducer(value.producer, diagnostics);
+  if (!Array.isArray(value.envelopes)) {
+    diagnostics.push("Studio evidence envelope document envelopes must be an array");
+  }
+  const envelopes: EvidenceEnvelope[] = [];
+  for (const item of Array.isArray(value.envelopes) ? value.envelopes : []) {
+    const parsed = parseEvidenceEnvelope(item);
+    diagnostics.push(...parsed.diagnostics);
+    if (parsed.envelope) envelopes.push(parsed.envelope);
+  }
+  const summary = summarizeEnvelopes(envelopes);
+  if (isRecord(value.summary) && !summariesEqual(value.summary, summary)) {
+    diagnostics.push("Studio evidence envelope document summary does not match envelope freshness");
+  }
+  const documentDiagnostics = Array.isArray(value.diagnostics) && value.diagnostics.every((item) => typeof item === "string")
+    ? [...value.diagnostics]
+    : (diagnostics.push("Studio evidence envelope document diagnostics must be string[]"), []);
+  if (diagnostics.length || !project || !producer) return { diagnostics };
+  return {
+    diagnostics: [],
+    document: {
+      schemaVersion: STUDIO_EVIDENCE_ENVELOPE_DOCUMENT_SCHEMA,
+      generatedAt: String(value.generatedAt),
+      project,
+      producer,
+      summary,
+      envelopes,
+      diagnostics: documentDiagnostics,
+    },
+  };
+}
+
+export function packageEnvelopeSourceRevision(document: StudioEvidenceEnvelopeDocument): string | undefined {
+  return document.envelopes.find((envelope) => envelope.subject.kind === "package")?.revisions.source;
 }
 
 export function assessStudioEvidenceEnvelopeDocument(document: StudioEvidenceEnvelopeDocument): StudioEvidenceEnvelopeAssessment {
@@ -166,4 +211,67 @@ function assessPackageFreshness(input: {
 
 function toEnvelopeFreshness(state: "current" | "stale" | "missing"): EvidenceEnvelopeFreshnessState {
   return state;
+}
+
+function summarizeEnvelopes(envelopes: readonly EvidenceEnvelope[]): StudioEvidenceEnvelopeDocument["summary"] {
+  return envelopes.reduce(
+    (counts, envelope) => {
+      counts.total += 1;
+      counts[envelope.observation.freshness.state] += 1;
+      return counts;
+    },
+    { total: 0, current: 0, stale: 0, missing: 0, unknown: 0 },
+  );
+}
+
+function summariesEqual(
+  value: Record<string, unknown>,
+  expected: StudioEvidenceEnvelopeDocument["summary"],
+): boolean {
+  return expected.total === Number(value.total)
+    && expected.current === Number(value.current)
+    && expected.stale === Number(value.stale)
+    && expected.missing === Number(value.missing)
+    && expected.unknown === Number(value.unknown);
+}
+
+function parseProject(value: unknown, diagnostics: string[]): StudioEvidenceEnvelopeDocument["project"] | undefined {
+  if (!isRecord(value) || !nonEmptyString(value.id) || (value.scope !== "saved" && value.scope !== "session")) {
+    diagnostics.push("Studio evidence envelope project is invalid");
+    return undefined;
+  }
+  if (value.revision !== undefined && !nonEmptyString(value.revision)) {
+    diagnostics.push("Studio evidence envelope project revision is invalid");
+    return undefined;
+  }
+  return {
+    id: String(value.id),
+    ...(typeof value.revision === "string" && value.revision ? { revision: value.revision } : {}),
+    scope: value.scope,
+  };
+}
+
+function parseProducer(value: unknown, diagnostics: string[]): typeof STUDIO_EVIDENCE_ENVELOPE_PRODUCER | undefined {
+  if (
+    !isRecord(value)
+    || value.id !== STUDIO_EVIDENCE_ENVELOPE_PRODUCER.id
+    || value.version !== STUDIO_EVIDENCE_ENVELOPE_PRODUCER.version
+    || value.revision !== STUDIO_EVIDENCE_ENVELOPE_PRODUCER.revision
+  ) {
+    diagnostics.push("Studio evidence envelope producer is unsupported");
+    return undefined;
+  }
+  return STUDIO_EVIDENCE_ENVELOPE_PRODUCER;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isIsoDate(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
 }

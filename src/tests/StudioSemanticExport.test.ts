@@ -45,6 +45,48 @@ describe("StudioSemanticExport", () => {
     expect(first.evidence.map((item) => item.id)).toEqual(second.evidence.map((item) => item.id));
   });
 
+  it("preserves package revision identity through export and a later timestamp", () => {
+    const packageDigest = "b".repeat(64);
+    const decision = createProjectReleaseDecisionDocument({
+      generatedAt: "2026-07-17T04:00:00.000Z",
+      project: { id: "kfm-project", revision: 7, scope: "saved", dirty: false, conflict: false },
+      evidence: [
+        {
+          id: "package-analysis",
+          label: "Package analysis",
+          kind: "analysis",
+          status: "passed",
+          freshness: "current",
+          revisionState: "matched",
+          requiredForRelease: false,
+          detail: "recognized",
+          evidenceIds: [`package:${packageDigest}`],
+        },
+        {
+          id: "package-stale",
+          label: "Stale package analysis",
+          kind: "analysis",
+          status: "stale",
+          freshness: "stale",
+          revisionState: "mismatched",
+          requiredForRelease: false,
+          detail: "source moved",
+          evidenceIds: [`package:${"d".repeat(64)}`],
+        },
+      ],
+    });
+    const first = createStudioSemanticExportDocument({ generatedAt: "2026-07-17T04:00:00.000Z", decision });
+    const later = createStudioSemanticExportDocument({ generatedAt: "2099-01-01T00:00:00.000Z", decision });
+    const current = first.evidence.find((item) => item.id === "package-analysis");
+    const stale = first.evidence.find((item) => item.id === "package-stale");
+
+    expect(current).toMatchObject({ freshness: "current", revisionState: "matched" });
+    expect(current?.evidenceIds).toContain(`package:${packageDigest}`);
+    expect(stale).toMatchObject({ freshness: "stale", revisionState: "mismatched" });
+    expect(first.semanticDigest).toBe(later.semanticDigest);
+    expect(parseStudioSemanticExportDocument(later).document?.evidence).toEqual(first.evidence);
+  });
+
   it("rejects semantic and transport tampering", () => {
     const document = createStudioSemanticExportDocument({
       generatedAt: "2026-07-17T04:00:00.000Z",

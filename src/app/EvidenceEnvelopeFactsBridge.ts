@@ -89,10 +89,13 @@ function mapSubject(envelope: EvidenceEnvelope): CommonEvidenceSubject {
   } else if (kind === "gate" || kind === "contract" || kind === "snapshot" || kind === "artifact") {
     mapped = "tool";
   }
+  const revision = kind === "package" || kind === "asset"
+    ? envelope.revisions.source
+    : envelope.revisions.project?.revision ?? envelope.revisions.source;
   return {
     kind: mapped,
     id: envelope.subject.id,
-    revision: envelope.revisions.project?.revision ?? envelope.revisions.source,
+    revision,
   };
 }
 

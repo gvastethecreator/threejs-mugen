@@ -11477,7 +11477,13 @@ export class App {
       revisionState: envelopeRevisionState,
       requiredForRelease: true,
       detail: envelopeAssessment.detail,
-      evidenceIds: [envelopeDocument.schemaVersion, ...envelopeDocument.envelopes.map((item) => item.id)],
+      evidenceIds: [
+        envelopeDocument.schemaVersion,
+        ...envelopeDocument.envelopes.map((item) => item.id),
+        ...envelopeDocument.envelopes
+          .filter((item) => item.subject.kind === "package")
+          .map((item) => `package:${item.revisions.source}`),
+      ],
     });
 
     const gateEvidenceStatus: ProjectReleaseEvidenceInput["status"] = architectureEvidence.evidence?.status === "passed" && architectureEvidence.canExport
@@ -11549,18 +11555,26 @@ export class App {
 
     if (this.importedPackageAnalysis && this.importedPackageAnalysisV1) {
       const packageEnvelope = envelopeDocument.envelopes.find((item) => item.subject.kind === "package");
+      const linkedPackageRevision = this.importedSourceBundle?.fingerprint.digest;
+      const packageSourceRevision = packageEnvelope?.revisions.source ?? this.importedPackageAnalysisV1.source.package.digest;
       add({
         id: "package-analysis",
         label: "Package analysis",
         kind: "analysis",
         status: this.importedPackageAnalysis.status === "recognized" ? "passed" : this.importedPackageAnalysis.status === "partial" ? "warn" : "unknown",
         freshness: packageEnvelope?.observation.freshness.state ?? "unknown",
-        revisionState: packageEnvelope?.revisions.project
-          ? packageEnvelope.revisions.project.revision === String(projectRevision) ? "matched" : "mismatched"
-          : "unknown",
+        revisionState: !packageEnvelope || !linkedPackageRevision
+          ? "unknown"
+          : packageSourceRevision.toLowerCase() === linkedPackageRevision.toLowerCase()
+            ? "matched"
+            : "mismatched",
         requiredForRelease: false,
         detail: `${this.importedPackageAnalysis.status} / ${this.importedPackageAnalysisV1.semanticDigest}`,
-        evidenceIds: [`package-analysis:${this.importedPackageAnalysisV1.checksum}`, `package-analysis:semantic:${this.importedPackageAnalysisV1.semanticDigest}`],
+        evidenceIds: [
+          `package-analysis:${this.importedPackageAnalysisV1.checksum}`,
+          `package-analysis:semantic:${this.importedPackageAnalysisV1.semanticDigest}`,
+          `package:${packageSourceRevision}`,
+        ],
       });
     }
 
@@ -12983,6 +12997,9 @@ export class App {
         evidenceIds: [
           envelopeDocument.schemaVersion,
           ...envelopeDocument.envelopes.map((envelope) => envelope.id),
+          ...envelopeDocument.envelopes
+            .filter((envelope) => envelope.subject.kind === "package")
+            .map((envelope) => `package:${envelope.revisions.source}`),
         ],
         blockedBy: envelopeAssessment.blockedBy,
         canExport: envelopeAssessment.canExport,
