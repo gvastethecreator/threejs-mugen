@@ -65,6 +65,7 @@ export function parseStageDef(text: string, file = "stage.def"): MugenStageDef {
       sprite: getValue(bgdef, "spr"),
       music: getValue(music, "bgmusic"),
     },
+    ...stageMusicPlayback(music),
     rawSections,
     rawLines: lines.map((line) => line.raw),
     diagnostics,
@@ -327,6 +328,15 @@ function extractEmbeddedActionText(text: string): string {
     }
   }
   return output.join("\n");
+}
+
+function stageMusicPlayback(music: Record<string, string>): Pick<MugenStageDef, "musicLoop" | "musicVolume"> {
+  const loop = numberValue(music, "bgmloop");
+  const volume = numberValue(music, "bgmvolume");
+  return {
+    ...(loop === undefined ? {} : { musicLoop: loop !== 0 }),
+    ...(volume === undefined ? {} : { musicVolume: volume }),
+  };
 }
 
 function stageLayerParallaxShape(

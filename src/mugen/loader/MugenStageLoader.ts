@@ -70,6 +70,8 @@ export class MugenStageLoader {
       return resolved;
     };
     const id = `stage-${slugify(definition.info.displayName ?? definition.info.name ?? basename(defPath).replace(/\.def$/i, ""))}`;
+    const musicPath = resolve(definition.files.music);
+    const musicBytes = musicPath ? vfs.readArrayBuffer(musicPath) : undefined;
 
     return {
       sourceName,
@@ -79,9 +81,19 @@ export class MugenStageLoader {
       files: {
         def: defPath,
         sprite: resolve(definition.files.sprite),
-        music: resolve(definition.files.music),
+        music: musicPath,
         missing,
       },
+      ...(musicPath && musicBytes
+        ? {
+            music: {
+              path: musicPath,
+              bytes: musicBytes,
+              loop: definition.musicLoop !== false,
+              volume: Number.isFinite(definition.musicVolume) ? definition.musicVolume! : 100,
+            },
+          }
+        : {}),
       diagnostics,
     };
   }

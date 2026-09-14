@@ -4432,7 +4432,22 @@ export class App {
     this.syncRuntimeControls();
   }
 
+  private syncStageMusic(): void {
+    const stagePackage = this.importedStages.find((stage) => stage.stage.id === this.selectedStageId);
+    if (!stagePackage?.music) {
+      void this.audio.setStageMusic(undefined);
+      return;
+    }
+    void this.audio.setStageMusic({
+      id: stagePackage.stage.id,
+      bytes: stagePackage.music.bytes,
+      loop: stagePackage.music.loop,
+      volume: stagePackage.music.volume,
+    });
+  }
+
   private updateUi(): void {
+    this.syncStageMusic();
     this.syncShellState();
     this.setHtml("#studio-chrome", this.renderStudioChrome());
     this.setHtml("#workspace-brand", this.renderWorkspaceBrand());

@@ -18,6 +18,15 @@ export type MugenAudioDiagnostics = {
   skipped: number;
   missing: number;
   errors: string[];
+  bgmPlaying: boolean;
+  bgmId?: string;
+};
+
+export type StageMusicTrack = {
+  id: string;
+  bytes: ArrayBuffer;
+  loop: boolean;
+  volume: number;
 };
 
 export type RuntimeAudioEventAction =
@@ -103,6 +112,10 @@ export class MugenAudioSystem {
   private lastRoundFadeSoundKey?: string;
   private readonly roundAnnouncementSoundKeys = new Set<string>();
   private roundAnnouncementSoundStateKey?: string;
+  private stageMusicHandle?: RuntimeAudioSourceHandle;
+  private stageMusicId?: string;
+  private pendingStageMusic?: StageMusicTrack;
+  private stageMusicGeneration = 0;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
@@ -131,6 +144,37 @@ export class MugenAudioSystem {
       await context.resume();
     }
     this.unlocked = context.state === "running";
+    const pending = this.pendingStageMusic;
+    this.pendingStageMusic = undefined;
+    if (pending && this.unlocked) {
+      await this.startStageMusic(pending);
+    }
+  }
+
+  async setStageMusic(track?: StageMusicTrack): Promise<void> {
+    if (track && track.id === this.stageMusicId) {
+      return;
+    }
+    if (!track) {
+      this.stopStageMusic();
+      return;
+    }
+    this.stopStageMusic();
+    this.stageMusicId = track.id;
+    if (!this.unlocked) {
+      this.pendingStageMusic = track;
+      return;
+    }
+    await this.startStageMusic(track);
+  }
+
+  stopStageMusic(): void {
+    this.stageMusicGeneration += 1;
+    this.pendingStageMusic = undefined;
+    this.stageMusicId = undefined;
+    const handle = this.stageMusicHandle;
+    this.stageMusicHandle = undefined;
+    handle?.source.stop();
   }
 
   processSnapshot(snapshot: MugenSnapshot): void {
@@ -205,6 +249,8 @@ export class MugenAudioSystem {
       skipped: this.skipped,
       missing: this.missing,
       errors: this.errors.slice(0, 8),
+      bgmPlaying: Boolean(this.stageMusicHandle),
+      ...(this.stageMusicId ? { bgmId: this.stageMusicId } : {}),
     };
   }
 
@@ -429,6 +475,43 @@ export class MugenAudioSystem {
     return this.prefixedArchives.get(prefix);
   }
 
+  private async startStageMusic(track: StageMusicTrack): Promise<void> {
+    const generation = this.stageMusicGeneration;
+    if (!isRiffWave(track.bytes)) {
+      this.errors.unshift(`Stage BGM is not PCM WAV: ${track.id}`);
+      this.errors.splice(8);
+      return;
+    }
+    const context = this.ensureContext();
+    if (context.state !== "running") {
+      this.pendingStageMusic = track;
+      return;
+    }
+    const buffer = await context.decodeAudioData(track.bytes.slice(0)).catch((error: unknown) => {
+      this.errors.unshift(`Stage BGM decode failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.errors.splice(8);
+      return undefined;
+    });
+    if (generation !== this.stageMusicGeneration || !buffer || track.id !== this.stageMusicId) {
+      return;
+    }
+    const source = context.createBufferSource();
+    const gain = context.createGain();
+    gain.gain.value = resolveStageMusicGain(track.volume);
+    source.buffer = buffer;
+    source.loop = track.loop;
+    source.connect(gain).connect(context.destination);
+    const handle: RuntimeAudioSourceHandle = { source };
+    source.addEventListener("ended", () => {
+      if (this.stageMusicHandle === handle) {
+        this.stageMusicHandle = undefined;
+      }
+    });
+    this.stageMusicHandle = handle;
+    source.start();
+    this.played += 1;
+  }
+
   private hasAnyArchive(): boolean {
     return Boolean(this.archive) || this.prefixedArchives.size > 0;
   }
@@ -529,6 +612,25 @@ export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "t
     return { type: "skip", reason: "low-priority-channel", channel };
   }
   return { type: "play", channel };
+}
+
+function isRiffWave(bytes: ArrayBuffer): boolean {
+  if (bytes.byteLength < 12) {
+    return false;
+  }
+  const header = new Uint8Array(bytes, 0, 12);
+  return ascii(header, 0, 4) === "RIFF" && ascii(header, 8, 4) === "WAVE";
+}
+
+function ascii(bytes: Uint8Array, offset: number, length: number): string {
+  return String.fromCharCode(...bytes.subarray(offset, offset + length));
+}
+
+function resolveStageMusicGain(volume: number): number {
+  if (!Number.isFinite(volume)) {
+    return 1;
+  }
+  return Math.max(0, Math.min(1, volume / 100));
 }
 
 export function resolveRuntimeSoundGain(

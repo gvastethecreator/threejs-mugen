@@ -15,6 +15,10 @@ export type MugenStageDef = {
     sprite?: string;
     music?: string;
   };
+  /** Stage [Music] bgmloop. Omitted follows Ikemen default (loop). */
+  musicLoop?: boolean;
+  /** Stage [Music] bgmvolume 0-100. Omitted is 100. */
+  musicVolume?: number;
   rawSections: Record<string, Record<string, string>>;
   rawLines: string[];
   diagnostics: MugenDiagnostic[];
@@ -33,6 +37,13 @@ export type MugenStagePackage = {
     sprite?: string;
     music?: string;
     missing: string[];
+  };
+  /** Local package BGM bytes. Playback stays in the audio system. */
+  music?: {
+    path: string;
+    bytes: ArrayBuffer;
+    loop: boolean;
+    volume: number;
   };
   diagnostics: MugenDiagnostic[];
 };

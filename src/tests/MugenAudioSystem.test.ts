@@ -478,6 +478,47 @@ describe("MugenAudioSystem", () => {
     expect(resolveRuntimeSoundPlaybackRate({ freqMul: 0.5 }, 2)).toBe(1);
   });
 
+  it("plays local PCM stage music after unlock, replaces without stacking, and keeps PlaySnd stopAll separate", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    const first = pcmWavTrack("stage-a");
+    const second = pcmWavTrack("stage-b");
+
+    await system.setStageMusic(first);
+    expect(audioContext.sources).toHaveLength(0);
+    expect(system.getDiagnostics().bgmPlaying).toBe(false);
+
+    await system.unlock();
+    expect(audioContext.sources).toHaveLength(1);
+    expect(system.getDiagnostics()).toMatchObject({ bgmPlaying: true, bgmId: "stage-a", played: 1 });
+
+    await system.setStageMusic(first);
+    expect(audioContext.sources).toHaveLength(1);
+    expect(audioContext.sources[0]?.stopped).toBe(false);
+
+    await system.setStageMusic(second);
+    expect(audioContext.sources).toHaveLength(2);
+    expect(audioContext.sources.map((source) => source.stopped)).toEqual([true, false]);
+    expect(system.getDiagnostics()).toMatchObject({ bgmPlaying: true, bgmId: "stage-b", played: 2 });
+
+    system.stopAll();
+    expect(audioContext.sources[1]?.stopped).toBe(false);
+    expect(system.getDiagnostics().bgmPlaying).toBe(true);
+
+    await system.setStageMusic(undefined);
+    expect(audioContext.sources[1]?.stopped).toBe(true);
+    expect(system.getDiagnostics().bgmPlaying).toBe(false);
+
+    await system.setStageMusic({ id: "not-wav", bytes: new ArrayBuffer(8), loop: true, volume: 100 });
+    expect(system.getDiagnostics().errors[0]).toMatch(/not PCM WAV/);
+    expect(system.getDiagnostics().bgmPlaying).toBe(false);
+  });
+
   it("maps PlaySnd pan and abspan into bounded stereo panning", () => {
     expect(resolveRuntimeSoundStereoPan({})).toBe(0);
     expect(resolveRuntimeSoundStereoPan({ absPan: 160 })).toBe(0.5);
@@ -489,6 +530,13 @@ describe("MugenAudioSystem", () => {
     expect(resolveRuntimeSoundStereoPan({ pan: 64, absPan: -160 }, { actorX: 160, actorFacing: 1, cameraX: 0 })).toBe(-0.5);
   });
 });
+
+function pcmWavTrack(id: string): { id: string; bytes: ArrayBuffer; loop: boolean; volume: number } {
+  const bytes = new Uint8Array(44);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  bytes.set([0x57, 0x41, 0x56, 0x45], 8);
+  return { id, bytes: bytes.buffer, loop: true, volume: 80 };
+}
 
 function archive(soundTotal: number, group = 5): SndArchive {
   return {

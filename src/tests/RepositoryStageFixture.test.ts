@@ -63,7 +63,57 @@ describe("repository-authored Skyline Relay stage fixture", () => {
     });
     expect(report.errors).toEqual([]);
   });
+
+  it("loads local PCM stage music bytes and loop/volume from the production loader", async () => {
+    const vfs = createRepositoryStageFixtureVfs();
+    vfs.addFile("stages/skyline-relay/skyline.wav", createTinyPcmWav());
+    vfs.addFile(
+      "stages/skyline-relay/skyline.def",
+      new TextEncoder().encode(`${vfs.readText("stages/skyline-relay/skyline.def") ?? ""}
+
+[Music]
+bgmusic = skyline.wav
+bgmloop = 1
+bgmvolume = 80
+`),
+    );
+    const [stagePackage] = await new MugenStageLoader().loadAll(REPOSITORY_STAGE_FIXTURE_MANIFEST.id, vfs);
+    if (!stagePackage) throw new Error("repository Skyline Relay fixture did not produce a stage package");
+
+    expect(stagePackage.files.music).toBe("stages/skyline-relay/skyline.wav");
+    expect(stagePackage.definition.musicLoop).toBe(true);
+    expect(stagePackage.definition.musicVolume).toBe(80);
+    expect(stagePackage.music).toMatchObject({
+      path: "stages/skyline-relay/skyline.wav",
+      loop: true,
+      volume: 80,
+    });
+    expect(stagePackage.music?.bytes.byteLength).toBeGreaterThan(12);
+    const header = new Uint8Array(stagePackage.music!.bytes, 0, 12);
+    expect(String.fromCharCode(...header.subarray(0, 4))).toBe("RIFF");
+    expect(String.fromCharCode(...header.subarray(8, 12))).toBe("WAVE");
+  });
 });
+
+function createTinyPcmWav(): Uint8Array {
+  const bytes = new Uint8Array(45);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  view.setUint32(4, 37, true);
+  bytes.set([0x57, 0x41, 0x56, 0x45], 8);
+  bytes.set([0x66, 0x6d, 0x74, 0x20], 12);
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 8000, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  bytes.set([0x64, 0x61, 0x74, 0x61], 36);
+  view.setUint32(40, 1, true);
+  bytes[44] = 128;
+  return bytes;
+}
 
 function createPackageDigest(vfs: ReturnType<typeof createRepositoryStageFixtureVfs>): string {
   const digest = createHash("sha256");
