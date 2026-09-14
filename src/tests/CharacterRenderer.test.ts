@@ -6,6 +6,7 @@ import {
   resolveCharacterRenderDepth,
   shouldRenderActorReflection,
 } from "../game/render/CharacterRenderer";
+import { createActorPresentationOrder } from "../mugen/runtime/PresentationOrder";
 import { composePaletteFxRgba, transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
@@ -389,6 +390,35 @@ describe("CharacterRenderer", () => {
     expect(material.color.b).toBeCloseTo(localB / 255);
     renderer.dispose();
   });
+
+  it("draws ontop Explods in the stage-foreground band above ordinary Explods", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const ordinary = actor(
+      { spritePriority: 10, pos: { x: 0, y: 0 } },
+      {
+        actorKind: "explod",
+        presentationOrder: createActorPresentationOrder("explod", 10, 0),
+      },
+    );
+    ordinary.id = "explod-normal";
+    const ontop = actor(
+      { spritePriority: 4, pos: { x: 8, y: 0 } },
+      {
+        actorKind: "explod",
+        presentationOrder: createActorPresentationOrder("explod", 4, 0, { layerNo: 1 }),
+      },
+    );
+    ontop.id = "explod-ontop";
+
+    await renderer.update([ordinary, ontop]);
+    const diagnostics = renderer.getDiagnostics();
+    const ordinaryOrder = diagnostics.find((entry) => entry.actorId === "explod-normal")?.presentationOrder;
+    const ontopOrder = diagnostics.find((entry) => entry.actorId === "explod-ontop")?.presentationOrder;
+    expect(ordinaryOrder?.semantic.phase).toBe("actor");
+    expect(ontopOrder?.semantic.phase).toBe("stage-foreground");
+    expect(ordinaryOrder?.three.renderOrder ?? 0).toBeLessThan(ontopOrder?.three.renderOrder ?? 0);
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {
@@ -410,7 +440,7 @@ class RecordingSpriteProvider implements SpriteProvider {
 
 function actor(
   runtimeOverrides: Partial<ActorSnapshot["runtime"]>,
-  snapshotOverrides: Partial<Pick<ActorSnapshot, "actorKind" | "shadowVisible">> = {},
+  snapshotOverrides: Partial<Pick<ActorSnapshot, "actorKind" | "shadowVisible" | "presentationOrder">> = {},
 ): ActorSnapshot {
   return {
     id: "p1",
@@ -420,6 +450,7 @@ function actor(
     rootId: "p1",
     parentId: "p1",
     shadowVisible: snapshotOverrides.shadowVisible,
+    ...(snapshotOverrides.presentationOrder ? { presentationOrder: snapshotOverrides.presentationOrder } : {}),
     runtime: {
       pos: { x: 0, y: 0 },
       vel: { x: 0, y: 0 },

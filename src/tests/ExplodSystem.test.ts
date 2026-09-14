@@ -63,6 +63,7 @@ describe("ExplodSystem", () => {
       superMoveTime: 3,
       spritePriority: 10,
       opacity: 0.78,
+      ontop: false,
     });
   });
 
@@ -85,6 +86,7 @@ describe("ExplodSystem", () => {
       superMoveTime: 5,
       spritePriority: 6,
       trans: "none",
+      ontop: true,
     };
     const explod = createRuntimeExplod({
       serialId: "p1-explod-typed",
@@ -123,6 +125,7 @@ describe("ExplodSystem", () => {
       superMoveTime: 5,
       spritePriority: 6,
       opacity: 0.9,
+      ontop: true,
     });
   });
 
@@ -365,6 +368,24 @@ describe("ExplodSystem", () => {
       clsn1: [],
       clsn2: [],
     });
+    expect(snapshot.effect).toMatchObject({ kind: "explod", ontop: false, spritePriority: 6 });
+  });
+
+  it("keeps authored sprpriority when ontop is set", () => {
+    const explod = createRuntimeExplod({
+      serialId: "ontop",
+      controller: controller("Explod", { id: "7", sprpriority: "4", ontop: "1" }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "fighter",
+      spriteOwnerLabel: "Fighter",
+      action: action(),
+      animNo: 900,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      defaultRemoveTime: 8,
+    });
+    expect(explod).toMatchObject({ ontop: true, spritePriority: 4 });
+    expect(runtimeExplodsToSnapshots([explod], 200)[0]?.effect).toMatchObject({ ontop: true, spritePriority: 4 });
   });
 });
 

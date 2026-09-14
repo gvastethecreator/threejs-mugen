@@ -1110,6 +1110,7 @@ export type ExplodControllerOp = {
   superMoveTime?: number;
   spritePriority: number;
   trans?: string;
+  ontop?: boolean;
 };
 
 export type RemoveExplodControllerOp = {
@@ -1132,6 +1133,7 @@ export type ModifyExplodControllerOp = {
   superMoveTime?: number;
   spritePriority?: number;
   trans?: string;
+  ontop?: boolean;
 };
 
 export type HitFallControllerOp =
@@ -5001,6 +5003,7 @@ function compileExplodControllerOp(controller: MugenStateController): ExplodCont
     superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 3,
     trans: stripMugenString(findParam(controller, "trans")),
+    ontop: booleanNumber(findParam(controller, "ontop")) ?? false,
   });
 }
 
@@ -5027,6 +5030,7 @@ function compileModifyExplodControllerOp(controller: MugenStateController): Modi
     superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")),
     trans: stripMugenString(findParam(controller, "trans")),
+    ontop: booleanNumber(findParam(controller, "ontop")),
   });
 }
 

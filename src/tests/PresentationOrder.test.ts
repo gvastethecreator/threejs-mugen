@@ -50,6 +50,20 @@ describe("MugenPresentationOrder/v0", () => {
     expect(normal.three.renderOrder).toBeLessThan(front.three.renderOrder);
   });
 
+  it("places Explod ontop in the stage-foreground phase above ordinary Explods and actors", () => {
+    const fighter = resolveActorPresentationOrder("player", 10, 0);
+    const ordinary = resolveActorPresentationOrder("explod", 10, 0);
+    const ontop = resolveActorPresentationOrder("explod", 4, 0, { layerNo: 1 });
+    const stageFront = resolveStagePresentationOrder(1, 0);
+
+    expect(ordinary.semantic.phase).toBe("actor");
+    expect(ontop.semantic.phase).toBe("stage-foreground");
+    expect(ordinary.three.renderOrder).toBeLessThan(ontop.three.renderOrder);
+    expect(fighter.three.renderOrder).toBeLessThan(ontop.three.renderOrder);
+    expect(ontop.semantic.priority).toBe(4);
+    expect(ontop.three.renderOrder).toBeGreaterThanOrEqual(stageFront.three.renderOrder);
+  });
+
   it("preserves authored stage order inside each MUGEN layer", () => {
     expect(resolveStagePresentationOrder(0, 0).three.renderOrder).toBeLessThan(resolveStagePresentationOrder(0, 1).three.renderOrder);
     expect(resolveStagePresentationOrder(1, 3).three.renderOrder).toBeLessThan(resolveStagePresentationOrder(1, 4).three.renderOrder);

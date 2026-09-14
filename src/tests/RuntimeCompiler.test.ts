@@ -6210,6 +6210,7 @@ value = 1
         supermovetime: "4",
         sprpriority: "6",
         trans: "add",
+        ontop: "1",
       }),
     );
     const modifyExplod = compileControllerIr(
@@ -6249,6 +6250,7 @@ value = 1
       superMoveTime: 4,
       spritePriority: 6,
       trans: "add",
+      ontop: true,
     });
     expect(removeExplod.operation).toMatchObject({
       kind: "removeexplod",

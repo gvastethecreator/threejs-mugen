@@ -32,6 +32,7 @@ export type RuntimeExplod = {
   superMoveTime: number;
   spritePriority: number;
   opacity: number;
+  ontop: boolean;
 };
 
 export type RuntimeExplodBind = {
@@ -121,6 +122,7 @@ export function createRuntimeExplod(input: RuntimeExplodSpawnInput): RuntimeExpl
       Math.min(10, Math.round(input.operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 3)),
     ),
     opacity: parseExplodOpacity(input.operation?.trans ?? findControllerParam(input.controller, "trans")),
+    ontop: input.operation?.ontop ?? booleanNumber(findControllerParam(input.controller, "ontop")) ?? false,
   };
 }
 
@@ -149,6 +151,7 @@ export function modifyRuntimeExplods(explods: RuntimeExplod[], input: RuntimeExp
   const pauseMoveTime = operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime"));
   const superMoveTime = operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime"));
   const spritePriority = operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority"));
+  const ontop = operation?.ontop ?? booleanNumber(findControllerParam(input.controller, "ontop"));
   const trans = operation?.trans ?? findControllerParam(input.controller, "trans");
   let changed = 0;
 
@@ -185,6 +188,9 @@ export function modifyRuntimeExplods(explods: RuntimeExplod[], input: RuntimeExp
     }
     if (spritePriority !== undefined) {
       explod.spritePriority = Math.max(-5, Math.min(10, Math.round(spritePriority)));
+    }
+    if (ontop !== undefined) {
+      explod.ontop = ontop;
     }
     if (trans !== undefined) {
       explod.opacity = parseExplodOpacity(trans);
@@ -301,6 +307,7 @@ export function runtimeExplodsToSnapshots(explods: RuntimeExplod[], sourceStateN
           superMoveTime: explod.superMoveTime,
           bindRemaining: explod.bind?.remaining,
           bindOffset: explod.bind ? { ...explod.bind.localOffset } : undefined,
+          ontop: explod.ontop,
         },
         runtime: {
           pos: { ...explod.pos },

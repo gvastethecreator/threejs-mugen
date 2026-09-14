@@ -233,6 +233,7 @@ export class RuntimeSnapshotWorld {
           profile: "unknown",
           blendPolicy: clone.runtime.paletteFx?.add.some((value) => value > 0) ? "additive" : "alpha",
           ...(clone.effect?.kind === "projectile" ? { layerNo: clone.effect.layerNo } : {}),
+          ...(clone.effect?.kind === "explod" && clone.effect.ontop ? { layerNo: 1 as const } : {}),
         },
       );
       return clone;

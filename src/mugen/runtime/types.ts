@@ -621,6 +621,7 @@ export type ActorEffectSnapshot =
       superMoveTime: number;
       bindRemaining?: number;
       bindOffset?: { x: number; y: number };
+      ontop?: boolean;
     }
   | {
       kind: "helper";
