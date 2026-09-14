@@ -81,6 +81,13 @@ export function compileExpression(expression: string): ExpressionIr {
       if (!supportedExpressionFunctions.has(lower)) {
         unsupportedFeatures.add(identifier);
       }
+      const expectedArity = mathFunctionArity(lower);
+      if (expectedArity !== undefined) {
+        const argumentCount = countCallArguments(withoutStrings, match.index + identifier.length);
+        if (argumentCount !== expectedArity) {
+          unsupportedFeatures.add(`${lower}(arity)`);
+        }
+      }
       continue;
     }
     identifiers.add(identifier);
@@ -404,4 +411,77 @@ const supportedExpressionLiterals = new Set([
 
 function isFunctionCall(expression: string, identifier: string, index: number): boolean {
   return expression.slice(index + identifier.length).trimStart()[0] === "(";
+}
+
+const MATH_FUNCTION_ARITY: Record<string, number> = {
+  abs: 1,
+  sin: 1,
+  cos: 1,
+  tan: 1,
+  acos: 1,
+  asin: 1,
+  atan: 1,
+  exp: 1,
+  ln: 1,
+  floor: 1,
+  ceil: 1,
+  log: 2,
+};
+
+export function mathFunctionArity(identifier: string): number | undefined {
+  return MATH_FUNCTION_ARITY[identifier.toLowerCase()];
+}
+
+function countCallArguments(expression: string, afterIdentifier: number): number {
+  let index = afterIdentifier;
+  while (/\s/.test(expression[index] ?? "")) {
+    index += 1;
+  }
+  if (expression[index] !== "(") {
+    return -1;
+  }
+  index += 1;
+  let depth = 1;
+  let argumentsSeen = 0;
+  let argumentHasContent = false;
+  let inString = false;
+  while (index < expression.length && depth > 0) {
+    const char = expression[index]!;
+    if (inString) {
+      if (char === '"') inString = false;
+      index += 1;
+      continue;
+    }
+    if (char === '"') {
+      inString = true;
+      argumentHasContent = true;
+      index += 1;
+      continue;
+    }
+    if (char === "(" || char === "[") {
+      depth += 1;
+      argumentHasContent = true;
+      index += 1;
+      continue;
+    }
+    if (char === ")" || char === "]") {
+      depth -= 1;
+      if (depth === 0) {
+        return argumentHasContent || argumentsSeen > 0 ? argumentsSeen + 1 : 0;
+      }
+      index += 1;
+      continue;
+    }
+    if (char === "," && depth === 1) {
+      argumentsSeen += 1;
+      argumentHasContent = false;
+      index += 1;
+      continue;
+    }
+    if (!/\s/.test(char)) {
+      argumentHasContent = true;
+    }
+    index += 1;
+  }
+  return -1;
 }

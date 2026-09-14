@@ -91,6 +91,10 @@ describe("MugenRuntime frame selection", () => {
     });
     expect(xorRandom).toHaveLength(2);
     expect(evaluateExpression("Sin(0)", { self })).toBe(0);
+    expect(evaluateExpression("Sin()", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("sin(arity)");
+    expect(evaluateExpression("Cos(0,1)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("cos(arity)");
     expect(evaluateExpression("Cos(0)", { self })).toBe(1);
     expect(evaluateExpression("Tan(0)", { self })).toBe(0);
     expect(evaluateExpression("Sin(Pi/2)", { self })).toBeCloseTo(1, 6);
@@ -106,13 +110,20 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("Exp(0)", { self })).toBe(1);
     expect(evaluateExpression("Ln(1)", { self })).toBe(0);
     expect(evaluateExpression("Log(2,8)", { self })).toBeCloseTo(3, 10);
+    expect(evaluateExpression("Log(10,100)", { self })).toBeCloseTo(2, 10);
     expect(evaluateExpression("Ln(0)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("math(domain)");
+    expect(evaluateExpression("Log(1,10)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("log(domain)");
     expect(evaluateExpression("Log(8)", { self, reportUnsupported: report })).toBe(0);
     expect(malformed).toContain("log(arity)");
     expect(evaluateExpression("Floor(1.8)", { self })).toBe(1);
     expect(evaluateExpression("Ceil(1.2)", { self })).toBe(2);
     expect(evaluateExpression("Floor(-1.2)", { self })).toBe(-2);
+    expect(evaluateExpression("Ceil(-1.2)", { self })).toBe(-1);
     expect(evaluateExpression("Ceil(-1.8)", { self })).toBe(-1);
+    expect(evaluateExpression("Floor(1,2)", { self, reportUnsupported: report })).toBe(0);
+    expect(malformed).toContain("floor(arity)");
     const floored = executeStateController(
       controller("PosAdd", { x: "Floor(var(0))" }),
       expressionSelf({ vars: [1.8] }),

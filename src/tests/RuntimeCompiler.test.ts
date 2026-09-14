@@ -127,6 +127,9 @@ command = F, >x
     const logs = compileExpression("Log(2,8)");
     const rounding = compileExpression("Floor(-1.2)");
     const logArity = compileExpression("Log(8)");
+    const emptySin = compileExpression("Sin()");
+    const extraCos = compileExpression("Cos(0,1)");
+    const extraFloor = compileExpression("Floor(1,2)");
     const timeMod = compileExpression("TimeMod = 4, 0");
     const timeModBad = compileExpression("TimeMod = 0, 0");
     const roundOutcome = compileExpression("Win && Lose && DrawGame && WinKO");
@@ -324,7 +327,15 @@ command = F, >x
     expect(inverseTrig.supportLevel).toBe("executable");
     expect(logs.supportLevel).toBe("executable");
     expect(rounding.supportLevel).toBe("executable");
-    expect(logArity.supportLevel).toBe("executable");
+    expect(logArity.supportLevel).toBe("unsupported");
+    expect(logArity.unsupportedFeatures).toContain("log(arity)");
+    expect(emptySin.supportLevel).toBe("unsupported");
+    expect(emptySin.unsupportedFeatures).toContain("sin(arity)");
+    expect(extraCos.supportLevel).toBe("unsupported");
+    expect(extraCos.unsupportedFeatures).toContain("cos(arity)");
+    expect(extraFloor.supportLevel).toBe("unsupported");
+    expect(extraFloor.unsupportedFeatures).toContain("floor(arity)");
+    expect(compileExpression("Sin(0)").supportLevel).toBe("executable");
     expect(timeMod.supportLevel).toBe("executable");
     expect(timeMod.normalized).toBe("((Time % 4) = 0)");
     expect(timeModBad.supportLevel).toBe("unsupported");

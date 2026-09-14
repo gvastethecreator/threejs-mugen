@@ -1,4 +1,4 @@
-import { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
+import { mathFunctionArity, normalizeMugenExpression } from "../compiler/ExpressionCompiler";
 import { tokenizeMugenExpression, type ExpressionLexToken } from "../compiler/ExpressionLexer";
 import { runtimeRoundStateFromPhase } from "./RuntimeRoundPhaseSystem";
 import {
@@ -1320,6 +1320,11 @@ class ExpressionParser {
 
   private evaluateFunction(identifier: string, args: ExpressionValue[]): ExpressionValue {
     const lower = identifier.toLowerCase();
+    const expectedArity = mathFunctionArity(lower);
+    if (expectedArity !== undefined && args.length !== expectedArity) {
+      this.context.reportUnsupported?.(`${lower}(arity)`);
+      return failedRedirectMarker;
+    }
     if (lower === "abs") {
       return Math.abs(numeric(args[0] ?? 0));
     }
@@ -1348,10 +1353,6 @@ class ExpressionParser {
       return this.mathUnary(args[0], Math.log, (value) => value <= 0);
     }
     if (lower === "log") {
-      if (args.length !== 2) {
-        this.context.reportUnsupported?.("log(arity)");
-        return failedRedirectMarker;
-      }
       if (isFailedRedirect(args[0] ?? 0) || isFailedRedirect(args[1] ?? 0)) {
         return failedRedirectMarker;
       }
