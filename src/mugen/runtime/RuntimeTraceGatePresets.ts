@@ -1406,7 +1406,7 @@ async function createIkemenZssTraceArtifact(
           { actorId: "p1", source: "imported", stateNo: 0, animNo: 0 },
           { actorId: "p1", source: "imported", stateNo: 100, animNo: 0 },
           { actorId: "p1", source: "imported", stateNo: 101, animNo: 200, effectiveCtrl: false },
-          { actorId: "p1", source: "imported", stateNo: 102, animNo: 200, stateType: "A", ctrl: false },
+          { actorId: "p1", source: "imported", stateNo: 102, animNo: 200, stateType: "A", effectiveCtrl: false },
         ],
       }],
       requiredActorFrames: [
