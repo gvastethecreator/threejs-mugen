@@ -71,6 +71,11 @@ export function applyStageLayerPaletteFx(
 ): void {
   const localOn = paletteFx && paletteFx.remaining > 0 ? paletteFx : undefined;
   const globalOn = globalPaletteFx && globalPaletteFx.remaining > 0 ? globalPaletteFx : undefined;
+  bindPaletteFxMap(material, localOn, globalOn);
+  if (material.map) {
+    material.color.setRGB(1, 1, 1);
+    return;
+  }
   if (!localOn && !globalOn) {
     return;
   }
@@ -94,15 +99,104 @@ export function applyPaletteFxMaterial(
   material.opacity = renderOpacity;
   material.blending = THREE.NormalBlending;
   material.transparent = true;
+  material.color.setRGB(1, 1, 1);
   const localOn = paletteFx && paletteFx.remaining > 0 ? paletteFx : undefined;
   const globalOn = globalPaletteFx && globalPaletteFx.remaining > 0 ? globalPaletteFx : undefined;
-  if (!localOn && !globalOn) {
-    material.color.setRGB(1, 1, 1);
+  bindPaletteFxMap(material, localOn, globalOn);
+}
+
+const paletteFxTextureCache = new WeakMap<THREE.Texture, { key: string; texture: THREE.DataTexture }>();
+
+function bindPaletteFxMap(
+  material: THREE.MeshBasicMaterial,
+  localOn: RenderPaletteFx | undefined,
+  globalOn: RenderPaletteFx | undefined,
+): void {
+  const source = (material.userData.paletteFxSource as THREE.Texture | undefined) ?? material.map ?? undefined;
+  if (!source) {
     return;
   }
+  material.userData.paletteFxSource = source;
+  if (!localOn && !globalOn) {
+    material.map = source;
+    return;
+  }
+  material.map = paletteFxTexture(source, localOn, globalOn);
+}
 
-  const [red, green, blue] = composePaletteFxRgba(255, 255, 255, 255, localOn, globalOn);
-  material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
+function paletteFxTexture(
+  source: THREE.Texture,
+  localOn: RenderPaletteFx | undefined,
+  globalOn: RenderPaletteFx | undefined,
+): THREE.Texture {
+  const pixels = readTextureRgba(source);
+  if (!pixels) {
+    return source;
+  }
+  const key = JSON.stringify([localOn, globalOn]);
+  const cached = paletteFxTextureCache.get(source);
+  if (cached?.key === key) {
+    return cached.texture;
+  }
+  cached?.texture.dispose();
+  const dest = new Uint8Array(pixels.data.length);
+  for (let index = 0; index < pixels.data.length; index += 4) {
+    const [red, green, blue, alpha] = composePaletteFxRgba(
+      pixels.data[index]!,
+      pixels.data[index + 1]!,
+      pixels.data[index + 2]!,
+      pixels.data[index + 3]!,
+      localOn,
+      globalOn,
+    );
+    dest[index] = toByte(red);
+    dest[index + 1] = toByte(green);
+    dest[index + 2] = toByte(blue);
+    dest[index + 3] = toByte(alpha);
+  }
+  const texture = new THREE.DataTexture(dest, pixels.width, pixels.height);
+  texture.format = THREE.RGBAFormat;
+  texture.type = THREE.UnsignedByteType;
+  texture.colorSpace = source.colorSpace;
+  texture.magFilter = source.magFilter;
+  texture.minFilter = source.minFilter;
+  texture.wrapS = source.wrapS;
+  texture.wrapT = source.wrapT;
+  texture.needsUpdate = true;
+  paletteFxTextureCache.set(source, { key, texture });
+  return texture;
+}
+
+export function readTextureRgba(texture: THREE.Texture | null | undefined): {
+  data: Uint8Array | Uint8ClampedArray;
+  width: number;
+  height: number;
+} | undefined {
+  const image = texture?.image as
+    | { data?: ArrayLike<number>; width?: number; height?: number }
+    | HTMLCanvasElement
+    | undefined;
+  if (!image) {
+    return undefined;
+  }
+  if (typeof HTMLCanvasElement !== "undefined" && image instanceof HTMLCanvasElement) {
+    const context = image.getContext("2d");
+    if (!context) {
+      return undefined;
+    }
+    const pixels = context.getImageData(0, 0, image.width, image.height);
+    return { data: pixels.data, width: pixels.width, height: pixels.height };
+  }
+  if (image.data && image.width && image.height) {
+    return {
+      data: image.data instanceof Uint8Array || image.data instanceof Uint8ClampedArray
+        ? image.data
+        : Uint8Array.from(image.data),
+      width: image.width,
+      height: image.height,
+    };
+  }
+  return undefined;
 }
 
 function clamp(value: number, min: number, max: number): number {
@@ -111,4 +205,8 @@ function clamp(value: number, min: number, max: number): number {
 
 function clamp01(value: number): number {
   return Math.max(0, Math.min(1, value));
+}
+
+function toByte(value: number): number {
+  return Math.max(0, Math.min(255, Math.round(value)));
 }

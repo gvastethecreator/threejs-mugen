@@ -7,7 +7,7 @@ import {
   shouldRenderActorReflection,
 } from "../game/render/CharacterRenderer";
 import { createActorPresentationOrder } from "../mugen/runtime/PresentationOrder";
-import { composePaletteFxRgba, transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
+import { composePaletteFxRgba, readTextureRgba, transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -311,7 +311,7 @@ describe("CharacterRenderer", () => {
   });
 
   it("applies identity PalFX without fade, opacity loss, or additive blending", async () => {
-    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), palFxTextureStore([40, 80, 120, 255, 200, 10, 10, 180]));
     const identity = {
       remaining: 5,
       time: 10,
@@ -356,8 +356,44 @@ describe("CharacterRenderer", () => {
     renderer.dispose();
   });
 
+  it("transforms sampled texture pixels instead of tinting white", async () => {
+    const renderer = new CharacterRenderer(
+      new RecordingSpriteProvider(),
+      palFxTextureStore([32, 32, 32, 255, 64, 64, 64, 255]),
+    );
+    const add = {
+      remaining: 4,
+      time: 4,
+      add: [64, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const invert = {
+      remaining: 4,
+      time: 4,
+      add: [0, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: true,
+    };
+
+    await renderer.update([actor({ paletteFx: add, renderOpacity: 1 })]);
+    const mesh = renderer.group.children.find((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    const material = mesh?.material as THREE.MeshBasicMaterial;
+    expect(material.color.r).toBeCloseTo(1);
+    expect(sampledRgba(material.map)?.slice(0, 4)).toEqual([96, 32, 32, 255]);
+
+    await renderer.update([actor({ paletteFx: invert, renderOpacity: 1 })]);
+    expect(sampledRgba(material.map)?.slice(4, 8)).toEqual([191, 191, 191, 255]);
+
+    await renderer.update([actor({ paletteFx: { ...add, remaining: 0 }, renderOpacity: 1 })]);
+    expect(sampledRgba(material.map)).toEqual([32, 32, 32, 255, 64, 64, 64, 255]);
+    renderer.dispose();
+  });
+
   it("composes actor PalFX then AllPalFX and restores local after global expiry", async () => {
-    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), palFxTextureStore([40, 80, 120, 255]));
     const local = {
       remaining: 8,
       time: 8,
@@ -374,20 +410,18 @@ describe("CharacterRenderer", () => {
       color: 256,
       invert: false,
     };
-    const [composedR, composedG, composedB] = composePaletteFxRgba(255, 255, 255, 255, local, global);
-    const [localR, localG, localB] = transformPaletteFxRgba(255, 255, 255, 255, local);
+    const source = [40, 80, 120, 255] as const;
+    const composed = composePaletteFxRgba(source[0], source[1], source[2], source[3], local, global);
+    const localOnly = transformPaletteFxRgba(source[0], source[1], source[2], source[3], local);
 
     await renderer.update([actor({ paletteFx: local, renderOpacity: 1 })], global);
     const mesh = renderer.group.children.find((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
     const material = mesh?.material as THREE.MeshBasicMaterial;
-    expect(material.color.r).toBeCloseTo(composedR / 255);
-    expect(material.color.g).toBeCloseTo(composedG / 255);
-    expect(material.color.b).toBeCloseTo(composedB / 255);
+    expect(material.color.r).toBeCloseTo(1);
+    expect(sampledRgba(material.map)).toEqual(composed.map((value) => Math.max(0, Math.min(255, Math.round(value)))));
 
     await renderer.update([actor({ paletteFx: local, renderOpacity: 1 })]);
-    expect(material.color.r).toBeCloseTo(localR / 255);
-    expect(material.color.g).toBeCloseTo(localG / 255);
-    expect(material.color.b).toBeCloseTo(localB / 255);
+    expect(sampledRgba(material.map)).toEqual(localOnly.map((value) => Math.max(0, Math.min(255, Math.round(value)))));
     renderer.dispose();
   });
 
@@ -489,4 +523,20 @@ function fakeTextureStore(): TextureStore {
   return {
     getTexture: () => new THREE.Texture(),
   } as unknown as TextureStore;
+}
+
+function palFxTextureStore(texels: number[]): TextureStore {
+  const texture = new THREE.DataTexture(Uint8Array.from(texels), texels.length / 4, 1);
+  texture.format = THREE.RGBAFormat;
+  texture.type = THREE.UnsignedByteType;
+  texture.needsUpdate = true;
+  return {
+    getTexture: () => texture,
+    dispose: () => texture.dispose(),
+  } as unknown as TextureStore;
+}
+
+function sampledRgba(texture: THREE.Texture | null): number[] | undefined {
+  const pixels = readTextureRgba(texture ?? undefined);
+  return pixels ? [...pixels.data] : undefined;
 }
