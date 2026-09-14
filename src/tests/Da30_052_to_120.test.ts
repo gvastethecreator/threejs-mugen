@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { execSync } from "node:child_process";
+import { persistMeasuredEvidence } from "./da29/writeMeasuredJson";
 
 import { runLocalVersusSelectionFlow } from "../mugen/da30/SelectionBrowserJourney";
 import { runTeamPolicyMatrix } from "../mugen/da30/TeamSelectionHandoff";
@@ -59,8 +59,7 @@ import { adjudicateFinalRoadmap } from "../mugen/da30/FinalRoadmapAdjudication";
 
 const dir = resolve(process.cwd(), "docs/evidence/da30");
 function persist(name: string, body: unknown) {
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(resolve(dir, name), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  persistMeasuredEvidence(resolve(dir, name), body);
 }
 function headSha(): string {
   try {

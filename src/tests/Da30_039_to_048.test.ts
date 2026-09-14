@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { persistMeasuredEvidence } from "./da29/writeMeasuredJson";
 import {
   findFirstDivergence,
   mutateRecordingAt,
@@ -14,8 +14,7 @@ import { runCameraStageBoundsCases } from "../mugen/da30/CameraStageBounds";
 
 const dir = resolve(process.cwd(), "docs/evidence/da30");
 function persist(name: string, body: unknown) {
-  mkdirSync(dir, { recursive: true });
-  writeFileSync(resolve(dir, name), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  persistMeasuredEvidence(resolve(dir, name), body);
 }
 
 describe("DA30-039..048 remaining open cuts", () => {

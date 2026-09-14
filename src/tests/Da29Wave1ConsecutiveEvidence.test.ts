@@ -1,9 +1,9 @@
 /**
  * Acceptance-executed evidence for consecutive DA29 watermark advance from 012.
- * Writes docs/evidence/da29/measured/DA29-0xx.json with functionResults.
+ * Asserts docs/evidence/da29/measured/DA29-0xx.json; writes only when MEASURED_EVIDENCE_OUT is set.
  */
-import { mkdirSync, readFileSync, existsSync, statSync } from "node:fs";
-import { writeMeasuredJson } from "./da29/writeMeasuredJson";
+import { readFileSync, existsSync, statSync } from "node:fs";
+import { persistMeasuredEvidence } from "./da29/writeMeasuredJson";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -14,7 +14,6 @@ import { buildCnsControllerCensus } from "../mugen/da29/CnsControllerCensus";
 const outDir = resolve(process.cwd(), "docs/evidence/da29/measured");
 
 function persist(id: string, kind: "I" | "G", result: { functionResults: Record<string, unknown>; anchors: string[] }) {
-  mkdirSync(outDir, { recursive: true });
   const anchors = result.anchors
     .filter((p) => existsSync(resolve(process.cwd(), p)))
     .map((p) => {
@@ -40,7 +39,7 @@ function persist(id: string, kind: "I" | "G", result: { functionResults: Record<
     functionResults: result.functionResults,
     claimCeiling: `acceptance-executed unit evidence for ${id}; broader product claims remain blocked`,
   };
-  writeMeasuredJson(resolve(outDir, `${id}.json`), body);
+  persistMeasuredEvidence(resolve(outDir, `${id}.json`), body);
 }
 
 describe("DA29 wave1 consecutive acceptance-executed evidence", () => {

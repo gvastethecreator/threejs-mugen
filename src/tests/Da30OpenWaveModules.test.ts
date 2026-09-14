@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { persistMeasuredEvidence } from "./da29/writeMeasuredJson";
 import {
   applyGamepadEvent,
   createSeatBindings,
@@ -22,8 +23,7 @@ import { runRoccoContactCases } from "../mugen/da30/CombatJourneyRevalidation";
 
 const evidence = resolve(process.cwd(), "docs/evidence/da30");
 function persist(name: string, body: unknown) {
-  mkdirSync(evidence, { recursive: true });
-  writeFileSync(resolve(evidence, name), `${JSON.stringify(body, null, 2)}\n`, "utf8");
+  persistMeasuredEvidence(resolve(evidence, name), body);
 }
 
 describe("DA30 open-wave modules", () => {
