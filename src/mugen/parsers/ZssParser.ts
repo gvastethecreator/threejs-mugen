@@ -51,6 +51,11 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "velset",
   "changeanim",
   "changeanim2",
+  "posset",
+  "veladd",
+  "velmul",
+  "ctrlset",
+  "statetypeset",
 ]);
 
 /**

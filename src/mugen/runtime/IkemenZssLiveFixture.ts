@@ -12,7 +12,7 @@ export const IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST = Object.freeze({
   entry: "chars/mugen-lite-journey/journey.def",
   directStatePath: "chars/mugen-lite-journey/live.zss",
   fallbackStatePath: "chars/mugen-lite-journey/live.cns.zss",
-  expectedStates: [-2, 0, 100, 101] as const,
+  expectedStates: [-2, 0, 100, 101, 102] as const,
 });
 
 export const IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST = Object.freeze({
@@ -246,6 +246,18 @@ if time = 0 {
   posAdd{x: 2; y: 0;}
   changeAnim{value: 200;}
   changeAnim2{value: 200;}
+}
+if time >= 1 {
+  changeState{value: 102;}
+}
+
+[StateDef 102; type: S; movetype: I; physics: N; anim: 200; ctrl: 1;]
+if time = 0 {
+  velAdd{x: 1;}
+  velMul{x: 2;}
+  posSet{x: 12.5;}
+  ctrlSet{value: 0;}
+  stateTypeSet{statetype: A;}
 }
 `;
 
