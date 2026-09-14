@@ -228,6 +228,8 @@ null{}
 [StateDef 0; type: S; movetype: I; physics: S; anim: 0; ctrl: 1;]
 if time = 0 {
   posAdd{x: 4; y: 0;}
+  varSet{v: 2; value: 1;}
+  projectile{projanim: 200; projid: 7; velocity: 12, 0; offset: 40, 0; guard.kill: var(2);}
   changeState{value: 100;}
 }
 

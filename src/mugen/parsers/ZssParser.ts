@@ -59,6 +59,7 @@ const EXECUTABLE_ZSS_CONTROLLER_TYPES = new Set([
   "varset",
   "varadd",
   "hitdef",
+  "projectile",
 ]);
 
 /**
