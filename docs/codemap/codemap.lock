@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "fa49c2e5abe20a9ad2035bd4e6cc6e2bb62ef3cf",
+  "source_commit": "933d52298964b92f046d8fe29462df3fc5dcfc70",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-07T23:31:10Z",
-  "generation_id": "8f1ce477206d3f452de94d104fd3bfa900e6c79863b9c8c41ea51edb5ddb168f",
+  "generated_at": "2026-09-14T02:06:12Z",
+  "generation_id": "f10e7efefbf7f92058702b2eaab6e9a89298ca6bf31ca3bef78b84f2f7a1c1ea",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -1355,8 +1355,8 @@
         "path": "src/mugen/compiler/ControllerOps.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "87c367478bac534c0f3ec8cac23ef7bd2debe0df57626c38bee8ec2cdd2d9c95",
-        "size": 279410
+        "digest": "5a41c1b48e20d132aba3ca8f16c8956c4b911aa23e04836714298268c357949d",
+        "size": 279917
       },
       {
         "path": "src/mugen/compiler/ExpressionCompiler.ts",
@@ -2524,8 +2524,8 @@
         "path": "src/mugen/runtime/EffectActorSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "7115b6c6a35ce885f313e0262395ba9ff205de0c982847d40c3b04fb5fdbb82d",
-        "size": 45039
+        "digest": "cb698aab4d2a7872d32f1b3c79613a3b38bfdde45c256fb2eec7db3a3237907d",
+        "size": 45140
       },
       {
         "path": "src/mugen/runtime/EffectLifecycleSystem.ts",
@@ -2538,8 +2538,8 @@
         "path": "src/mugen/runtime/EffectSpawnSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "40ba013be1bd2da047379d32c586ff118a7a9317a7900e417f0977c47a69eb8a",
-        "size": 38776
+        "digest": "84bd4a1def53a5c2f3983742c464044b0a2e3d9662035e0cb241481f3a3e693b",
+        "size": 38984
       },
       {
         "path": "src/mugen/runtime/EnvColorSystem.ts",
@@ -2608,8 +2608,8 @@
         "path": "src/mugen/runtime/HelperSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "1bf2bb6ccd668066c712df5f5961fe8627cecce6d49b4c9e5ca0478cbb8c5913",
-        "size": 169732
+        "digest": "de4868f280321fddf53ebf305732a0bffa5c445f241d8c3f0776ee67d16619a8",
+        "size": 169854
       },
       {
         "path": "src/mugen/runtime/HitDefContactPriority.ts",
@@ -2916,8 +2916,8 @@
         "path": "src/mugen/runtime/PlayableMatchRuntime.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "343987859200e40c2733de03194982ffcee70dfad3f2fc4cf06d7f7559712dca",
-        "size": 422019
+        "digest": "9a288a703f9ee12f2d937dd97deef30e7a99fc118322140018921a4ed8f30dfd",
+        "size": 422795
       },
       {
         "path": "src/mugen/runtime/PluralCombatOracle.ts",
@@ -2944,8 +2944,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "85bccb36c171f87248f4d5349e81a0a06bdca0299787a235425ff037b52861a2",
-        "size": 174770
+        "digest": "cf3008b964b0a5e7055ef9954e155bd73f87e51a1565d2fbd74ef66177505cec",
+        "size": 175276
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -4300,7 +4300,7 @@
       },
       {
         "path": "src/tests/Da29MeasuredPublication.test.ts",
-        "origin": "untracked",
+        "origin": "tracked",
         "state": "present",
         "digest": "a1f441e95915ea615820039bb8e9ec95d2c8e841b8dce26523353805ee37d7aa",
         "size": 1627
@@ -4456,8 +4456,8 @@
         "path": "src/tests/EffectActorSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "02241cfed774aedb8ecfc3017fee5d555108a229472722a265bccaabe3cff086",
-        "size": 185469
+        "digest": "30486016c8014fd6cb2165a3fb68090b6b3733df982cfc5657a4c34a47714f27",
+        "size": 186943
       },
       {
         "path": "src/tests/EffectLifecycleSystem.test.ts",
@@ -4932,8 +4932,8 @@
         "path": "src/tests/PlayableMatchRuntime.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a3d7b88bc0d09f0641b89664152f2fbe8bb8ef6e9430ca8512215894dc2acf32",
-        "size": 545878
+        "digest": "71465de27ef00035462f5ed970898267f4b11da68646aef683c0f70fcf89e5ab",
+        "size": 548219
       },
       {
         "path": "src/tests/PluralCombatOracle.test.ts",
@@ -4995,8 +4995,8 @@
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "01ec39cd266a389a72cf6b3533dcc5afe23a49555735fb5c537e5922fb070c82",
-        "size": 173336
+        "digest": "bc99b9c9b9dca17e68a080ccc89e1a9ba3f94dc5c544382eaa158db7c394b16e",
+        "size": 175381
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -5205,8 +5205,8 @@
         "path": "src/tests/RuntimeCompiler.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "22b96d38c2d8aaffc66fbfea8f7f04de45b584a86fa14f0c98cb8d76f3146626",
-        "size": 236889
+        "digest": "9fff9643ebb34cd5bc8c2f5bd40200459c971dfdf1d8be2a505df99cf3c54eb8",
+        "size": 237764
       },
       {
         "path": "src/tests/RuntimeContactPresentationSystem.test.ts",
@@ -6365,7 +6365,7 @@
       },
       {
         "path": "src/tests/da29/writeMeasuredJson.ts",
-        "origin": "untracked",
+        "origin": "tracked",
         "state": "present",
         "digest": "eb61e9633be2ce5a1be8795298d7781173c6b18384d9a849862f73432d92b582",
         "size": 559
@@ -6406,12 +6406,12 @@
         "size": 235
       }
     ],
-    "digest": "523502cc3d91863ffece3ea7ed181f75df00b14c05a707427ab2cbde65a01472"
+    "digest": "ba9adb81f20697214203d62fc3860850ef8d1c064e728cc130ca67d561801abc"
   },
-  "source_digest": "ad03531606fb4718b2030443b54221ef0fa1ed06c5e9874f9d426bae335daeed",
+  "source_digest": "06c2fc51f62455bba17b64970616f97641fc5e7f589c73d2fd94bec8ce6cc7e6",
   "artifact_hashes": {
-    "codemap.json": "9cfa3e2b8200ce845f9ce63c3f92c37a2fcb89190b4dd16b5d5a283ff567b3c7",
-    "codemap.md": "ba9748a377ef16e6a2f16de797c0e45f1176b9f82c8dd059fc1685219d4a08c8",
-    "codemap.html": "e1579ab7a949de79e44d0e99b3c048c42e2be03c2467919649cb62d853eb0ae2"
+    "codemap.json": "4b459f0cb7ea5a0f9a2934ac93f6fb1d47259dcb22abff89e1a673388d535fe8",
+    "codemap.md": "63720c0e3c769d24722548c21c1dd84aea4089d5977d0eec42c5a3299423d1de",
+    "codemap.html": "1318902b6ac430fe3848fcde5e12bc1a5012ffcd448144bb1a39399a7a6f2932"
   }
 }

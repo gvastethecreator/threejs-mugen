@@ -2043,6 +2043,49 @@ describe("EffectActorSystem", () => {
     expect(projectile?.forceNoFall).toBe(true);
   });
 
+  it("resolves Helper Projectile posture in the helper caller context, not the root", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    helper.vars[0] = 0.5;
+    helper.vars[1] = 0;
+    const rootState = actor("p1", "Root", { vars: [0, 1] }).runtime;
+    const controllerIr = compileControllerIr(controller("Projectile", {
+      projanim: "920",
+      projid: "8869",
+      forcestand: "var(0)",
+      forcecrouch: "var(1)",
+    }));
+
+    const projectile = spawnRuntimeHelperProjectileActor(store, helper, controllerIr, { rootState });
+
+    expect(projectile).toMatchObject({
+      forceStand: true,
+      forceCrouch: false,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+    helper.vars[0] = 0;
+    helper.vars[1] = 1;
+    expect(projectile?.forceStand).toBe(true);
+    expect(projectile?.forceCrouch).toBe(false);
+    helper.vars[0] = Number.NaN;
+    helper.vars[1] = -0.5;
+    expect(spawnRuntimeHelperProjectileActor(store, helper, controllerIr, { rootState })).toMatchObject({
+      forceCrouch: true,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+    expect(spawnRuntimeHelperProjectileActor(store, helper, controllerIr, { rootState })?.forceStand).toBeUndefined();
+  });
+
   it("resolves Helper Projectile p2facing in the helper caller context", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

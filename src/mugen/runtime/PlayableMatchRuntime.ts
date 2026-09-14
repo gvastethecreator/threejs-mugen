@@ -6976,10 +6976,21 @@ function runActiveStateControllers(
           resolveProjectileDownBounce:
             effect === "projectile"
               ? () => {
+                  const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
+                  const expression = operation?.downBounceExpression;
+                  if (expression === undefined) return undefined;
+                  const resolved = resolveDispatchFloat(undefined, expression, actor, targetOpponent,
+                    stateOwner, stageBounds, activeTick, gameSpace, options.characters, createPlayerIdTarget(actor));
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : resolved;
+                }
+              : undefined,
+          resolveProjectilePosture:
+            effect === "projectile"
+              ? (key) => {
                   const operation = controller.operation?.kind === "projectile"
                     ? controller.operation
                     : undefined;
-                  const expression = operation?.downBounceExpression;
+                  const expression = key === "forcestand" ? operation?.forceStandExpression : operation?.forceCrouchExpression;
                   if (expression === undefined) return undefined;
                   const resolved = resolveDispatchFloat(
                     typeof expression === "number" ? expression : undefined,

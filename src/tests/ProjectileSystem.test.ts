@@ -1186,13 +1186,59 @@ describe("ProjectileSystem", () => {
     expect(spawn().downBounce).toBeUndefined();
   });
 
+  it("resolves Projectile posture once and leaves a non-finite sibling unset", () => {
+    const source = controller({ projanim: "1005", forcestand: "var(0)", forcecrouch: "var(1)" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.forceStandExpression).toBe("var(0)");
+    expect(operation.forceCrouchExpression).toBe("var(1)");
+    const values: Record<"forcestand" | "forcecrouch", number> = { forcestand: 0.5, forcecrouch: 0 };
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-posture",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolvePosture: (key) => values[key],
+    });
+    const projectile = spawn();
+    values.forcestand = 0;
+    values.forcecrouch = -0.5;
+    expect(projectile.forceStand).toBe(true);
+    expect(projectile.forceCrouch).toBe(false);
+    expect(spawn()).toMatchObject({ forceStand: false, forceCrouch: true });
+    values.forcestand = 0.5;
+    values.forcecrouch = Number.NaN;
+    expect(spawn()).toMatchObject({ forceStand: true });
+    expect(spawn().forceCrouch).toBeUndefined();
+    const omitted = createRuntimeProjectile({
+      serialId: "p1-projectile-posture-omitted",
+      controller: controller({ projanim: "1005" }),
+      operation: compileControllerIr(controller({ projanim: "1005" })).operation as ProjectileControllerOp,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+    expect(omitted).not.toHaveProperty("forceStand");
+    expect(omitted).not.toHaveProperty("forceCrouch");
+  });
+
   it("preserves literal Projectile fall fractions and explicit zero", () => {
     for (const value of [0.5, -0.5, 0]) {
       const source = controller({ projanim: "1005", fall: String(value),
         "air.fall": String(value), "fall.kill": String(value),
         "fall.recover": String(value), "down.recover": String(value),
         "fall.recovertime": "17.8", "down.recovertime": "29.5",
-        "down.bounce": String(value) });
+        "down.bounce": String(value),
+        forcestand: String(value), forcecrouch: String(value) });
       const projectile = createRuntimeProjectile({
         serialId: `literal-fall-${value}`,
         controller: source,
@@ -1211,6 +1257,8 @@ describe("ProjectileSystem", () => {
         recoverTime: 17, downRecoverTime: 29,
       });
       expect(projectile.downBounce).toBe(value !== 0);
+      expect(projectile.forceStand).toBe(value !== 0);
+      expect(projectile.forceCrouch).toBe(value !== 0);
     }
   });
 

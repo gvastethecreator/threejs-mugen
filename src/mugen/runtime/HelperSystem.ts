@@ -2017,8 +2017,9 @@ export function resolveRuntimeHelperFloatScalarParam(
 ): number | undefined {
   const operation = controller.operation;
   if (key === "down.bounce" || key === "forcestand" || key === "forcecrouch" || key === "forcenofall") {
-    if (key === "down.bounce" && operation?.kind === "projectile") {
-      const expression = operation.downBounceExpression;
+    if (operation?.kind === "projectile" && key !== "forcenofall") {
+      const expression = key === "down.bounce" ? operation.downBounceExpression
+        : key === "forcestand" ? operation.forceStandExpression : operation.forceCrouchExpression;
       return expression === undefined ? undefined : resolveHelperFloat(helper, expression, options);
     }
     const typed = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef" ? operation : undefined;

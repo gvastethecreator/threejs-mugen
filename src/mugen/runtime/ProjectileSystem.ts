@@ -416,6 +416,7 @@ export type RuntimeProjectileSpawnInput = {
   resolveKeepState?: () => number | undefined;
   resolveForceNoFall?: () => number | undefined;
   resolveDownBounce?: () => number | undefined;
+  resolvePosture?: (key: "forcestand" | "forcecrouch") => number | undefined;
 };
 
 export type RuntimeProjectileModifyInput = {
@@ -818,8 +819,17 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     : dynamicForceNoFall === undefined || !Number.isFinite(dynamicForceNoFall)
       ? undefined
       : dynamicForceNoFall !== 0;
-  const forceStand = operation?.forceStand ?? booleanNumber(findControllerParam(input.controller, "forcestand"));
-  const forceCrouch = operation?.forceCrouch ?? booleanNumber(findControllerParam(input.controller, "forcecrouch"));
+  const resolvePosture = (key: "forcestand" | "forcecrouch"): boolean | undefined => {
+    const expression = key === "forcestand" ? operation?.forceStandExpression : operation?.forceCrouchExpression;
+    if (expression === undefined) {
+      const literal = key === "forcestand" ? operation?.forceStand : operation?.forceCrouch;
+      return literal ?? booleanNumber(findControllerParam(input.controller, key));
+    }
+    const value = input.resolvePosture?.(key);
+    return value !== undefined && Number.isFinite(value) ? value !== 0 : undefined;
+  };
+  const forceStand = resolvePosture("forcestand");
+  const forceCrouch = resolvePosture("forcecrouch");
   const staticFall = operation?.fall ?? projectileFallData(input.controller);
   const fallFlags = operation?.fallFlags === undefined
     ? undefined

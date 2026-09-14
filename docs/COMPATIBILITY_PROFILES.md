@@ -42,6 +42,31 @@ Allowed: these local expression, spawn, and contact behaviors. Not established:
 upstream differential parity, nested Helper contact coverage, full fall recovery
 timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 
+## Fresh Projectile `forcestand` / `forcecrouch`
+
+A fresh root or Helper Projectile evaluates authored `forcestand` and
+`forcecrouch` expressions once in the creator context and stores the resulting
+booleans. Later creator-variable changes do not rewrite that Projectile.
+Finite nonzero values become true; explicit zero becomes false; a non-finite
+component stays unset without discarding its finite sibling. Omitted fields stay
+unset on this spawn path. Helper `var()` evaluation uses the Helper caller, not
+the root owner. Accepted default get-hit selection consumes the stored flags;
+guard contact does not.
+
+This adapts boolean `evalB` posture cases from Ikemen-GO
+`149402fa8b50a64e9af8316772e0cd266025133a`, `src/bytecode.go` `hitDef.runSub`
+(`hitDef_forcestand` / `hitDef_forcecrouch`) and Projectile `Run` delegation
+into that same HitDef path. Local compiler, spawn, Helper, and imported
+root-contact tests cover the stored flags. Existing combat tests already route
+stored `forceStand`/`forceCrouch` into Common1 5000/5010 for imported defenders.
+
+Allowed: this local compilation, spawn-once storage, Helper-versus-root caller,
+and accepted-versus-guard contact behavior. Not established: HitDef
+`finalizeParams` omitted `forcestand` ground-Y default on fresh Projectiles,
+full get-hit posture physics, ModifyProjectile-retention copied onto fresh
+spawn, nested Helper contact, airborne/lying posture, teams, rollback, or full
+MUGEN/Ikemen compatibility.
+
 `ModifyProjectile` uses the existing decimal caller evaluator for dynamic
 `forcenofall` before conversion to a boolean. The focused mutation test distinguishes
 0.5 from an integer evaluator's zero and preserves nonselected Projectiles.

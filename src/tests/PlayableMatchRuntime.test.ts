@@ -10903,6 +10903,54 @@ value = 0
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
   });
 
+  it("evaluates fresh Projectile posture once and consumes it only on accepted contact", () => {
+    const attacker = createImportedFixture({
+      id: "dynamic-projectile-posture-root",
+      withStateMove: false,
+      withProjectile: true,
+      projectileHitDefParams: `
+forcestand = Time
+forcecrouch = Time + 0.5
+guardflag = HL
+`,
+    });
+    const defender = createImportedFixture({
+      id: "dynamic-projectile-posture-defender",
+      displayName: "Posture Defender",
+      withStateMove: false,
+      extraStateNos: [150, 5000, 5010],
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const acceptedWorld = new RuntimeEffectActorWorld();
+    const accepted = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: acceptedWorld });
+    let acceptedSnapshot = accepted.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(acceptedWorld.projectiles("p1")[0]).toMatchObject({ forceStand: false, forceCrouch: true });
+    expect(acceptedSnapshot.compatibilitySession?.actors[0]?.executedOperations.projectile).toBe(1);
+    for (let frame = 0; frame < 12 && acceptedSnapshot.actors[1]?.runtime.stateNo === 0; frame += 1) {
+      acceptedSnapshot = accepted.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(acceptedSnapshot.actors[1]?.runtime.stateNo).toBe(5010);
+    expect(acceptedSnapshot.actors[1]?.runtime.moveType).toBe("H");
+
+    const rejectedWorld = new RuntimeEffectActorWorld();
+    const rejected = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: rejectedWorld });
+    let rejectedSnapshot = rejected.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+    expect(rejectedWorld.projectiles("p1")[0]).toMatchObject({ forceStand: false, forceCrouch: true });
+    for (let frame = 0; frame < 12; frame += 1) {
+      rejectedSnapshot = rejected.step({ p1: new Set(), p2: new Set(["B"]) });
+    }
+    expect(rejectedSnapshot.logs.some((line) => line.includes("Posture Defender guarded"))).toBe(true);
+    expect(rejectedSnapshot.actors[1]?.runtime.guarding).toBe(true);
+    expect(rejectedSnapshot.actors[1]?.runtime.stateNo).not.toBe(5010);
+    expect(rejectedSnapshot.actors[1]?.runtime.stateNo).not.toBe(5000);
+  });
+
   it("evaluates fresh Projectile fall impact expressions in the root caller context", () => {
     const imported = createImportedFixture({
       id: "dynamic-projectile-fall-impact-root",

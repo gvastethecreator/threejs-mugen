@@ -754,6 +754,8 @@ export type ProjectileControllerOp = {
   /** Ikemen HitDef posture overrides used before default get-hit selection. */
   forceStand?: boolean;
   forceCrouch?: boolean;
+  forceStandExpression?: string;
+  forceCrouchExpression?: string;
   fall?: HitDefFallOp;
   /** Dynamic or mixed Projectile fall EnvShake package evaluated in caller context. */
   fallEnvShake?: MugenHitDefEnvShakeOp;
@@ -4072,6 +4074,9 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   const keepStateValue = optionalIntegerExpressionParam(controller, "keepstate");
   const forceNoFallValue = optionalIntegerExpressionParam(controller, "forcenofall");
   const downBounceValue = optionalFloatExpressionParam(controller, "down.bounce");
+  const forceStandValue = optionalFloatExpressionParam(controller, "forcestand");
+  const forceCrouchValue = optionalFloatExpressionParam(controller, "forcecrouch");
+  if (forceStandValue === false || forceCrouchValue === false) return undefined;
   if (downBounceValue === false) return undefined;
   if (forceNoFallValue === false) return undefined;
   if (
@@ -4307,6 +4312,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     forceNoFall: booleanNumber(findParam(controller, "forcenofall")),
     forceStand: booleanNumber(findParam(controller, "forcestand")),
     forceCrouch: booleanNumber(findParam(controller, "forcecrouch")),
+    ...(typeof forceStandValue === "string" ? { forceStandExpression: forceStandValue } : {}),
+    ...(typeof forceCrouchValue === "string" ? { forceCrouchExpression: forceCrouchValue } : {}),
     keepState: typeof keepStateValue === "number" ? keepStateValue !== 0 : undefined,
     ...(typeof keepStateValue === "string" ? { keepStateExpression: keepStateValue } : {}),
     ...(typeof forceNoFallValue === "string" ? { forceNoFallExpression: forceNoFallValue } : {}),

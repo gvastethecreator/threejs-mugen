@@ -4649,6 +4649,31 @@ value = 1
     })).operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile posture expressions and rejects malformed values", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      forcestand: "var(0)",
+      forcecrouch: "Root,var(1)",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      forceStandExpression: "var(0)",
+      forceCrouchExpression: "Root,var(1)",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      forcestand: "0.5",
+      forcecrouch: "0",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      forceStand: true,
+      forceCrouch: false,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      forcestand: "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      forcecrouch: "1,2",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       projmisstime: "var(0) + 2",
