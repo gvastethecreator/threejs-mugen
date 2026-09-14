@@ -439,6 +439,7 @@ const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWor
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 /** Active match profile for free helpers that cannot close over the instance. */
 let activeMatchRuntimeProfile: RuntimeCompatibilityProfile = "unknown";
+let activeTeamMode = "single";
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
@@ -751,6 +752,7 @@ export class PlayableMatchRuntime {
     });
     this.socdResolution = this.socdResolutionAuthority.resolution;
     this.teamRoundMode = options.teamMode ?? "single";
+    activeTeamMode = this.teamRoundMode;
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
     this.helperResourceShareContractEnabled = options.helperResourceShareContractEnabled === true;
@@ -9895,6 +9897,7 @@ function activeExpressionContextFactory(
     animTimeRemaining: getAnimTimeRemaining,
     animElemTime: getAnimElemTime,
     inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
+    teamMode: activeTeamMode,
   });
 }
 

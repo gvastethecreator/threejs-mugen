@@ -134,6 +134,18 @@ export type ExpressionContext = {
   animElemVar?: (parameter: string) => number | string | undefined;
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
+  roundDecision?: {
+    settled: boolean;
+    win?: boolean;
+    lose?: boolean;
+    draw?: boolean;
+    winKO?: boolean;
+    winTime?: boolean;
+    winPerfect?: boolean;
+    loseKO?: boolean;
+    loseTime?: boolean;
+  };
+  teamMode?: string;
   reportUnsupported?: (feature: string) => void;
   receivedDamage?: () => number;
   receivedHits?: () => number;
@@ -1163,6 +1175,31 @@ class ExpressionParser {
     if (lower === "roundsexisted" || lower === "matchover") {
       return lower === "roundsexisted" ? (this.context.self.roundsExisted ?? 0) : (this.context.self.matchOver ? 1 : 0);
     }
+    if (lower === "win" || lower === "winko" || lower === "wintime" || lower === "winperfect") {
+      const decision = this.context.roundDecision;
+      if (!decision?.settled) {
+        return 0;
+      }
+      if (lower === "win") return decision.win ? 1 : 0;
+      if (lower === "winko") return decision.winKO ? 1 : 0;
+      if (lower === "wintime") return decision.winTime ? 1 : 0;
+      return decision.winPerfect ? 1 : 0;
+    }
+    if (lower === "lose" || lower === "loseko" || lower === "losetime") {
+      const decision = this.context.roundDecision;
+      if (!decision?.settled) {
+        return 0;
+      }
+      if (lower === "lose") return decision.lose ? 1 : 0;
+      if (lower === "loseko") return decision.loseKO ? 1 : 0;
+      return decision.loseTime ? 1 : 0;
+    }
+    if (lower === "drawgame") {
+      return this.context.roundDecision?.settled && this.context.roundDecision.draw ? 1 : 0;
+    }
+    if (lower === "teammode") {
+      return this.context.teamMode ?? "single";
+    }
     if (lower === "teamside") {
       return Math.max(0, Math.trunc(this.context.teamSide ?? 0));
     }
@@ -1268,6 +1305,9 @@ class ExpressionParser {
     }
     if (/^(s|c|a|l|i|h|n|sc|ca|sa|sca|na|nt|np|st|sp|ha|ht|hp)$/i.test(identifier)) {
       return identifier.toUpperCase();
+    }
+    if (/^(single|simul|turns|tag)$/i.test(identifier)) {
+      return identifier.toLowerCase();
     }
     this.context.reportUnsupported?.(identifier);
     return 0;

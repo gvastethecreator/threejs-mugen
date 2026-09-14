@@ -29,6 +29,7 @@ export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExp
   playerIdTarget?: (playerId: number) => ExpressionRedirectTarget | undefined;
   resolveRootSelection?: (actor: TActor, characters: readonly TActor[]) => RuntimeRootSelectionEntry | undefined;
   defaultP2Selection?: RuntimeP2SelectionOptions;
+  teamMode?: string;
 };
 
 export class RuntimeActiveExpressionContextWorld {
@@ -55,6 +56,7 @@ export class RuntimeActiveExpressionContextWorld {
       animTimeRemaining: input.animTimeRemaining(input.actor),
       animElemTime: (elementNumber) => input.animElemTime(input.actor, elementNumber),
       inGuardDist: () => input.inGuardDist(input.actor, input.opponent),
+      ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
     });
   }
 

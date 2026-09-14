@@ -93,6 +93,8 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
   animElemTime?: (elementNumber: number) => number | undefined;
   inGuardDist?: () => boolean;
   reportUnsupported?: (feature: string) => void;
+  teamMode?: string;
+  roundDecision?: ExpressionContext["roundDecision"];
 };
 
 export class RuntimeExpressionContextWorld {
@@ -244,6 +246,8 @@ export class RuntimeExpressionContextWorld {
       projCancelTime: (projectileId) => this.projectileCancelTime(actor, projectileId),
       uniqueHitCount: () => this.moveHitCountValue(actor, true),
       reportUnsupported: input.reportUnsupported,
+      ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
+      ...(input.roundDecision === undefined ? {} : { roundDecision: input.roundDecision }),
     };
   }
 

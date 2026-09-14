@@ -121,6 +121,23 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 8 })).toBe(1);
     expect(evaluateExpression("TimeMod = 4, 0", { self: expressionSelf(), stateTime: 1 })).toBe(0);
     expect(evaluateExpression("TimeMod = 4, <= 1", { self: expressionSelf(), stateTime: 1 })).toBe(1);
+    expect(evaluateExpression("Win", { self: expressionSelf({ matchOver: false }), roundDecision: { settled: false, win: true } })).toBe(0);
+    expect(
+      evaluateExpression("Win && WinKO && !DrawGame", {
+        self: expressionSelf({ matchOver: true }),
+        roundDecision: { settled: true, win: true, winKO: true, draw: false },
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("Lose && LoseKO && !Win", {
+        self: expressionSelf({ matchOver: true }),
+        roundDecision: { settled: true, lose: true, loseKO: true, win: false },
+      }),
+    ).toBe(1);
+    expect(evaluateExpression("DrawGame", { self: expressionSelf({ matchOver: true }), roundDecision: { settled: true, draw: true, win: false, lose: false } })).toBe(1);
+    expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "single" })).toBe(1);
+    expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "turns" })).toBe(0);
+    expect(evaluateExpression("TeamMode != Turns", { self: expressionSelf(), teamMode: "single" })).toBe(1);
   });
 });
 

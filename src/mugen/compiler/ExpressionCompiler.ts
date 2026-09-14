@@ -311,7 +311,16 @@ const supportedExpressionIdentifiers = new Set([
   "statetype",
   "stateno",
   "statetime",
+  "teammode",
   "teamside",
+  "win",
+  "winko",
+  "wintime",
+  "winperfect",
+  "lose",
+  "loseko",
+  "losetime",
+  "drawgame",
   "time",
   "uniqhitcount",
   "velx",
@@ -385,6 +394,10 @@ const supportedExpressionLiterals = new Set([
   "ha",
   "ht",
   "hp",
+  "single",
+  "simul",
+  "turns",
+  "tag",
 ]);
 
 function isFunctionCall(expression: string, identifier: string, index: number): boolean {
