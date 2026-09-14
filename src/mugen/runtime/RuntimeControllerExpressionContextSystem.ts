@@ -31,6 +31,7 @@ export type RuntimeControllerExpressionBindings = Pick<
   | "animElemNo"
   | "animLength"
   | "animPlayerNo"
+  | "roundDecision"
   | "clsnVar"
   | "opponentClsnVar"
   | "clsnOverlap"
@@ -95,6 +96,7 @@ export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBind
   animElemNo?: ExpressionContext["animElemNo"];
   animLength?: ExpressionContext["animLength"];
   animPlayerNo?: ExpressionContext["animPlayerNo"];
+  roundDecision?: ExpressionContext["roundDecision"];
   parentClsnVar?: ExpressionContext["parentClsnVar"];
   rootClsnVar?: ExpressionContext["rootClsnVar"];
   parentClsnOverlap?: ExpressionContext["parentClsnOverlap"];
@@ -151,6 +153,7 @@ export function createRuntimeControllerExpressionContext(
     animElemNo: context.animElemNo,
     animLength: context.animLength,
     animPlayerNo: context.animPlayerNo,
+    roundDecision: context.roundDecision,
     clsnVar: context.clsnVar,
     opponentClsnVar: context.opponentClsnVar,
     parentClsnVar: context.parentClsnVar,

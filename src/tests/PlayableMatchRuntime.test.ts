@@ -4861,6 +4861,7 @@ RedirectID = 999
       withStateMove: false,
       hitDefDamage: 2000,
       extraStateNos: [170, 180],
+      withRoundOutcomeVars: true,
     });
     const defender = createImportedFixture({
       id: "win-pose-defender",
@@ -4868,6 +4869,7 @@ RedirectID = 999
       withStateMove: false,
       hitDefDamage: 0,
       extraStateNos: [170, 180],
+      withRoundOutcomeVars: true,
     });
     const closeStage = {
       ...trainingStage,
@@ -4902,10 +4904,13 @@ RedirectID = 999
     expect(closed.actors.find((actor) => actor.id === "p1")?.runtime).toMatchObject({
       stateNo: 180,
       winPose: { role: "winner", requestedStateNo: 180, status: "started" },
+      vars: expect.objectContaining({ 20: 1, 21: 1 }),
     });
+    expect(closed.actors.find((actor) => actor.id === "p1")?.runtime.vars[22]).toBeUndefined();
     expect(closed.actors.find((actor) => actor.id === "p2")?.runtime).toMatchObject({
       stateNo: 170,
       winPose: { role: "loser", requestedStateNo: 170, status: "started" },
+      vars: expect.objectContaining({ 20: 1, 21: 1 }),
     });
   });
 
@@ -13840,6 +13845,7 @@ function createImportedFixture(
     hitDefP2ChangeAnim2After?: number;
     extraStateNos?: number[];
     winPoseRoundNotOver?: boolean;
+    withRoundOutcomeVars?: boolean;
     hitSpark?: string;
     guardSpark?: string;
     hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
@@ -14092,6 +14098,33 @@ ${stateNo === 180 && options.winPoseRoundNotOver ? `
 type = AssertSpecial
 trigger1 = 1
 flag = RoundNotOver
+` : ""}${options.withRoundOutcomeVars && stateNo === 180 ? `
+[State 180, Mark Win]
+type = VarSet
+trigger1 = Win
+v = 20
+value = 1
+[State 180, Mark WinKO]
+type = VarSet
+trigger1 = WinKO
+v = 21
+value = 1
+[State 180, Mark Draw]
+type = VarSet
+trigger1 = DrawGame
+v = 22
+value = 1
+` : ""}${options.withRoundOutcomeVars && stateNo === 170 ? `
+[State 170, Mark Lose]
+type = VarSet
+trigger1 = Lose
+v = 20
+value = 1
+[State 170, Mark LoseKO]
+type = VarSet
+trigger1 = LoseKO
+v = 21
+value = 1
 ` : ""}
 `,
     )

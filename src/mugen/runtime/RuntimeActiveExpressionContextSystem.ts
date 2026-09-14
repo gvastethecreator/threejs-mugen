@@ -30,6 +30,7 @@ export type RuntimeActiveExpressionContextFactoryInput<TActor extends RuntimeExp
   resolveRootSelection?: (actor: TActor, characters: readonly TActor[]) => RuntimeRootSelectionEntry | undefined;
   defaultP2Selection?: RuntimeP2SelectionOptions;
   teamMode?: string;
+  roundDecision?: ExpressionContext["roundDecision"] | ((actor: TActor) => ExpressionContext["roundDecision"] | undefined);
 };
 
 export class RuntimeActiveExpressionContextWorld {
@@ -57,6 +58,12 @@ export class RuntimeActiveExpressionContextWorld {
       animElemTime: (elementNumber) => input.animElemTime(input.actor, elementNumber),
       inGuardDist: () => input.inGuardDist(input.actor, input.opponent),
       ...(input.teamMode === undefined ? {} : { teamMode: input.teamMode }),
+      ...(input.roundDecision === undefined
+        ? {}
+        : {
+            roundDecision:
+              typeof input.roundDecision === "function" ? input.roundDecision(input.actor) : input.roundDecision,
+          }),
     });
   }
 

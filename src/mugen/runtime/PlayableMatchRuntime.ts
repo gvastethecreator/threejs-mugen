@@ -386,7 +386,7 @@ import type {
   RuntimeRoundOutcomeTiming,
   RuntimeRedirectedTargetDispatchWriteback,
 } from "./types";
-import type { ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
+import type { ExpressionContext, ExpressionGameSpace, ExpressionRedirectTarget } from "./ExpressionEvaluator";
 
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
@@ -440,6 +440,7 @@ const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld()
 /** Active match profile for free helpers that cannot close over the instance. */
 let activeMatchRuntimeProfile: RuntimeCompatibilityProfile = "unknown";
 let activeTeamMode = "single";
+let activeRoundDecision: ((actor: FighterMatchState) => ExpressionContext["roundDecision"] | undefined) | undefined;
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
@@ -753,6 +754,7 @@ export class PlayableMatchRuntime {
     this.socdResolution = this.socdResolutionAuthority.resolution;
     this.teamRoundMode = options.teamMode ?? "single";
     activeTeamMode = this.teamRoundMode;
+    activeRoundDecision = (actor) => this.actorRoundDecision(actor);
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
     this.helperResourceShareContractEnabled = options.helperResourceShareContractEnabled === true;
@@ -1753,6 +1755,8 @@ export class PlayableMatchRuntime {
   }
 
   step(input: MatchInput, options: MatchStepOptions = {}): MugenSnapshot {
+    activeTeamMode = this.teamRoundMode;
+    activeRoundDecision = (actor) => this.actorRoundDecision(actor);
     const result = matchStepWorld.step({
       playing: this.playing,
       frameClock: this.frameClock,
@@ -4513,6 +4517,31 @@ export class PlayableMatchRuntime {
       canEnterState: (actor, stateNo) => canEnterState(actor, stateNo),
       enterState: (actor, stateNo) => enterState(actor, stateNo, undefined, { clearStateOwner: true }),
     });
+  }
+
+  private actorRoundDecision(actor: FighterMatchState): ExpressionContext["roundDecision"] {
+    const round = this.round.snapshot();
+    const phase = this.round.currentPhase;
+    const winner = round.winner;
+    if (phase < 3 || winner === undefined) {
+      return { settled: false };
+    }
+    const draw = winner === "Draw";
+    const winnerRoot = this.characterRoots().find((root) => root.label === winner || root.id === winner);
+    const won = !draw && winnerRoot?.id === actor.id;
+    const lost = !draw && !won;
+    const ko = round.state === "ko";
+    const timeover = round.state === "timeover";
+    return {
+      settled: true,
+      win: won,
+      lose: lost,
+      draw,
+      winKO: won && ko,
+      winTime: won && timeover,
+      loseKO: lost && ko,
+      loseTime: lost && timeover,
+    };
   }
 
   private currentMatchOutcomeProjection(): RuntimeMatchOutcomeProjection | undefined {
@@ -9898,6 +9927,7 @@ function activeExpressionContextFactory(
     animElemTime: getAnimElemTime,
     inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
     teamMode: activeTeamMode,
+    roundDecision: (actor) => activeRoundDecision?.(actor),
   });
 }
 
