@@ -31,12 +31,15 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("1 2", { self, reportUnsupported: report })).toBe(0);
     expect(evaluateExpression("(1", { self, reportUnsupported: report })).toBe(0);
     expect(evaluateExpression("1 +", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpression("1 + * 2", { self, reportUnsupported: report })).toBe(0);
     expect(malformed).toEqual([
       "malformed expression",
       "malformed expression",
       "malformed expression",
       "malformed expression",
+      "malformed expression",
     ]);
+    expect(evaluateExpression("2 = (1,3]", { self })).toBe(1);
     expect(evaluateExpression("Parent,Var(0)", { self, parent: expressionSelf({ vars: [11] }) })).toBe(11);
     expect(evaluateExpression("Cond(1, 8, 9)", { self })).toBe(8);
     expect(evaluateExpression("GetHitVar(fall.recover)", { self, getHitVar: (name) => (name === "fall.recover" ? 1 : 0) })).toBe(1);

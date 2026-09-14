@@ -80,6 +80,9 @@ export function isMalformedMugenExpression(lexed: TokenizedMugenExpression): boo
     if (next && adjacentValueTokens(token, next)) {
       return true;
     }
+    if (next?.type === "operator" && !isUnaryOperator(next.value) && expectsOperandBefore(token)) {
+      return true;
+    }
   }
   if (groupDepth !== 0) {
     return true;
@@ -108,6 +111,19 @@ function rangeContainsComma(tokens: ExpressionLexToken[], openIndex: number): bo
     }
   }
   return false;
+}
+
+function isUnaryOperator(value: string): boolean {
+  return value === "-" || value === "!" || value === "~";
+}
+
+function expectsOperandBefore(token: ExpressionLexToken): boolean {
+  return (
+    token.type === "operator" ||
+    token.type === "comma" ||
+    (token.type === "paren" && token.value === "(") ||
+    (token.type === "bracket" && token.value === "[")
+  );
 }
 
 function adjacentValueTokens(left: ExpressionLexToken, right: ExpressionLexToken): boolean {

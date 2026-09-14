@@ -114,6 +114,7 @@ command = F, >x
     const juxtaposition = compileExpression("1 2");
     const unterminatedParen = compileExpression("(1");
     const missingOperand = compileExpression("1 +");
+    const misplacedOperator = compileExpression("1 + * 2");
     const closedRange = compileExpression("2 = [2,4]");
     const mixedRange = compileExpression("2 = (2,4]");
     const dynamicRange = compileExpression("Time != [var(0),var(1))");
@@ -309,6 +310,8 @@ command = F, >x
     expect(unterminatedParen.unsupportedFeatures).toEqual(["malformed expression"]);
     expect(missingOperand.supportLevel).toBe("unsupported");
     expect(missingOperand.unsupportedFeatures).toEqual(["malformed expression"]);
+    expect(misplacedOperator.supportLevel).toBe("unsupported");
+    expect(misplacedOperator.unsupportedFeatures).toEqual(["malformed expression"]);
     expect(closedRange.supportLevel).toBe("executable");
     expect(mixedRange.supportLevel).toBe("executable");
     expect(dynamicRange.supportLevel).toBe("executable");
@@ -4813,6 +4816,10 @@ value = 1
     });
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       forcestand: "var(",
+    })).operation).toBeUndefined();
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      forcestand: "1 + * 2",
+      forcecrouch: "0",
     })).operation).toBeUndefined();
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       forcecrouch: "1,2",
