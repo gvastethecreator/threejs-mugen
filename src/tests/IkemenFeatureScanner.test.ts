@@ -252,6 +252,33 @@ name = "holdfwd"
     expect(character.compatibility.unsupported.some((item) => item.format === "ikemen" && item.feature === "IKEMEN screenpack DEF")).toBe(true);
     expect(character.compatibility.unsupported.some((item) => item.format === "controller" && item.feature === "AssertCommand")).toBe(true);
   });
+
+  it("keeps scanner recognition separate from the named ikemen-go ZSS execution subset", () => {
+    const files = new Map<string, string>([
+      [
+        "chars/neo/live.zss",
+        `[StateDef 0; type: S; anim: 0;]
+changeAnim{value: 200;}
+for i = 1; i < 3; i++ {
+  posAdd{x: 1;}
+}
+`,
+      ],
+      ["chars/neo/neo.def", "st = live.zss\n"],
+    ]);
+
+    const report = scanIkemenFeatures({
+      paths: [...files.keys()],
+      readText: (path) => files.get(path),
+    });
+
+    expect(report.features["ZSS script file"]).toBe(1);
+    expect(report.findings.some((finding) => finding.fallback.includes("named ikemen-go"))).toBe(true);
+    expect(report.features["ZSS loop statement"]).toBe(1);
+    expect(report.findings.some((finding) => finding.feature === "ZSS loop statement" && finding.fallback.includes("not executed"))).toBe(true);
+    expect(report.claimBlocked).toContain("ZSS/Lua execution");
+    expect(report.claimBlocked).toContain("separate loader/trace claim");
+  });
 });
 
 function textBytes(value: string): Uint8Array {

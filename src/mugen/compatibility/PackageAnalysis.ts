@@ -306,7 +306,7 @@ export function createPackageAnalysis(input: {
       ],
       blocked: [
         "Package analysis does not prove runtime execution, rendering parity, or license compatibility.",
-        "IKEMEN scanner findings remain unsupported and are not executed by the browser runtime.",
+        "IKEMEN scanner findings are not a runtime verdict. Named ikemen-go character-state ZSS is a separate loader/trace claim.",
       ],
     },
     diagnostics: uniqueSorted(diagnostics),

@@ -211,6 +211,7 @@ Examples:
 - `HitDef compiled into typed operation evidence` is a compiler claim.
 - `KFM state 200 routes and hits in kfm-official-x.json` is an executed-partial fixture claim.
 - `ZSS recognized as IKEMEN-only unsupported` is a scanner claim.
+- `Named ikemen-go character-state ZSS executed` is a loader/trace claim, not a scanner verdict.
 
 ## Profile rules
 

@@ -95,7 +95,7 @@ export function scanIkemenFeatures(input: {
     claimAllowed: detected
       ? "IKEMEN feature recognized by scanner and not executed."
       : "No IKEMEN scanner-only claim for this package.",
-    claimBlocked: "IKEMEN compatible, ZSS/Lua execution, rollback/netplay, and IKEMEN-only runtime behavior remain blocked.",
+    claimBlocked: "IKEMEN compatible, general ZSS/Lua execution, rollback/netplay, and IKEMEN-only runtime behavior remain blocked. Named ikemen-go character-state ZSS is a separate loader/trace claim.",
   };
 }
 
@@ -151,10 +151,10 @@ function scanText(path: string, text: string, findings: FindingAccumulator, zssF
       findings.add("config", "IkemenVersion declaration", location, raw, "Profile-specific behavior is reported but not executed.");
     }
     if (assignment && (/(^|\/).+\.zss\b/.test(assignment.value) || assignment.key === "zss")) {
-      findings.add("reference", "ZSS state/script reference", location, raw, "ZSS state code is not compiled or executed.");
+      findings.add("reference", "ZSS state/script reference", location, raw, "Scanner recognition is not a runtime verdict. Only the named ikemen-go character-state subset can compile and execute.");
     }
     if (assignment && isZssFallbackReference(path, assignment.value, zssFallbackTargets)) {
-      findings.add("reference", "ZSS fallback file for CNS reference", location, raw, "A matching .zss file is recognized but not compiled.");
+      findings.add("reference", "ZSS fallback file for CNS reference", location, raw, "A matching .cns.zss fallback is scanner-recognized. Compilation requires the ikemen-go loader path, not this scan.");
     }
     if (assignment && /^movelist\d*$/.test(assignment.key)) {
       findings.add("screenpack", "IKEMEN movelist reference", location, raw, "Pause/menu movelist metadata is report-only in the browser Studio.");
@@ -206,7 +206,7 @@ function scanText(path: string, text: string, findings: FindingAccumulator, zssF
     if (isZss) {
       scanZssSyntaxLine(line, location, raw, findings);
       for (const zssController of findIkemenZssControllers(line)) {
-        findings.add("controller", `IKEMEN controller ${zssController}`, location, raw, "ZSS controller syntax is recognized but not compiled.");
+        findings.add("controller", `IKEMEN controller ${zssController}`, location, raw, "ZSS controller syntax is scanner-recognized. Compilation is loader, profile, and allowlist gated.");
       }
     }
     if (assignment && IKEMEN_STAGE_PARAM_NAMES.has(assignment.key)) {
