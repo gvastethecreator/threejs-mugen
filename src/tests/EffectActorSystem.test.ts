@@ -3300,6 +3300,64 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("keeps nested Helper B Projectile caller vars and ownprojectile owner distinct", () => {
+    const store = createRuntimeEffectActorStore();
+    const parent = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "41", anim: "900" }),
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    parent.vars[0] = 0;
+    const owned = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      parentId: parent.serialId,
+      ownProjectile: true,
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    owned.vars[0] = 0.5;
+    const shared = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "43", anim: "900" }),
+      parentId: parent.serialId,
+      ownProjectile: false,
+      animations: new Map([
+        [900, action(900)],
+        [920, action(920)],
+      ]),
+    });
+    shared.vars[0] = 0.5;
+    const ownedProjectile = spawnRuntimeHelperProjectileActor(
+      store,
+      owned,
+      compileControllerIr(controller("Projectile", { projanim: "920", projid: "8871", kill: "var(0)" })),
+    );
+    const sharedProjectile = spawnRuntimeHelperProjectileActor(
+      store,
+      shared,
+      compileControllerIr(controller("Projectile", { projanim: "920", projid: "8872", kill: "var(0)" })),
+    );
+    expect(ownedProjectile).toMatchObject({
+      kill: true,
+      ownerId: owned.serialId,
+      rootId: "p1",
+      parentId: owned.serialId,
+    });
+    expect(sharedProjectile).toMatchObject({
+      kill: true,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: shared.serialId,
+    });
+    owned.vars[0] = 0;
+    expect(ownedProjectile?.kill).toBe(true);
+    removeRuntimeHelperActors(store, "p1", 42);
+    expect(store.projectiles.find((projectile) => projectile.serialId === ownedProjectile?.serialId)).toBeDefined();
+  });
+
   it("uses Helper ownprojectile identity for ownership queries and mutation", () => {
     const store = createRuntimeEffectActorStore();
     const rootProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8852", projanim: "930", projhits: "2" }));
