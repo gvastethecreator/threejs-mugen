@@ -1231,6 +1231,38 @@ describe("ProjectileSystem", () => {
     expect(omitted).not.toHaveProperty("forceCrouch");
   });
 
+  it("resolves nested Projectile HitDef priority once without changing projpriority", () => {
+    const source = controller({
+      projanim: "1005",
+      priority: "var(0), Hit",
+      projpriority: "2",
+      projsprpriority: "7",
+    });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.hitPriorityExpression).toBe("var(0)");
+    expect(operation.hitPriorityType).toBe("hit");
+    expect(operation.priority).toBe(2);
+    expect(operation.spritePriority).toBe(7);
+    let value = 4.8;
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-hit-priority",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveHitPriority: () => value,
+    });
+    const projectile = spawn();
+    value = 1;
+    expect(projectile).toMatchObject({ hitPriority: 4, hitPriorityType: "hit", priority: 2, spritePriority: 7 });
+    expect(spawn()).toMatchObject({ hitPriority: 1, priority: 2, spritePriority: 7 });
+  });
+
   it("resolves Projectile kill and guard.kill once and does not treat a missing result as true", () => {
     const source = controller({ projanim: "1005", kill: "var(0)", "guard.kill": "var(1)" });
     const operation = compileControllerIr(source).operation as ProjectileControllerOp;

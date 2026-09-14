@@ -649,6 +649,7 @@ export type ProjectileControllerOp = {
   spritePriority: number;
   /** Nested HitDef priority, separate from Projectile `projpriority`. */
   hitPriority?: number;
+  hitPriorityExpression?: string;
   hitPriorityType?: "hit" | "miss" | "dodge";
   /** Nested HitDef sprite priorities, separate from Projectile `projsprpriority`. */
   p1SpritePriority?: number;
@@ -4042,6 +4043,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (missTimeValue === false) return undefined;
   const priorityValue = optionalIntegerExpressionParam(controller, "projpriority");
   if (priorityValue === false) return undefined;
+  const hitDefPriority = optionalHitDefPriorityParam(controller);
+  if (hitDefPriority === false) return undefined;
   const hitCountValue = optionalIntegerExpressionParam(controller, "projhits");
   if (hitCountValue === false) return undefined;
   const projAnimValue = optionalIntegerExpressionParam(controller, "projanim");
@@ -4245,8 +4248,13 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     ...(typeof removeTimeValue === "string" ? { removeTimeExpression: removeTimeValue } : {}),
     layerNo: projectileLayerNo(firstNumber(findParam(controller, "projlayerno"))),
     spritePriority: firstNumber(findParam(controller, "projsprpriority")) ?? 4,
-    hitPriority: firstNumber(findParam(controller, "priority")),
-    hitPriorityType: hitDefPriorityType(findParam(controller, "priority")),
+    hitPriority: typeof hitDefPriority === "object" && typeof hitDefPriority.priority === "number"
+      ? hitDefPriority.priority
+      : undefined,
+    ...(typeof hitDefPriority === "object" && typeof hitDefPriority.priority === "string"
+      ? { hitPriorityExpression: hitDefPriority.priority }
+      : {}),
+    hitPriorityType: typeof hitDefPriority === "object" ? hitDefPriority.priorityType : undefined,
     p1SpritePriority: firstNumber(findParam(controller, "p1sprpriority") ?? findParam(controller, "sprpriority")),
     p2SpritePriority: firstNumber(findParam(controller, "p2sprpriority")),
     priority: typeof priorityValue === "number"

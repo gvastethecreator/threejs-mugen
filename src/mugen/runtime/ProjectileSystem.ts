@@ -397,6 +397,8 @@ export type RuntimeProjectileSpawnInput = {
   resolveMissTime?: () => number | undefined;
   /** Resolves fresh Projectile projpriority authored expressions in the original caller context. */
   resolvePriority?: () => number | undefined;
+  /** Resolves nested HitDef `priority` on a fresh Projectile in the original caller context. */
+  resolveHitPriority?: () => number | undefined;
   /** Resolves fresh Projectile projhits authored expressions in the original caller context. */
   resolveHitCount?: () => number | undefined;
   /** Resolves fresh Projectile guard.hittime authored expressions in the original caller context. */
@@ -1039,6 +1041,14 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const finiteDynamicPriority = dynamicPriority !== undefined && Number.isFinite(dynamicPriority)
     ? Math.trunc(dynamicPriority)
     : undefined;
+  const dynamicHitPriority = operation?.hitPriorityExpression === undefined
+    ? undefined
+    : input.resolveHitPriority?.();
+  const authoredHitPriority = operation?.hitPriorityExpression === undefined
+    ? operation?.hitPriority ?? firstNumber(findControllerParam(input.controller, "priority"))
+    : dynamicHitPriority !== undefined && Number.isFinite(dynamicHitPriority)
+      ? Math.trunc(dynamicHitPriority)
+      : undefined;
   const dynamicHitCount = operation?.hitCountExpression === undefined
     ? undefined
     : input.resolveHitCount?.();
@@ -1117,9 +1127,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
       ?? firstNumber(findControllerParam(input.controller, "projsprpriority"))
       ?? 4,
     ))),
-    ...((operation?.hitPriority ?? firstNumber(findControllerParam(input.controller, "priority"))) === undefined
-      ? {}
-      : { hitPriority: Math.trunc((operation?.hitPriority ?? firstNumber(findControllerParam(input.controller, "priority"))) as number) }),
+    ...(authoredHitPriority === undefined ? {} : { hitPriority: Math.trunc(authoredHitPriority) }),
     ...((operation?.hitPriorityType ?? projectileHitDefPriorityType(findControllerParam(input.controller, "priority"))) === undefined
       ? {}
       : { hitPriorityType: (operation?.hitPriorityType ?? projectileHitDefPriorityType(findControllerParam(input.controller, "priority"))) as "hit" | "miss" | "dodge" }),

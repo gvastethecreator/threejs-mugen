@@ -2328,9 +2328,11 @@ export function resolveRuntimeHelperIntegerScalarParam(
 ): number | undefined {
   if (key === "priority") {
     const operation = controller.operation;
-    const value = operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
-      ? operation.priorityExpression ?? operation.priority
-      : undefined;
+    const value = operation?.kind === "projectile"
+      ? operation.hitPriorityExpression
+      : operation?.kind === "hitdef" || operation?.kind === "modifyhitdef"
+        ? operation.priorityExpression ?? operation.priority
+        : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
   }
   if (key === "snaptime") {

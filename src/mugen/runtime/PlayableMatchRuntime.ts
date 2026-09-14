@@ -6574,6 +6574,29 @@ function runActiveStateControllers(
                   return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
                 }
               : undefined,
+          resolveProjectileHitPriority:
+            effect === "projectile"
+              ? () => {
+                  const operation = controller.operation?.kind === "projectile"
+                    ? controller.operation
+                    : undefined;
+                  const expression = operation?.hitPriorityExpression;
+                  if (expression === undefined) return undefined;
+                  const resolved = resolveDispatchNumber(
+                    undefined,
+                    expression,
+                    actor,
+                    targetOpponent,
+                    stateOwner,
+                    stageBounds,
+                    activeTick,
+                    gameSpace,
+                    options.characters,
+                    createPlayerIdTarget(actor),
+                  );
+                  return resolved === undefined || !Number.isFinite(resolved) ? undefined : Math.trunc(resolved);
+                }
+              : undefined,
           resolveProjectileHitCount:
             effect === "projectile"
               ? () => {

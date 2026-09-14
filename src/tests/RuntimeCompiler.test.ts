@@ -4695,6 +4695,30 @@ value = 1
     expect(compileControllerIr(controller(1000, "Projectile", [], { "guard.kill": "1,2" })).operation).toBeUndefined();
   });
 
+  it("compiles nested Projectile HitDef priority separately from projpriority", () => {
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      priority: "var(0), Hit",
+      projpriority: "2",
+      projsprpriority: "7",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      hitPriorityExpression: "var(0)",
+      hitPriorityType: "hit",
+      priority: 2,
+      spritePriority: 7,
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      priority: "4, Dodge",
+    })).operation).toMatchObject({
+      kind: "projectile",
+      hitPriority: 4,
+      hitPriorityType: "dodge",
+    });
+    expect(compileControllerIr(controller(1000, "Projectile", [], {
+      priority: "var(0), Nope",
+    })).operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projmisstime expressions and rejects malformed values", () => {
     expect(compileControllerIr(controller(1000, "Projectile", [], {
       projmisstime: "var(0) + 2",

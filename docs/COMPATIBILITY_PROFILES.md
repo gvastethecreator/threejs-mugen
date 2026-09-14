@@ -42,6 +42,24 @@ Allowed: these local expression, spawn, and contact behaviors. Not established:
 upstream differential parity, nested Helper contact coverage, full fall recovery
 timing, team/rollback behavior, or complete MUGEN/Ikemen compatibility.
 
+## Fresh Projectile nested HitDef `priority`
+
+A fresh Projectile preserves the nested HitDef `priority` pair separately from
+`projpriority` and `projsprpriority`. A dynamic numeric component is evaluated
+once in the creator context with integer truncation; the static Hit/Miss/Dodge
+class is stored as authored. Omitted nested priority stays unset at spawn and
+the existing contact default remains 4. Accepted contact writes the stored
+value as `GetHitVar` source priority.
+
+This adapts Ikemen-GO `149402fa8b50a64e9af8316772e0cd266025133a` HitDef
+priority-pair compilation versus Projectile `projpriority`. Local compiler,
+spawn, and projectile-combat tests cover the stored pair. Projectile-to-Projectile
+cancellation still uses `projpriority`.
+
+Allowed: this local nested-pair compilation, spawn-once integer storage, and
+accepted-contact source priority. Not established: full Hit/Miss/Dodge tie
+policy, nested Helper, teams, rollback, or full parity.
+
 ## Fresh Projectile `kill` / `guard.kill`
 
 A fresh root or Helper Projectile evaluates authored `kill` and `guard.kill`

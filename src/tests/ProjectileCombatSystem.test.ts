@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import {
   consumeRuntimeProjectileHitFacing,
@@ -7,7 +8,7 @@ import {
   RuntimeProjectileCombatWorld,
 } from "../mugen/runtime/ProjectileCombatSystem";
 import { runtimeHitVar } from "../mugen/runtime/RuntimeExpressionContextSystem";
-import { modifyRuntimeProjectiles, type RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
+import { createRuntimeProjectile, modifyRuntimeProjectiles, type RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
 import type { CharacterRuntimeState, RuntimePaletteFxPayload, RuntimePaletteFxState } from "../mugen/runtime/types";
 
 const action: MugenAnimationAction = {
@@ -3120,6 +3121,53 @@ describe("ProjectileCombatSystem", () => {
 
     expect(projectiles[0]?.hitsRemaining).toBe(1);
     expect(defender.runtime.hitVars).toMatchObject({ hitCount: 9, comboHitCount: 1, sourcePriority: 8 });
+  });
+
+  it("uses stored nested Projectile HitDef priority on accepted contact", () => {
+    const source = {
+      stateId: 1000,
+      type: "Projectile",
+      params: { projanim: "910", priority: "var(0), Hit", projpriority: "2" },
+      triggers: [] as [],
+      line: 1,
+      rawHeader: "[State 1000, Projectile]",
+    };
+    const operation = compileControllerIr(source).operation;
+    let value = 4;
+    const spawned = createRuntimeProjectile({
+      serialId: "projectile-hit-priority-contact",
+      controller: source,
+      operation: operation as never,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "trace",
+      spriteOwnerLabel: "Trace Fighter",
+      action,
+      animNo: 910,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveHitPriority: () => value,
+    });
+    value = 1;
+    expect(spawned).toMatchObject({ hitPriority: 4, hitPriorityType: "hit", priority: 2 });
+    let projectiles = [spawned];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      runtimeProfile: "ikemen-go",
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+    expect(defender.runtime.hitVars).toMatchObject({ sourcePriority: 4 });
+    expect(spawned.priority).toBe(2);
   });
 
   it("applies modified Projectile P2 sprite priority on hit and guard without changing P1", () => {

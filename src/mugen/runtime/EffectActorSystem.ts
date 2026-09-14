@@ -783,6 +783,7 @@ export function spawnRuntimeHelperProjectileActor(
     resolveRemoveTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "projremovetime", options),
     resolveMissTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "projmisstime", options),
     resolvePriority: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "projpriority", options),
+    resolveHitPriority: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "priority", options),
     resolveHitCount: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "projhits", options),
     resolveGuardHitTime: () => resolveRuntimeHelperIntegerScalarParam(helper, controller, "guard.hittime", options),
     resolveAirGuardVelocity: () => resolveRuntimeHelperProjectileAirGuardVelocity(helper, controller, options),
