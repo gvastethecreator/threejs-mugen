@@ -6,9 +6,6 @@ export function compileCommandIr(command: MugenCommand): CommandIr {
   const steps = compileCommandSteps(command.sequence);
   const unsupportedFeatures = new Set<string>();
   for (const token of command.sequence) {
-    if (token.type === "modifier" && token.raw.startsWith(">")) {
-      unsupportedFeatures.add("> strict next-step modifier");
-    }
     if (token.type === "combo" && token.raw !== "+") {
       unsupportedFeatures.add(`unclassified command token ${token.raw}`);
     }
@@ -57,7 +54,12 @@ export function compileCommandSteps(tokens: MugenCommandToken[]): CommandStepIr[
 
   for (const token of tokens) {
     if (token.type === "modifier") {
-      modifiers.push(token.raw[0] ?? token.raw);
+      const modifier = token.raw[0] ?? token.raw;
+      if (modifier === ">") {
+        current.greater = true;
+      } else {
+        modifiers.push(modifier);
+      }
       if (token.chargeTime !== undefined) {
         chargeTime = token.chargeTime;
       }

@@ -13,6 +13,7 @@ export type CommandPartIr = {
 
 export type CommandStepIr = {
   parts: CommandPartIr[][];
+  greater?: boolean;
 };
 
 export type CommandIr = {

@@ -255,6 +255,33 @@ time = 10
     expect(buffer.isCommandActive("down_a", commands)).toBe(true);
   });
 
+  it("rejects intervening input on > while the lenient command still matches", () => {
+    const commands = commandsFrom(`
+[Command]
+name = "strict_fx"
+command = F, >x
+time = 15
+
+[Command]
+name = "lenient_fx"
+command = F, x
+time = 15
+`);
+    const direct = new CommandBuffer();
+    direct.push(1, ["F"]);
+    direct.push(2, ["F", "x"]);
+
+    const interrupted = new CommandBuffer();
+    interrupted.push(1, ["F"]);
+    interrupted.push(2, ["D"]);
+    interrupted.push(3, ["x"]);
+
+    expect(direct.isCommandActive("strict_fx", commands)).toBe(true);
+    expect(direct.isCommandActive("lenient_fx", commands)).toBe(true);
+    expect(interrupted.isCommandActive("strict_fx", commands)).toBe(false);
+    expect(interrupted.isCommandActive("lenient_fx", commands)).toBe(true);
+  });
+
   it("limits the gap between matched command steps with steptime", () => {
     const commands = commandsFrom(`
 [Command]

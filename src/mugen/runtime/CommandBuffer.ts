@@ -57,6 +57,7 @@ export class CommandBuffer {
     let elapsed = 0;
     let lastMatchedAge: number | undefined;
     let youngerMatchedAge: number | undefined;
+    let pendingGreater: CommandStepIr | undefined;
     for (let index = this.samples.length - 1; index >= 0; index -= 1) {
       const sample = this.samples[index];
       if (!sample || elapsed > command.time) {
@@ -64,11 +65,23 @@ export class CommandBuffer {
       }
       const expected = steps[cursor];
       const usableSample = isSampleUsableForCommand(sample, command);
-      if (expected && usableSample && isCommandStepActive(expected, this.samples, index, command)) {
+      const expectedMatches = Boolean(expected && usableSample && isCommandStepActive(expected, this.samples, index, command));
+      if (
+        pendingGreater &&
+        usableSample &&
+        !expectedMatches &&
+        greaterCheckFail(pendingGreater, this.samples, index, command)
+      ) {
+        return false;
+      }
+      if (expected && usableSample && expectedMatches) {
         if (youngerMatchedAge !== undefined && elapsed - youngerMatchedAge > command.stepTime) {
           return false;
         }
         const matchedStep = expected;
+        if (matchedStep.greater && greaterCheckFail(matchedStep, this.samples, index, command)) {
+          return false;
+        }
         lastMatchedAge ??= elapsed;
         youngerMatchedAge = elapsed;
         cursor -= 1;
@@ -84,6 +97,7 @@ export class CommandBuffer {
         if (cursor < 0) {
           return lastMatchedAge <= command.bufferTime;
         }
+        pendingGreater = matchedStep.greater ? matchedStep : undefined;
         while (
           index > 0 &&
           isSampleUsableForCommand(this.samples[index - 1], command) &&
@@ -124,6 +138,38 @@ function isCommandStepActive(step: CommandStepIr, samples: InputSample[], index:
 
 function canMatchOlderStepInSameSample(step: CommandStepIr): boolean {
   return step.parts.every((part) => part.every((alternative) => alternative.modifiers.includes("~")));
+}
+
+function greaterCheckFail(
+  step: CommandStepIr,
+  samples: InputSample[],
+  index: number,
+  command: MugenCommand,
+): boolean {
+  const current = samples[index]?.values ?? new Set<string>();
+  const previous = previousUsableSample(samples, index, command)?.values ?? new Set<string>();
+  const allowedPress = new Set<string>();
+  const allowedRelease = new Set<string>();
+  for (const part of step.parts) {
+    for (const alternative of part) {
+      if (alternative.modifiers.includes("~")) {
+        allowedRelease.add(alternative.raw);
+      } else {
+        allowedPress.add(alternative.raw);
+      }
+    }
+  }
+  for (const key of new Set([...current, ...previous])) {
+    const pressed = current.has(key) && !previous.has(key);
+    const released = !current.has(key) && previous.has(key);
+    if (pressed && !allowedPress.has(key)) {
+      return true;
+    }
+    if (released && !allowedRelease.has(key)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isPartActive(part: CommandPartIr, samples: InputSample[], index: number, command: MugenCommand): boolean {

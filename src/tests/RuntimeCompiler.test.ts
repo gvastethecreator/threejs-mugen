@@ -32,6 +32,20 @@ time = 20
         { raw: "z", type: "button", modifiers: [], chargeTime: undefined },
       ],
     ]);
+
+    const strict = parseCmd(`
+[Command]
+name = "strict_fx"
+command = F, >x
+`).commands[0];
+    if (!strict) {
+      throw new Error("Expected parsed command");
+    }
+    const compiledStrict = compileCommandIr(strict);
+    expect(compiledStrict.supportLevel).toBe("executable");
+    expect(compiledStrict.unsupportedFeatures).toEqual([]);
+    expect(compiledStrict.steps[1]?.greater).toBe(true);
+    expect(compiledStrict.steps[0]?.greater).toBeUndefined();
   });
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
