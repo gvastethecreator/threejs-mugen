@@ -109,8 +109,11 @@ import type {
   RuntimeSoundEvent,
   RuntimeTeamState,
 } from "./types";
-import { resolveRuntimeResourceControllerOperation } from "./RuntimeResourceSystem";
-import type { RuntimeResourceConstants } from "./RuntimeResourceSystem";
+import {
+  applyRuntimeVariableAssignment,
+  resolveRuntimeResourceControllerOperation,
+  type RuntimeResourceConstants,
+} from "./RuntimeResourceSystem";
 import {
   RUNTIME_CURRENT_STATE_TRANSITION_BUDGET,
   type RuntimeStateTransition,
@@ -292,6 +295,7 @@ export type RuntimeHelperAdvanceOptions = {
   opponentId?: string;
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
+  helpers?: readonly RuntimeHelper[];
   opponentState?: CharacterRuntimeState;
   opponentLocalCoord?: [number, number];
   p2BodyDistYUsesSizeBoxes?: boolean;
@@ -562,7 +566,7 @@ export function advanceRuntimeHelpers(
   stage: RuntimeHelperStage,
   options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeHelper[] {
-  return helpers.filter((helper) => advanceRuntimeHelperActor(helper, stage, options));
+  return helpers.filter((helper) => advanceRuntimeHelperActor(helper, stage, { ...options, helpers }));
 }
 
 export function advanceRuntimeHelperActor(
@@ -693,6 +697,7 @@ export function runRuntimeHelperStateControllers(
     | "runtimeTick"
     | "parentState"
     | "rootState"
+    | "helpers"
     | "opponentState"
     | "opponentStates"
     | "opponentRoster"
@@ -780,6 +785,14 @@ export function runRuntimeHelperStateControllers(
       continue;
     }
     if (dispatch.kind === "runtime-controller") {
+      if (controller.normalizedType === "parentvarset" || controller.normalizedType === "parentvaradd") {
+        applyHelperParentVariableController(helper, controller, options);
+        options.onController?.(helper, controller);
+        if (controller.operation) {
+          options.onOperation?.(helper, controller.operation);
+        }
+        continue;
+      }
       if (controller.normalizedType === "destroyself") {
         options.onController?.(helper, controller);
         return { status: "destroyed" };
@@ -1718,6 +1731,8 @@ const helperRuntimeControllers = new Set([
   "assertspecial",
   "varset",
   "varadd",
+  "parentvarset",
+  "parentvaradd",
   "varrandom",
   "varrangeset",
   "transformclsn",
@@ -2341,6 +2356,16 @@ export function resolveRuntimeHelperIntegerScalarParam(
         ? operation.priorityExpression ?? operation.priority
         : undefined;
     if (value !== undefined) return resolveRuntimeHelperIntegerExpression(helper, value, options);
+    const raw = findControllerParam(controller.source, "priority");
+    if (raw !== undefined) {
+      const parts = topLevelCommaIndices(raw);
+      const typeStart = parts[parts.length - 1];
+      const priorityType = typeStart === undefined ? "" : raw.slice(typeStart + 1).trim().toLowerCase();
+      const expression = priorityType === "hit" || priorityType === "miss" || priorityType === "dodge"
+        ? raw.slice(0, typeStart).trim()
+        : raw;
+      return expression ? resolveHelperNumber(helper, undefined, expression, options) : undefined;
+    }
   }
   if (key === "snaptime") {
     const operation = controller.operation;
@@ -3563,6 +3588,95 @@ function applyRuntimeHelperOwnerBind(
       helper.ownerBind = undefined;
     }
   }
+}
+
+function applyHelperParentVariableController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: RuntimeHelperAdvanceOptions,
+): void {
+  const parent = resolveHelperParentVariableTarget(helper, options);
+  if (!parent) {
+    return;
+  }
+  const additive = controller.normalizedType === "parentvaradd";
+  const operation = controller.operation?.kind === "variable" ? controller.operation : undefined;
+  const helperState = helperRuntimeState(helper);
+  const context = { ...helperExpressionContext(helper, options), self: helperState };
+  const readNumber = (raw: string | undefined): number | undefined => {
+    if (raw === undefined) {
+      return undefined;
+    }
+    const direct = Number(raw);
+    if (Number.isFinite(direct)) {
+      return direct;
+    }
+    const evaluated = Number(evaluateExpression(raw, context));
+    return Number.isFinite(evaluated) ? evaluated : undefined;
+  };
+  let variableType: "var" | "fvar" | "sysvar" =
+    operation?.variableType === "fvar" || operation?.variableType === "sysvar" || operation?.variableType === "var"
+      ? operation.variableType
+      : findControllerParam(controller.source, "fv") !== undefined || findControllerParam(controller.source, "fvar") !== undefined
+        ? "fvar"
+        : "var";
+  let index =
+    operation?.index ??
+    readNumber(
+      findControllerParam(controller.source, variableType === "fvar" ? "fv" : "v") ??
+        findControllerParam(controller.source, variableType),
+    );
+  let value = operation?.value ?? readNumber(findControllerParam(controller.source, "value"));
+  if (index === undefined || value === undefined) {
+    for (const [key, rawValue] of Object.entries(controller.params)) {
+      const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
+      if (!match) {
+        continue;
+      }
+      const assigned = readNumber(rawValue);
+      if (assigned === undefined) {
+        continue;
+      }
+      variableType = match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var";
+      index = Number(match[2]);
+      value = assigned;
+      break;
+    }
+  }
+  if (index === undefined || value === undefined || index < 0) {
+    return;
+  }
+  applyRuntimeVariableAssignment(
+    parent,
+    {
+      variableType,
+      index: Math.round(index),
+      value: variableType === "fvar" ? value : Math.trunc(value),
+    },
+    additive,
+  );
+}
+
+function resolveHelperParentVariableTarget(
+  helper: RuntimeHelper,
+  options: RuntimeHelperAdvanceOptions,
+): CharacterRuntimeState | undefined {
+  if (!helper.parentId) {
+    return undefined;
+  }
+  const parentHelper = options.helpers?.find((candidate) => candidate.serialId === helper.parentId && !candidate.destroyed);
+  if (parentHelper) {
+    return {
+      ...helperRuntimeState(parentHelper),
+      vars: parentHelper.vars,
+      fvars: parentHelper.fvars,
+      sysvars: parentHelper.sysvars,
+    };
+  }
+  if (helper.parentId === helper.rootId || helper.parentId === helper.ownerId) {
+    return options.parentState;
+  }
+  return undefined;
 }
 
 function helperExpressionContext(

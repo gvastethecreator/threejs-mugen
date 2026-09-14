@@ -131,6 +131,8 @@ const runtimeControllers = new Set([
   "powerset",
   "varset",
   "varadd",
+  "parentvarset",
+  "parentvaradd",
   "varrandom",
   "varrangeset",
   "transformclsn",
@@ -245,6 +247,8 @@ export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boole
 const stateEntrySetupControllers = new Set([
   "varset",
   "varadd",
+  "parentvarset",
+  "parentvaradd",
   "varrandom",
   "ctrlset",
   "poweradd",

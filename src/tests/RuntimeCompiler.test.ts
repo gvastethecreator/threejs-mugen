@@ -1787,6 +1787,11 @@ value = 1
     expect(life.operation).toEqual({ kind: "resource", controllerType: "lifeadd", value: -25, kill: false });
     expect(power.operation).toEqual({ kind: "resource", controllerType: "powerset", value: 1000 });
     expect(varSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "var", index: 3, value: 8 });
+    const parentVarSet = compileControllerIr(controller(200, "ParentVarSet", [], { v: "0", value: "8" }));
+    const parentVarAdd = compileControllerIr(controller(200, "ParentVarAdd", [], { fv: "0", value: "0.25" }));
+    expect(parentVarSet.supportLevel).toBe("partial");
+    expect(parentVarSet.operation).toEqual({ kind: "variable", controllerType: "parentvarset", variableType: "var", index: 0, value: 8 });
+    expect(parentVarAdd.operation).toEqual({ kind: "variable", controllerType: "parentvaradd", variableType: "fvar", index: 0, value: 0.25 });
     expect(varAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "var", index: 1, value: 7 });
     expect(fvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "fvar", index: 2, value: 1.5 });
     expect(sysvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "sysvar", index: 0, value: 1 });

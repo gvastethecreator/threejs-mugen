@@ -270,6 +270,53 @@ describe("HelperSystem", () => {
     expect(operations).toEqual([{ color: [32, 128, 240], time: -1, under: true }]);
   });
 
+  it("writes ParentVarSet and ParentVarAdd to the direct parent helper, not the root", () => {
+    const root = helperRuntimeState(helper({ vars: [10, 0], fvars: [0, 0] }));
+    const parent = helper({
+      serialId: "helper-a",
+      parentId: "p1",
+      vars: [20, 0],
+      fvars: [1.5, 0],
+    });
+    const child = helper({
+      serialId: "helper-b",
+      parentId: "helper-a",
+      vars: [30, 0],
+      fvars: [0, 0],
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "0", value: "var(0)" }),
+          compiledControllerIr(6000, "ParentVarAdd", [], { fv: "0", value: "0.25" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([parent, child], stage, { parentState: root, rootState: root });
+
+    expect(parent.vars[0]).toBe(30);
+    expect(child.vars[0]).toBe(30);
+    expect(root.vars[0]).toBe(10);
+    expect(parent.fvars[0]).toBe(1.75);
+  });
+
+  it("does not write ParentVarSet onto root when the parent helper is missing", () => {
+    const root = helperRuntimeState(helper({ vars: [10] }));
+    const child = helper({
+      serialId: "helper-b",
+      parentId: "helper-a",
+      vars: [30],
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ParentVarSet", [], { v: "0", value: "99" }),
+        ])],
+      },
+    });
+
+    advanceRuntimeHelpers([child], stage, { parentState: root, rootState: root });
+
+    expect(root.vars[0]).toBe(10);
+    expect(child.vars[0]).toBe(30);
+  });
+
   it("preserves Helper EnvColor finite time above the former local ceiling", () => {
     const parent = helperRuntimeState(helper());
     parent.vars[3] = 241;

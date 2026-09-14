@@ -1363,14 +1363,14 @@ export type ResourceControllerOp =
 export type VariableControllerOp =
   | {
       kind: "variable";
-      controllerType: "varset";
+      controllerType: "varset" | "parentvarset";
       variableType: "var" | "fvar" | "sysvar";
       index: number;
       value: number;
     }
   | {
       kind: "variable";
-      controllerType: "varadd";
+      controllerType: "varadd" | "parentvaradd";
       variableType: "var" | "fvar" | "sysvar";
       index: number;
       value: number;
@@ -2337,7 +2337,14 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
 }
 
 function isVariableController(type: string): type is VariableControllerOp["controllerType"] {
-  return type === "varset" || type === "varadd" || type === "varrandom" || type === "varrangeset";
+  return (
+    type === "varset" ||
+    type === "varadd" ||
+    type === "parentvarset" ||
+    type === "parentvaradd" ||
+    type === "varrandom" ||
+    type === "varrangeset"
+  );
 }
 
 function compileVariableControllerOp(controller: MugenStateController, type: VariableControllerOp["controllerType"]): VariableControllerOp | undefined {

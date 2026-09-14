@@ -621,6 +621,7 @@ function createRuntimeHelperAdvanceOptions(
 ): RuntimeHelperAdvanceOptions {
   return {
     ...options,
+    helpers: options?.helpers ?? store.helpers,
     stageBounds: options?.stageBounds ?? stage.bounds,
     gameSpace: options?.gameSpace ?? runtimeStageGameSpace(stage),
     countExplods: (helper, explodId) => {
