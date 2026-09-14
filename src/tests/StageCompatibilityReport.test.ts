@@ -331,24 +331,80 @@ bgmusic = floor.wav
 type = normal
 spriteno = 0,0
 `, "stages/music.def");
-    const wav = new Uint8Array(12);
-    wav.set([0x52, 0x49, 0x46, 0x46], 0);
-    wav.set([0x57, 0x41, 0x56, 0x45], 8);
+    const headerOnly = new Uint8Array(12);
+    headerOnly.set([0x52, 0x49, 0x46, 0x46], 0);
+    headerOnly.set([0x57, 0x41, 0x56, 0x45], 8);
+    const headerReport = createStageCompatibilityReport({
+      sourceName: "music.zip",
+      defPath: "stages/music.def",
+      definition,
+      stage: stageDefToRuntime(definition, "music"),
+      files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
+      music: { path: "stages/floor.wav", bytes: headerOnly.buffer, loop: true, volume: 100 },
+      diagnostics: [],
+    });
+    expect(headerReport.files.music).toBe(true);
+    expect(headerReport.audio).toEqual({
+      fileFound: true,
+      bytesLoaded: true,
+      pcmWav: false,
+      playbackObserved: false,
+    });
+
     const report = createStageCompatibilityReport({
       sourceName: "music.zip",
       defPath: "stages/music.def",
       definition,
       stage: stageDefToRuntime(definition, "music"),
       files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
-      music: { path: "stages/floor.wav", bytes: wav.buffer, loop: true, volume: 100 },
+      music: { path: "stages/floor.wav", bytes: pcmWaveBytes(), loop: true, volume: 100 },
       diagnostics: [],
     });
-    expect(report.files.music).toBe(true);
     expect(report.audio).toEqual({
       fileFound: true,
       bytesLoaded: true,
       pcmWav: true,
       playbackObserved: false,
     });
+    expect(createStageCompatibilityReport({
+      sourceName: "music.zip",
+      defPath: "stages/music.def",
+      definition,
+      stage: stageDefToRuntime(definition, "music"),
+      files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
+      music: { path: "stages/floor.wav", bytes: pcmWaveBytes(3), loop: true, volume: 100 },
+      diagnostics: [],
+    }).audio.pcmWav).toBe(false);
+    expect(createStageCompatibilityReport({
+      sourceName: "music.zip",
+      defPath: "stages/music.def",
+      definition,
+      stage: stageDefToRuntime(definition, "music"),
+      files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
+      music: { path: "stages/floor.wav", bytes: pcmWaveBytes(1, false), loop: true, volume: 100 },
+      diagnostics: [],
+    }).audio.pcmWav).toBe(false);
   });
 });
+
+function pcmWaveBytes(format = 1, includeData = true): ArrayBuffer {
+  const dataSize = includeData ? 1 : 0;
+  const bytes = new Uint8Array(includeData ? 44 + dataSize : 36);
+  const view = new DataView(bytes.buffer);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  view.setUint32(4, bytes.byteLength - 8, true);
+  bytes.set([0x57, 0x41, 0x56, 0x45], 8);
+  bytes.set([0x66, 0x6d, 0x74, 0x20], 12);
+  view.setUint32(16, 16, true);
+  view.setUint16(20, format, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 8000, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  if (includeData) {
+    bytes.set([0x64, 0x61, 0x74, 0x61], 36);
+    view.setUint32(40, dataSize, true);
+  }
+  return bytes.buffer;
+}

@@ -1,5 +1,6 @@
 import type { MugenStageDefinition, MugenStageLayer } from "../model/MugenStage";
 import type { MugenStagePackage } from "../model/MugenStagePackage";
+import { isPcmWave } from "../model/PcmWave";
 import type { UnsupportedFeature } from "./UnsupportedFeatureTracker";
 
 export type StageBackgroundLayerStatus = "rendered" | "animated" | "fallback" | "missing" | "unsupported";
@@ -529,18 +530,9 @@ function describeStageAudio(stagePackage: MugenStagePackage): StageCompatibility
   return {
     fileFound: Boolean(stagePackage.files.music),
     bytesLoaded: Boolean(bytes && bytes.byteLength > 0),
-    pcmWav: Boolean(bytes && isRiffWave(bytes)),
+    pcmWav: Boolean(bytes && isPcmWave(bytes)),
     playbackObserved: false,
   };
-}
-
-function isRiffWave(bytes: ArrayBuffer): boolean {
-  if (bytes.byteLength < 12) {
-    return false;
-  }
-  const header = new Uint8Array(bytes, 0, 12);
-  const ascii = (offset: number) => String.fromCharCode(...header.subarray(offset, offset + 4));
-  return ascii(0) === "RIFF" && ascii(8) === "WAVE";
 }
 
 function isSupportedStageLayerType(type: string): boolean {

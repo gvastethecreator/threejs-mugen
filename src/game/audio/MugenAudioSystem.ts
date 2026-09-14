@@ -1,4 +1,5 @@
 import { findSound, type MugenSound, type SndArchive } from "../../mugen/model/MugenSound";
+import { isPcmWave } from "../../mugen/model/PcmWave";
 import type {
   ActorSnapshot,
   MugenSnapshot,
@@ -174,7 +175,7 @@ export class MugenAudioSystem {
     this.stageMusicId = undefined;
     const handle = this.stageMusicHandle;
     this.stageMusicHandle = undefined;
-    handle?.source.stop();
+    stopAudioHandle(handle);
   }
 
   processSnapshot(snapshot: MugenSnapshot): void {
@@ -260,10 +261,10 @@ export class MugenAudioSystem {
     this.roundAnnouncementSoundStateKey = undefined;
     this.pendingChannels.clear();
     for (const handle of this.activeChannels.clear()) {
-      handle.source.stop();
+      stopAudioHandle(handle);
     }
     for (const handle of this.floatingSources) {
-      handle.source.stop();
+      stopAudioHandle(handle);
     }
     this.floatingSources.clear();
   }
@@ -414,7 +415,7 @@ export class MugenAudioSystem {
     if (!handle) {
       return;
     }
-    handle.source.stop();
+    stopAudioHandle(handle);
   }
 
   private pan(actorId: string, channel: number, event: RuntimeSoundEvent, actor: ActorSnapshot, snapshot: MugenSnapshot): void {
@@ -477,7 +478,7 @@ export class MugenAudioSystem {
 
   private async startStageMusic(track: StageMusicTrack): Promise<void> {
     const generation = this.stageMusicGeneration;
-    if (!isRiffWave(track.bytes)) {
+    if (!isPcmWave(track.bytes)) {
       this.errors.unshift(`Stage BGM is not PCM WAV: ${track.id}`);
       this.errors.splice(8);
       return;
@@ -614,16 +615,15 @@ export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "t
   return { type: "play", channel };
 }
 
-function isRiffWave(bytes: ArrayBuffer): boolean {
-  if (bytes.byteLength < 12) {
-    return false;
+function stopAudioHandle(handle?: RuntimeAudioSourceHandle): void {
+  if (!handle) {
+    return;
   }
-  const header = new Uint8Array(bytes, 0, 12);
-  return ascii(header, 0, 4) === "RIFF" && ascii(header, 8, 4) === "WAVE";
-}
-
-function ascii(bytes: Uint8Array, offset: number, length: number): string {
-  return String.fromCharCode(...bytes.subarray(offset, offset + length));
+  try {
+    handle.source.stop();
+  } catch {
+    // already stopped or never started
+  }
 }
 
 function resolveStageMusicGain(volume: number): number {

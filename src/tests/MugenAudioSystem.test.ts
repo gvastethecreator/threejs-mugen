@@ -517,6 +517,73 @@ describe("MugenAudioSystem", () => {
     await system.setStageMusic({ id: "not-wav", bytes: new ArrayBuffer(8), loop: true, volume: 100 });
     expect(system.getDiagnostics().errors[0]).toMatch(/not PCM WAV/);
     expect(system.getDiagnostics().bgmPlaying).toBe(false);
+
+    const headerOnly = new Uint8Array(12);
+    headerOnly.set([0x52, 0x49, 0x46, 0x46], 0);
+    headerOnly.set([0x57, 0x41, 0x56, 0x45], 8);
+    await system.setStageMusic({ id: "header-only", bytes: headerOnly.buffer, loop: true, volume: 100 });
+    expect(system.getDiagnostics().errors[0]).toMatch(/not PCM WAV/);
+  });
+
+  it("drops a replaced BGM decode and starts a locked pending track only after unlock", async () => {
+    const audioContext = deferredAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    const first = pcmWavTrack("stage-a");
+    const second = pcmWavTrack("stage-b");
+
+    await system.setStageMusic(first);
+    expect(audioContext.sources).toHaveLength(0);
+    expect(system.getDiagnostics().bgmPlaying).toBe(false);
+    expect(audioContext.decodeResolvers).toHaveLength(0);
+
+    const unlocking = system.unlock();
+    await vi.waitFor(() => expect(audioContext.decodeResolvers).toHaveLength(1));
+
+    const replacing = system.setStageMusic(second);
+    await vi.waitFor(() => expect(audioContext.decodeResolvers).toHaveLength(2));
+
+    audioContext.decodeResolvers[0]!({} as AudioBuffer);
+    await unlocking;
+    expect(audioContext.sources).toHaveLength(0);
+
+    audioContext.decodeResolvers[1]!({} as AudioBuffer);
+    await replacing;
+    expect(system.getDiagnostics()).toMatchObject({ bgmPlaying: true, bgmId: "stage-b", played: 1 });
+    expect(audioContext.sources).toHaveLength(1);
+    expect(audioContext.sources[0]?.loop).toBe(true);
+    expect(audioContext.gains[0]?.gain.value).toBeCloseTo(0.8);
+  });
+
+  it("ends a non-looping BGM without stopping PlaySnd, and stop() after expiry is safe", async () => {
+    const audioContext = fakeAudioContext();
+    vi.stubGlobal("AudioContext", class {
+      constructor() {
+        return audioContext;
+      }
+    });
+    const system = new MugenAudioSystem();
+    system.setArchive(archive(1));
+    await system.unlock();
+    system.processSnapshot(audioSnapshot([soundActor("p1", 1, 0)]));
+    await vi.waitFor(() => expect(system.getDiagnostics().played).toBe(1));
+
+    await system.setStageMusic({ ...pcmWavTrack("once"), loop: false, volume: 50 });
+    expect(audioContext.sources[1]?.loop).toBe(false);
+    expect(audioContext.gains[1]?.gain.value).toBeCloseTo(0.5);
+    expect(system.getDiagnostics().bgmPlaying).toBe(true);
+
+    audioContext.sources[1]?.ended?.();
+    expect(system.getDiagnostics().bgmPlaying).toBe(false);
+    expect(audioContext.sources[0]?.stopped).toBe(false);
+
+    await system.setStageMusic(pcmWavTrack("again"));
+    audioContext.throwOnStop = true;
+    await expect(system.setStageMusic(undefined)).resolves.toBeUndefined();
   });
 
   it("maps PlaySnd pan and abspan into bounded stereo panning", () => {
@@ -532,9 +599,21 @@ describe("MugenAudioSystem", () => {
 });
 
 function pcmWavTrack(id: string): { id: string; bytes: ArrayBuffer; loop: boolean; volume: number } {
-  const bytes = new Uint8Array(44);
+  const bytes = new Uint8Array(45);
+  const view = new DataView(bytes.buffer);
   bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  view.setUint32(4, 37, true);
   bytes.set([0x57, 0x41, 0x56, 0x45], 8);
+  bytes.set([0x66, 0x6d, 0x74, 0x20], 12);
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 8000, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  bytes.set([0x64, 0x61, 0x74, 0x61], 36);
+  view.setUint32(40, 1, true);
   return { id, bytes: bytes.buffer, loop: true, volume: 80 };
 }
 
@@ -668,39 +747,61 @@ function roundAnnouncementSoundSnapshot(): NonNullable<MugenSnapshot["round"]> {
 function fakeAudioContext(): {
   state: AudioContextState;
   destination: object;
-  sources: Array<{ stopped: boolean }>;
+  sources: Array<{ stopped: boolean; loop: boolean; ended?: () => void }>;
+  gains: Array<{ gain: { value: number } }>;
+  throwOnStop: boolean;
   resume: () => Promise<void>;
   decodeAudioData: () => Promise<AudioBuffer>;
   createBufferSource: () => AudioBufferSourceNode;
   createGain: () => GainNode;
   createStereoPanner: () => StereoPannerNode;
 } {
-  const sources: Array<{ stopped: boolean }> = [];
-  return {
-    state: "running",
+  const sources: Array<{ stopped: boolean; loop: boolean; ended?: () => void }> = [];
+  const gains: Array<{ gain: { value: number } }> = [];
+  const context = {
+    state: "running" as AudioContextState,
     destination: {},
     sources,
-    resume: async () => undefined,
+    gains,
+    throwOnStop: false,
+    resume: async () => {
+      context.state = "running";
+    },
     decodeAudioData: async () => ({}) as AudioBuffer,
     createBufferSource: () => {
-      const state = { stopped: false };
+      const state: { stopped: boolean; loop: boolean; ended?: () => void } = { stopped: false, loop: false };
       sources.push(state);
-      return {
+      const node = {
         playbackRate: { value: 1 },
-        loop: false,
+        get loop() {
+          return state.loop;
+        },
+        set loop(value: boolean) {
+          state.loop = value;
+        },
         connect: (target: AudioNode) => target,
-        addEventListener: () => undefined,
+        addEventListener: (_type: string, listener: () => void) => {
+          state.ended = listener;
+        },
         start: () => undefined,
         stop: () => {
+          if (context.throwOnStop) {
+            throw new Error("InvalidStateError");
+          }
           state.stopped = true;
         },
-      } as unknown as AudioBufferSourceNode;
+      };
+      return node as unknown as AudioBufferSourceNode;
     },
-    createGain: () =>
-      ({ gain: { value: 1 }, connect: (target: AudioNode) => target }) as unknown as GainNode,
+    createGain: () => {
+      const gain = { gain: { value: 1 }, connect: (target: AudioNode) => target };
+      gains.push(gain);
+      return gain as unknown as GainNode;
+    },
     createStereoPanner: () =>
       ({ pan: { value: 0 }, connect: (target: AudioNode) => target }) as unknown as StereoPannerNode,
   };
+  return context;
 }
 
 function deferredAudioContext(): ReturnType<typeof fakeAudioContext> & {
