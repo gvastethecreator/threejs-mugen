@@ -225,6 +225,7 @@ function shouldFastRecoverFromLieDown(
 ): boolean {
   return (
     actor.runtime.stateType === "L" &&
+    hitFall.downRecover !== false &&
     !actor.runtime.assertSpecial?.noFastRecoverFromLieDown &&
     (hitFall.downRecoverTime ?? 0) > 0 &&
     transitions.isFastRecoverFromLieDownRequested?.() === true

@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
+import type { CharacterRuntimeState } from "../mugen/runtime/types";
 import {
   defaultDownRecoverTime,
   defaultFallDefenseMultiplier,
@@ -12,14 +14,25 @@ import {
 describe("RuntimeRecoverySystem", () => {
   it("ticks fall recoverTime while recovery is enabled and clamps at zero", () => {
     const system = new RuntimeRecoverySystem();
-    const fighter = actor({ recoverTime: 2 });
+    const fighter = actor({ recoverTime: 3, moveType: "H" });
+    const canRecover = () => evaluateExpression("CanRecover", { self: fighter.runtime as CharacterRuntimeState });
 
+    expect(canRecover()).toBe(0);
+    system.tickHitFallRecoveryWindow(fighter);
+    expect(fighter.runtime.hitFall?.recoverTime).toBe(2);
+    expect(canRecover()).toBe(0);
+    const paused = fighter.runtime.hitFall?.recoverTime;
+    expect(paused).toBe(2);
     system.tickHitFallRecoveryWindow(fighter);
     expect(fighter.runtime.hitFall?.recoverTime).toBe(1);
-
-    system.tickHitFallRecoveryWindow(fighter);
+    expect(canRecover()).toBe(0);
     system.tickHitFallRecoveryWindow(fighter);
     expect(fighter.runtime.hitFall?.recoverTime).toBe(0);
+    expect(canRecover()).toBe(1);
+
+    const blocked = actor({ recoverTime: 0, recover: false, moveType: "H" });
+    system.tickHitFallRecoveryWindow(blocked);
+    expect(evaluateExpression("CanRecover", { self: blocked.runtime as CharacterRuntimeState })).toBe(0);
   });
 
   it("applies Common1 fall defense once and restores it after leaving Hit", () => {
@@ -227,6 +240,18 @@ describe("RuntimeRecoverySystem", () => {
 
     expect(fighter.runtime.hitFall?.downRecoverTime).toBe(0);
     expect(transition.entered).toEqual([5120]);
+
+    const denied = actor({
+      stateNo: 5110,
+      stateType: "L",
+      downRecover: false,
+      downRecoverTime: 5,
+      stateElapsed: 1,
+    });
+    const deniedTransition = transitions({ isFastRecoverFromLieDownRequested: () => true });
+    system.advanceCommon1LieDownRecovery(denied, deniedTransition.api);
+    expect(denied.runtime.hitFall?.downRecoverTime).toBe(4);
+    expect(deniedTransition.entered).toEqual([]);
   });
 
   it("blocks Common1 liedown fast recovery while AssertSpecial NoFastRecoverFromLieDown is active", () => {
@@ -284,6 +309,8 @@ function actor(options: {
   stateType?: "S" | "C" | "A" | "L";
   stateElapsed?: number;
   recoverTime?: number;
+  recover?: boolean;
+  downRecover?: boolean;
   downRecoverTime?: number;
   fallCount?: number;
   fallCountedGroundImpact?: boolean;
@@ -312,8 +339,9 @@ function actor(options: {
         falling: true,
         damage: 0,
         velocity: { y: 0 },
-        recover: true,
+        recover: options.recover ?? true,
         recoverTime: options.recoverTime,
+        ...(options.downRecover === undefined ? {} : { downRecover: options.downRecover }),
         ...(options.fallCount === undefined ? {} : { fallCount: options.fallCount }),
         ...(options.fallCountedGroundImpact === undefined
           ? {}

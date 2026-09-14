@@ -11058,6 +11058,10 @@ guardflag = HL
       projectileHitDefParams: `
 fall = Time + 0.5
 down.bounce = Time - 0.5
+fall.recover = 1
+fall.recovertime = 3
+down.recover = 1
+down.recovertime = 5
 fall.damage = Time + 17.8
 fall.xvelocity = Time - 6.5
 fall.yvelocity = Time - 7
@@ -11075,12 +11079,16 @@ fall.zvelocity = Time + 2.5
 
     let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
     expect(effectActorWorld.projectiles("p1")[0]?.downBounce).toBe(true);
-    expect(effectActorWorld.projectiles("p1")[0]?.fall).toEqual({
+    expect(effectActorWorld.projectiles("p1")[0]?.fall).toMatchObject({
       enabled: true,
       damage: 17,
       xVelocity: -6.5,
       yVelocity: -7,
       zVelocity: 2.5,
+      recover: true,
+      recoverTime: 3,
+      downRecover: true,
+      downRecoverTime: 5,
     });
 
     for (let frame = 0; frame < 12 && !snapshot.actors[1]?.runtime.hitFall?.falling; frame += 1) {
@@ -11091,6 +11099,11 @@ fall.zvelocity = Time + 2.5
       falling: true,
       damage: 17,
       velocity: { x: -6.5, y: -7, z: 2.5 },
+      recover: true,
+      recoverTime: 3,
+      downRecover: true,
+      downRecoverTime: 5,
+      downBounce: true,
     });
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.damage")).toBe(17);
     expect(runtimeHitVar(snapshot.actors[1]!.runtime, "fall.xvel")).toBe(-6.5);
