@@ -3354,7 +3354,7 @@ describe("EffectActorSystem", () => {
     });
     owned.vars[0] = 0;
     expect(ownedProjectile?.kill).toBe(true);
-    removeRuntimeHelperActors(store, "p1", 42);
+    removeRuntimeHelperActors(store, { helperId: 42 });
     expect(store.projectiles.find((projectile) => projectile.serialId === ownedProjectile?.serialId)).toBeDefined();
   });
 

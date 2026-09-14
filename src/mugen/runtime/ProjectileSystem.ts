@@ -3487,7 +3487,7 @@ function projectilePaletteRemap(value: string | undefined): [number, number] | u
 }
 
 function mergeFreshProjectileDistanceVector(
-  expressions: Array<number | string>,
+  expressions: Array<number | string | undefined>,
   resolved: [number?, number?, number?] | undefined,
 ): [number?, number?, number?] | undefined {
   const merged: [number?, number?, number?] = [];
