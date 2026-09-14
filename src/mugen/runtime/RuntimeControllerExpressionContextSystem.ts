@@ -26,6 +26,8 @@ export type RuntimeControllerExpressionBindings = Pick<
   | "fightScreenVar"
   | "gameVar"
   | "animElemVar"
+  | "animExists"
+  | "activeAnimExists"
   | "animLength"
   | "animPlayerNo"
   | "clsnVar"
@@ -87,6 +89,8 @@ export type RuntimeControllerEvaluationContext = RuntimeControllerExpressionBind
   fightScreenVar?: ExpressionContext["fightScreenVar"];
   gameVar?: ExpressionContext["gameVar"];
   animElemVar?: ExpressionContext["animElemVar"];
+  animExists?: ExpressionContext["animExists"];
+  activeAnimExists?: ExpressionContext["activeAnimExists"];
   animLength?: ExpressionContext["animLength"];
   animPlayerNo?: ExpressionContext["animPlayerNo"];
   parentClsnVar?: ExpressionContext["parentClsnVar"];
@@ -140,6 +144,8 @@ export function createRuntimeControllerExpressionContext(
     fightScreenVar: context.fightScreenVar,
     gameVar: context.gameVar,
     animElemVar: context.animElemVar,
+    animExists: context.animExists,
+    activeAnimExists: context.activeAnimExists,
     animLength: context.animLength,
     animPlayerNo: context.animPlayerNo,
     clsnVar: context.clsnVar,

@@ -3634,6 +3634,7 @@ function helperExpressionContext(
     hitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, false),
     uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
+    activeAnimExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => matchesMugenStateIdentity(candidate, stateNo)) ?? false,
   };
 }

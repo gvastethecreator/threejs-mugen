@@ -120,6 +120,37 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("EnemyNear, AnimPlayerNo", { actor, opponent })).toBe(3);
   });
 
+  it("distinguishes AnimExist current AIR table from SelfAnimExist", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const owner = runtimeActor("p2", "Owner");
+    const opponent = runtimeActor("p3", "Rival");
+    actor.playerNo = 1;
+    actor.animationOwnerPlayerNo = 2;
+    actor.runtime.animationSource = "state-owner";
+    actor.definition.animations = new Map<number, unknown>([[200, {}], [6666, {}]]);
+    owner.playerNo = 2;
+    owner.definition.animations = new Map<number, unknown>([[200, {}], [7777, {}]]);
+    opponent.playerNo = 3;
+    const input = { actor, opponent, owner, characters: [actor, owner, opponent] };
+
+    expect(world.evaluateNumber("AnimExist(7777)", input)).toBe(1);
+    expect(world.evaluateNumber("SelfAnimExist(7777)", input)).toBe(0);
+    expect(world.evaluateNumber("AnimExist(6666)", input)).toBe(0);
+    expect(world.evaluateNumber("SelfAnimExist(6666)", input)).toBe(1);
+    expect(world.evaluateNumber("AnimExist(9999)", input)).toBe(0);
+    expect(world.evaluateNumber("EnemyNear, AnimExist(7777)", input)).toBe(0);
+
+    actor.playerNo = undefined;
+    actor.animationOwnerPlayerNo = undefined;
+    owner.playerNo = undefined;
+    opponent.playerNo = undefined;
+    expect(world.evaluateNumber("AnimExist(7777)", input)).toBe(1);
+    expect(world.evaluateNumber("SelfAnimExist(7777)", input)).toBe(0);
+    expect(world.evaluateNumber("AnimExist(6666)", input)).toBe(0);
+    expect(world.evaluateNumber("SelfAnimExist(6666)", input)).toBe(1);
+  });
+
   it("exposes current AIR ClsnVar reads, runtime overrides, size, and redirected localcoords", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author", {

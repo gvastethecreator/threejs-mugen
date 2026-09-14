@@ -198,6 +198,7 @@ export class RuntimeExpressionContextWorld {
         ? (parameter) => runtimeAnimationElementVar({ currentAction, runtime: actor.runtime }, parameter)
         : undefined,
       animExists: (animationId) => actor.definition.animations.has(animationId),
+      activeAnimExists: (animationId) => runtimeActiveAnimExists(actor, owner, expressionActors, animationId),
       stateExists: (stateNo) => runtimeActorHasState(actor, stateNo),
       commandActive: (name) => actor.commandBuffer.isCommandActive(name, actor.definition.commands ?? []),
       getConst: (name) => runtimeDefinitionConst(owner.definition, name),
@@ -422,6 +423,8 @@ export class RuntimeExpressionContextWorld {
       playerId: redirected.playerId,
       playerNo: redirected.playerNo,
       animPlayerNo: runtimeAnimationPlayerNo(redirected),
+      animExists: (animationId) => redirected.definition.animations.has(animationId),
+      activeAnimExists: (animationId) => runtimeActiveAnimExists(redirected, actor, characters, animationId),
       opponent: actor.runtime,
       opponentPlayerId: actor.playerId,
       opponentPlayerNo: actor.playerNo,
@@ -563,6 +566,21 @@ function runtimeExpressionSizeBoxY(
   const box = resolveRuntimePushSizeBox(actor.definition.constants, stateType);
   const projected = runtimeCurrentSizeBox(actor.runtime, box, { includeHeight, includeWidth: false });
   return projected ? { y1: projected.y1, y2: projected.y2 } : null;
+}
+
+function runtimeActiveAnimExists(
+  actor: RuntimeExpressionContextActor,
+  owner: RuntimeExpressionContextActor,
+  characters: readonly RuntimeExpressionContextActor[],
+  animationId: number,
+): boolean {
+  const playerNo = runtimeAnimationPlayerNo(actor);
+  const tableOwner =
+    playerNo !== undefined && Number.isFinite(playerNo)
+      ? characters.find((candidate) => candidate.playerNo === playerNo)
+      : undefined;
+  const fallback = actor.runtime.animationSource === "state-owner" ? owner : actor;
+  return (tableOwner ?? fallback).definition.animations.has(animationId);
 }
 
 export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, "runtimeProgram" | "definition">, stateNo: number): boolean {

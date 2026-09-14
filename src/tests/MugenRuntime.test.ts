@@ -138,6 +138,27 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "single" })).toBe(1);
     expect(evaluateExpression("TeamMode = Single", { self: expressionSelf(), teamMode: "turns" })).toBe(0);
     expect(evaluateExpression("TeamMode != Turns", { self: expressionSelf(), teamMode: "single" })).toBe(1);
+    expect(
+      evaluateExpression("AnimExist(7777)", {
+        self: expressionSelf(),
+        animExists: (id) => id === 6666,
+        activeAnimExists: (id) => id === 7777,
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("SelfAnimExist(7777)", {
+        self: expressionSelf(),
+        animExists: (id) => id === 6666,
+        activeAnimExists: (id) => id === 7777,
+      }),
+    ).toBe(0);
+    expect(
+      evaluateExpression("Enemy, AnimExist(7777)", {
+        self: expressionSelf(),
+        animExists: () => true,
+        activeAnimExists: () => true,
+      }),
+    ).toBe(0);
   });
 });
 

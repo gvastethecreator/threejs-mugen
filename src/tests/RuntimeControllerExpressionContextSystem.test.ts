@@ -59,6 +59,20 @@ describe("RuntimeControllerExpressionContextSystem", () => {
     expect(evaluateRuntimeControllerNumber("AnimElemVar(Group) + 1", self, context)).toBe(201);
     expect(evaluateRuntimeControllerNumber("AnimLength - 3", self, context)).toBe(5);
     expect(evaluateRuntimeControllerNumber("AnimPlayerNo + 1", self, context)).toBe(3);
+    expect(
+      evaluateRuntimeControllerNumber("AnimExist(7777)", self, {
+        ...context,
+        animExists: (id) => id === 6666,
+        activeAnimExists: (id) => id === 7777,
+      }),
+    ).toBe(1);
+    expect(
+      evaluateRuntimeControllerNumber("SelfAnimExist(7777)", self, {
+        ...context,
+        animExists: (id) => id === 6666,
+        activeAnimExists: (id) => id === 7777,
+      }),
+    ).toBe(0);
     expect(evaluateRuntimeControllerNumber("ClsnVar(Clsn2, var(0), Front)", self, context)).toBe(48);
     expect(evaluateRuntimeControllerNumber("ClsnOverlap(Clsn1, 58, Clsn2)", self, context)).toBe(1);
     expect(evaluateRuntimeControllerNumber("ProjClsnOverlap(0, 58, Clsn2)", self, context)).toBe(1);

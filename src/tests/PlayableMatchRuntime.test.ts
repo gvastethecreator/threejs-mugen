@@ -7937,6 +7937,8 @@ value = 889
       withStateMove: false,
       actionGroupOffset: 20000,
     });
+    attacker.animations.set(7777, action(7777));
+    defender.animations.set(6666, action(6666));
     const runtime = new PlayableMatchRuntime(attacker, defender, {
       ...trainingStage,
       playerStart: {
@@ -7958,6 +7960,10 @@ value = 889
     expect(snapshot.actors[1]?.spriteOwnerDefinitionId).toBe("attacker-fixture");
     expect(snapshot.actors[1]?.frame?.spriteGroup).toBe(10920);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ChangeAnim2).toBe(1);
+    expect(snapshot.actors[1]?.runtime.vars[20]).toBe(1);
+    expect(snapshot.actors[1]?.runtime.vars[21]).toBe(0);
+    expect(snapshot.actors[1]?.runtime.vars[22]).toBe(0);
+    expect(snapshot.actors[1]?.runtime.vars[23]).toBe(1);
   });
 
   it("uses imported AttackMulSet to scale outgoing HitDef damage", () => {
@@ -14013,6 +14019,26 @@ value = ${options.hitDefP2ChangeStateTo}
 type = ChangeAnim2
 trigger1 = Time >= ${options.hitDefP2ChangeAnim2After ?? 1}
 value = ${options.hitDefP2ChangeAnim2To}
+[State ${options.hitDefP2StateNo}, AnimExist owner table]
+type = VarSet
+trigger1 = Time >= ${options.hitDefP2ChangeAnim2After ?? 1}
+v = 20
+value = AnimExist(7777)
+[State ${options.hitDefP2StateNo}, SelfAnimExist owner table]
+type = VarSet
+trigger1 = Time >= ${options.hitDefP2ChangeAnim2After ?? 1}
+v = 21
+value = SelfAnimExist(7777)
+[State ${options.hitDefP2StateNo}, AnimExist receiver table]
+type = VarSet
+trigger1 = Time >= ${options.hitDefP2ChangeAnim2After ?? 1}
+v = 22
+value = AnimExist(6666)
+[State ${options.hitDefP2StateNo}, SelfAnimExist receiver table]
+type = VarSet
+trigger1 = Time >= ${options.hitDefP2ChangeAnim2After ?? 1}
+v = 23
+value = SelfAnimExist(6666)
 `
       : "";
   const hitDefP2SelfStateLines =

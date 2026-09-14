@@ -101,6 +101,7 @@ export type ExpressionContext = {
   helperClsnProxy?: boolean;
   helperType?: number;
   animExists?: (animationId: number) => boolean;
+  activeAnimExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
   getConst?: (name: string) => number | undefined;
@@ -173,6 +174,8 @@ export type ExpressionRedirectTarget = {
   opponentPlayerId?: number;
   opponentPlayerNo?: number;
   opponentAnimPlayerNo?: number;
+  animExists?: ExpressionContext["animExists"];
+  activeAnimExists?: ExpressionContext["activeAnimExists"];
   clsnVar?: ExpressionContext["clsnVar"];
   opponentClsnVar?: ExpressionContext["clsnVar"];
   clsnOverlap?: ExpressionContext["clsnOverlap"];
@@ -1467,6 +1470,12 @@ class ExpressionParser {
     if (lower === "selfanimexist") {
       return this.context.animExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
     }
+    if (lower === "animexist") {
+      if (isFailedRedirect(args[0] ?? 0)) {
+        return failedRedirectMarker;
+      }
+      return (this.context.activeAnimExists ?? this.context.animExists)?.(numeric(args[0] ?? 0)) ? 1 : 0;
+    }
     if (lower === "selfstatenoexist") {
       return this.context.stateExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
     }
@@ -2136,6 +2145,8 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     playerId: redirected.playerId,
     playerNo: redirected.playerNo,
     animPlayerNo: redirected.animPlayerNo,
+    animExists: redirected.animExists ?? context.animExists,
+    activeAnimExists: redirected.activeAnimExists ?? context.activeAnimExists,
     clsnVar: redirected.clsnVar,
     opponentClsnVar: redirected.opponentClsnVar ?? context.clsnVar,
     clsnOverlap: redirected.clsnOverlap,
