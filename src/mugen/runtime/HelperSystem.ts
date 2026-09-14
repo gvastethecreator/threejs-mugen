@@ -229,6 +229,7 @@ export type RuntimeHelper = {
   frameIndex: number;
   frameElapsed: number;
   age: number;
+  animTime: number;
   stateTime: number;
   /** Helper-local direct-contact pause, independent from root pause state. */
   hitPause: number;
@@ -308,6 +309,7 @@ export type RuntimeHelperAdvanceOptions = {
   projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   projectileCancelTime?: (helper: RuntimeHelper, projectileId?: number) => number;
+  ownerAnimations?: Pick<Map<number, MugenAnimationAction>, "has">;
   targetCandidates?: RuntimeTargetWorldActor[];
   resolveTargetRedirect?: (
     helper: RuntimeHelper,
@@ -550,6 +552,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
+    animTime: 0,
     stateTime: 0,
     hitPause: 0,
     removeTime: clampHelperTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime")) ?? 180),
@@ -868,6 +871,9 @@ export function runRuntimeHelperStateControllers(
         isHelper: expressionContext.isHelper,
         helperId: expressionContext.helperId,
         stateTime: expressionContext.stateTime,
+        animExists: expressionContext.animExists,
+        activeAnimExists: expressionContext.activeAnimExists,
+        animElemNo: expressionContext.animElemNo,
       };
       const redirectedController = redirect
         ? resolveHelperResourceController(controller, helper, context)
@@ -3533,10 +3539,14 @@ function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
   if (!action) {
     return;
   }
+  if (helper.animNo === animNo && helper.action === action) {
+    return;
+  }
   helper.action = action;
   helper.animNo = animNo;
   helper.frameIndex = 0;
   helper.frameElapsed = 0;
+  helper.animTime = 0;
 }
 
 function applyRuntimeHelperOwnerBindController(
@@ -3773,14 +3783,15 @@ function helperExpressionContext(
     hitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, false),
     uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
-    activeAnimExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
+    activeAnimExists: (animationId: number) =>
+      (options.ownerAnimations ?? helper.animations)?.has(animationId) ?? false,
     animElemNo: (timeOffset: number) =>
       runtimeAnimationElementNo(
         {
           currentAction: helper.action,
           frameElapsed: helper.frameElapsed,
           animationComplete: false,
-          runtime: { frameIndex: helper.frameIndex, animTime: helper.age },
+          runtime: { frameIndex: helper.frameIndex, animTime: helper.animTime },
         },
         timeOffset,
       ),
@@ -3849,7 +3860,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     runOrder: helper.runOrder,
     stateNo: helper.stateNo ?? 0,
     animNo: helper.animNo,
-    animTime: helper.stateTime,
+    animTime: helper.animTime,
     frameIndex: helper.frameIndex,
     lifeMax: helper.lifeMax,
     life: helper.life,
@@ -3957,6 +3968,8 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.facing = runtime.facing;
   helper.stateNo = runtime.stateNo;
   helper.animNo = runtime.animNo;
+  helper.animTime = runtime.animTime;
+  helper.frameIndex = runtime.frameIndex;
   helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
   helper.hitDefSpritePriority = runtime.hitDefSpritePriority ? { ...runtime.hitDefSpritePriority } : undefined;
   helper.unhittableTime = runtime.unhittableTime;
@@ -4027,6 +4040,7 @@ function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelper
   advanceRuntimeContactTimers(helper.contact);
   advanceRuntimeHelperTargetMemory(helper);
   helper.age += 1;
+  helper.animTime += 1;
   helper.stateTime += 1;
   helper.pos.x += helper.vel.x;
   helper.pos.y += helper.vel.y;

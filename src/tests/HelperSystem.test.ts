@@ -223,6 +223,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
+    animTime: 0,
     stateTime: 0,
     hitPause: 0,
     removeTime: 10,
@@ -315,6 +316,61 @@ describe("HelperSystem", () => {
 
     expect(root.vars[0]).toBe(10);
     expect(child.vars[0]).toBe(30);
+  });
+
+  it("uses Helper action time and borrowed AIR tables for animation queries", () => {
+    const shortAction: MugenAnimationAction = {
+      ...action,
+      id: 7000,
+      frames: [
+        { ...action.frames[0]!, duration: 1, spriteIndex: 0 },
+        { ...action.frames[1]!, duration: 1, spriteIndex: 1 },
+      ],
+    };
+    const own = new Map<number, MugenAnimationAction>([
+      [6100, action],
+      [7000, shortAction],
+      [902, action],
+    ]);
+    const borrowed = new Map<number, MugenAnimationAction>([
+      [6100, action],
+      [901, action],
+    ]);
+    const active = helper({
+      age: 100,
+      animTime: 100,
+      animations: own,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "VarSet", [], { v: "0", value: "AnimExist(901)" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "1", value: "SelfAnimExist(902)" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "2", value: "SelfAnimExist(901)" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "3", value: "AnimExist(902)" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([active], stage, { ownerAnimations: borrowed });
+    expect(active.vars[0]).toBe(1);
+    expect(active.vars[1]).toBe(1);
+    expect(active.vars[2]).toBe(0);
+    expect(active.vars[3]).toBe(0);
+
+    const switching = helper({
+      age: 100,
+      animTime: 100,
+      animations: own,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ChangeAnim", [], { value: "7000" }),
+          compiledControllerIr(6000, "VarSet", [], { v: "4", value: "AnimElemNo(-50)" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([switching], stage);
+    advanceRuntimeHelpers([switching], stage);
+    expect(switching.age).toBeGreaterThan(100);
+    expect(switching.animTime).toBe(2);
+    expect(switching.vars[4]).toBe(0);
   });
 
   it("truncates ParentVar index toward zero and refuses invalid index or value writes", () => {
