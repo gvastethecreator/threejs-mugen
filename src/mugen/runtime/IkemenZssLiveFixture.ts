@@ -12,7 +12,7 @@ export const IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST = Object.freeze({
   entry: "chars/mugen-lite-journey/journey.def",
   directStatePath: "chars/mugen-lite-journey/live.zss",
   fallbackStatePath: "chars/mugen-lite-journey/live.cns.zss",
-  expectedStates: [-2, 0, 100, 101, 102, 104] as const,
+  expectedStates: [-2, 0, 100, 101, 102, 104, 105] as const,
 });
 
 export const IKEMEN_ZSS_HITPAUSE_FIXTURE_MANIFEST = Object.freeze({
@@ -230,6 +230,7 @@ if time = 0 {
   posAdd{x: 4; y: 0;}
   varSet{v: 2; value: 1;}
   projectile{projanim: 200; projid: 7; velocity: 12, 0; offset: 40, 0; guard.kill: var(2);}
+  helper{stateno: 105;}
   changeState{value: 100;}
 }
 
@@ -285,6 +286,12 @@ if time = 0 {
     ground.hittime: 8;
     ground.velocity: -1, 0;
   }
+}
+
+[StateDef 105; type: S; movetype: I; physics: N; anim: 0; ctrl: 0;]
+parentVarAdd{v: 3; value: 1;}
+if time >= 2 {
+  destroySelf{}
 }
 `;
 

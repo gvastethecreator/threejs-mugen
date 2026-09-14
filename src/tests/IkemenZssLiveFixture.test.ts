@@ -37,7 +37,17 @@ describe("IKEMEN ZSS live fixture", () => {
         }),
       ]),
     );
-    expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101, 102, 104]));
+    expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101, 102, 104, 105]));
+    expect(character.states.find((state) => state.id === 105)?.controllers.map((controller) => controller.type)).toEqual([
+      "parentVarAdd",
+      "destroySelf",
+    ]);
+    expect(dispatchStateProgramController(
+      character.runtimeProgram?.states.find((state) => state.id === 105)?.controllers.find((controller) => controller.normalizedType === "parentvaradd")!,
+    )).toMatchObject({ kind: "runtime-controller" });
+    expect(dispatchStateProgramController(
+      character.runtimeProgram?.states.find((state) => state.id === 105)?.controllers.find((controller) => controller.normalizedType === "destroyself")!,
+    )).toMatchObject({ kind: "runtime-controller" });
     expect(character.states.find((state) => state.id === 101)?.controllers).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -89,8 +99,8 @@ describe("IKEMEN ZSS live fixture", () => {
       recognized: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
       compiled: {
         sourcePaths: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
-        stateIds: [-2, 0, 100, 101, 102, 104],
-        controllers: 26,
+        stateIds: [-2, 0, 100, 101, 102, 104, 105],
+        controllers: 29,
       },
       executed: { stateIds: [], controllers: 0 },
       blocked: { count: 0 },
@@ -165,6 +175,7 @@ describe("IKEMEN ZSS live fixture", () => {
       expect.arrayContaining([
         expect.objectContaining({ stateNo: 0, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 0, controller: "projectile", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
+        expect.objectContaining({ stateNo: 0, controller: "helper", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 100, controller: "velSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 101, controller: "posAdd", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
         expect.objectContaining({ stateNo: 101, controller: "changeAnim", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath }) }),
