@@ -1288,6 +1288,8 @@ export type SpriteEffectControllerOp =
       mul: [number, number, number];
       color: number;
       invert: boolean;
+      sinadd?: [number, number, number];
+      sinaddPeriod?: number;
     }
   | {
       kind: "sprite-effect";
@@ -2162,12 +2164,15 @@ function compilePalFxControllerOp(controller: MugenStateController): SpriteEffec
   const color = firstNumber(findParam(controller, "color"));
   const invertRaw = findParam(controller, "invertall") ?? findParam(controller, "invert");
   const invert = booleanNumber(invertRaw);
+  const sinaddRaw = findParam(controller, "sinadd");
+  const sinadd = parsePalFxSinAdd(sinaddRaw);
   if (
     time === undefined ||
     add === undefined ||
     mul === undefined ||
     (findParam(controller, "color") !== undefined && color === undefined) ||
-    (invertRaw !== undefined && invert === undefined)
+    (invertRaw !== undefined && invert === undefined) ||
+    (sinaddRaw !== undefined && sinadd === undefined)
   ) {
     return undefined;
   }
@@ -2179,7 +2184,25 @@ function compilePalFxControllerOp(controller: MugenStateController): SpriteEffec
     mul,
     color: clampPaletteFxColor(color ?? 256),
     invert: invert ?? false,
+    ...(sinadd && sinadd.period > 1 ? { sinadd: sinadd.amplitude, sinaddPeriod: sinadd.period } : {}),
   };
+}
+
+/** PalFX sinadd is `r, g, b[, period]`. A negative period flips RGB and uses abs(period). Period <= 1 does not oscillate. */
+export function parsePalFxSinAdd(raw: string | undefined): { amplitude: [number, number, number]; period: number } | undefined {
+  if (raw === undefined || !raw.trim()) {
+    return undefined;
+  }
+  const values = raw.split(",").map((part) => Number(part.trim()));
+  if (values.length < 3 || values.slice(0, 3).some((value) => !Number.isFinite(value))) {
+    return undefined;
+  }
+  const amplitude: [number, number, number] = [Math.trunc(values[0]!), Math.trunc(values[1]!), Math.trunc(values[2]!)];
+  let period = values.length >= 4 && Number.isFinite(values[3]) ? Math.trunc(values[3]!) : 0;
+  if (period < 0) {
+    return { amplitude: [0 - amplitude[0], 0 - amplitude[1], 0 - amplitude[2]], period: -period };
+  }
+  return { amplitude, period };
 }
 
 function compileRemapPalControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {

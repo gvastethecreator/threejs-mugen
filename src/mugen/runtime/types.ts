@@ -37,6 +37,10 @@ export type RuntimePaletteFxPayload = {
   mul: [number, number, number];
   color: number;
   invert: boolean;
+  addBase?: [number, number, number];
+  sinadd?: [number, number, number];
+  sinaddPeriod?: number;
+  sinaddTime?: number;
 };
 
 export type RuntimePaletteFxState = RuntimePaletteFxPayload & {

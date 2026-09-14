@@ -1687,6 +1687,40 @@ value = 1
       invert: false,
     });
     expect(dynamic.operation).toBeUndefined();
+
+    const sinadd = compileControllerIr(
+      controller(200, "PalFX", [], { time: "20", add: "0,0,0", sinadd: "80,0,0,4" }),
+    );
+    const negativePeriod = compileControllerIr(
+      controller(200, "PalFX", [], { time: "20", add: "0,0,0", sinadd: "80,0,0,-4" }),
+    );
+    const invalidPeriod = compileControllerIr(
+      controller(200, "PalFX", [], { time: "20", add: "0,0,0", sinadd: "80,0,0,1" }),
+    );
+    const malformed = compileControllerIr(controller(200, "PalFX", [], { time: "20", sinadd: "80,0" }));
+
+    expect(sinadd.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 20,
+      add: [0, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+      sinadd: [80, 0, 0],
+      sinaddPeriod: 4,
+    });
+    expect(negativePeriod.operation).toMatchObject({ sinadd: [-80, 0, 0], sinaddPeriod: 4 });
+    expect(invalidPeriod.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 20,
+      add: [0, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    });
+    expect(malformed.operation).toBeUndefined();
   });
 
   it("compiles static RemapPal controllers into typed sprite-effect operations", () => {

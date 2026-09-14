@@ -103,6 +103,42 @@ describe("SpriteEffectSystem", () => {
     });
   });
 
+  it("advances PalFX sinadd on the effect clock and clears it on expiry", () => {
+    const state = runtimeState();
+
+    applyRuntimePaletteFxController(
+      state,
+      controller("PalFX", { time: "8", add: "0,0,0", mul: "256,256,256", sinadd: "80,0,0,4" }),
+    );
+
+    expect(state.paletteFx).toMatchObject({
+      remaining: 8,
+      add: [0, 0, 0],
+      addBase: [0, 0, 0],
+      sinadd: [80, 0, 0],
+      sinaddPeriod: 4,
+      sinaddTime: 0,
+    });
+
+    tickRuntimePaletteFx(state);
+    expect(state.paletteFx).toMatchObject({ remaining: 7, sinaddTime: 1, add: [80, 0, 0] });
+    tickRuntimePaletteFx(state);
+    expect(state.paletteFx).toMatchObject({ remaining: 6, sinaddTime: 2, add: [0, 0, 0] });
+    tickRuntimePaletteFx(state);
+    expect(state.paletteFx).toMatchObject({ remaining: 5, sinaddTime: 3, add: [-80, 0, 0] });
+    tickRuntimePaletteFx(state);
+    expect(state.paletteFx).toMatchObject({ remaining: 4, sinaddTime: 0, add: [0, 0, 0] });
+
+    applyRuntimePaletteFxController(state, controller("PalFX", { time: "3", add: "0,0,0", sinadd: "80,0,0,1" }));
+    expect(state.paletteFx).toMatchObject({ remaining: 3, add: [0, 0, 0] });
+    expect(state.paletteFx?.sinadd).toBeUndefined();
+    tickRuntimePaletteFx(state);
+    expect(state.paletteFx?.add).toEqual([0, 0, 0]);
+
+    applyRuntimePaletteFxController(state, controller("PalFX", { time: "0" }));
+    expect(state.paletteFx).toBeUndefined();
+  });
+
   it("resolves dynamic PalFX material params from active expressions", () => {
     const state = runtimeState();
     const resolver = {

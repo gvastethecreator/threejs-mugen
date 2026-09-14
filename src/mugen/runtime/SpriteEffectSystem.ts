@@ -1,4 +1,4 @@
-import type { SpriteEffectControllerOp } from "../compiler/ControllerOps";
+import { parsePalFxSinAdd, type SpriteEffectControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -277,13 +277,14 @@ export function applyRuntimePaletteFxController(
     state.paletteFx = undefined;
     return;
   }
+  const add =
+    resolvedOperation?.add ??
+    clampColorTriplet(addParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("add"), -255, 255) ??
+    colorTriplet(addParam, [0, 0, 0], -255, 255);
   state.paletteFx = {
     remaining: time,
     time,
-    add:
-      resolvedOperation?.add ??
-      clampColorTriplet(addParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("add"), -255, 255) ??
-      colorTriplet(addParam, [0, 0, 0], -255, 255),
+    add,
     mul:
       resolvedOperation?.mul ??
       clampColorTriplet(mulParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("mul"), 0, 512) ??
@@ -297,6 +298,7 @@ export function applyRuntimePaletteFxController(
       (invertAllParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invertall"))) ??
       (invertParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invert"))) ??
       (firstNumber(invertAllParam) ?? firstNumber(invertParam)) === 1,
+    ...paletteFxSinAddState(resolvedOperation?.sinadd, resolvedOperation?.sinaddPeriod, findControllerParam(controller, "sinadd"), add),
   };
 }
 
@@ -308,13 +310,15 @@ export function applyRuntimeContactPaletteFx(
   if (!payload || !Number.isFinite(payload.time) || payload.time <= 0) return false;
   const time = clampFxTime(payload.time);
   if (time <= 0) return false;
+  const add = clampColorTriplet(payload.add, -255, 255) ?? [0, 0, 0];
   state.paletteFx = {
     remaining: time,
     time,
-    add: clampColorTriplet(payload.add, -255, 255) ?? [0, 0, 0],
+    add,
     mul: clampColorTriplet(payload.mul, 0, 512) ?? [255, 255, 255],
     color: clampColorLevel(payload.color),
     invert: payload.invert,
+    ...paletteFxSinAddState(payload.sinadd, payload.sinaddPeriod, undefined, add),
   };
   return true;
 }
@@ -341,7 +345,12 @@ export function resolveRuntimePaletteFxControllerOperation(
     resolvePaletteFxBoolean(invertAllParam, "invertall", resolvePaletteFx) ??
     resolvePaletteFxBoolean(invertParam, "invert", resolvePaletteFx) ??
     (invertAllParam === undefined && invertParam === undefined ? false : undefined);
+  const sinaddRaw = findControllerParam(controller, "sinadd");
+  const sinadd = parsePalFxSinAdd(sinaddRaw);
   if (time === undefined || add === undefined || mul === undefined || color === undefined || invert === undefined) {
+    return undefined;
+  }
+  if (sinaddRaw !== undefined && sinadd === undefined) {
     return undefined;
   }
   return {
@@ -352,6 +361,7 @@ export function resolveRuntimePaletteFxControllerOperation(
     mul,
     color,
     invert,
+    ...(sinadd && sinadd.period > 1 ? { sinadd: sinadd.amplitude, sinaddPeriod: sinadd.period } : {}),
   };
 }
 
@@ -404,8 +414,13 @@ export function tickRuntimePaletteFx(state: CharacterRuntimeState): void {
   if (!state.paletteFx) {
     return;
   }
-  state.paletteFx.remaining -= 1;
-  if (state.paletteFx.remaining <= 0) {
+  const paletteFx = state.paletteFx;
+  if (paletteFx.sinadd && paletteFx.sinaddPeriod && paletteFx.sinaddPeriod > 1 && paletteFx.addBase) {
+    paletteFx.sinaddTime = ((paletteFx.sinaddTime ?? 0) + 1) % paletteFx.sinaddPeriod;
+    paletteFx.add = palFxAddWithSin(paletteFx.addBase, paletteFx.sinadd, paletteFx.sinaddPeriod, paletteFx.sinaddTime);
+  }
+  paletteFx.remaining -= 1;
+  if (paletteFx.remaining <= 0) {
     state.paletteFx = undefined;
   }
 }
@@ -1035,6 +1050,48 @@ function pairToRenderScale(value: [number, number]): { x: number; y: number } {
     x: clampRenderScale(value[0]),
     y: clampRenderScale(value[1]),
   };
+}
+
+function paletteFxSinAddState(
+  operationSinadd: [number, number, number] | undefined,
+  operationPeriod: number | undefined,
+  raw: string | undefined,
+  add: [number, number, number],
+): Pick<RuntimePaletteFxPayload, "add" | "addBase" | "sinadd" | "sinaddPeriod" | "sinaddTime"> {
+  const parsed = operationSinadd && operationPeriod && operationPeriod > 1
+    ? { amplitude: operationSinadd, period: operationPeriod }
+    : parsePalFxSinAdd(raw);
+  if (!parsed || parsed.period <= 1) {
+    return { add };
+  }
+  return {
+    addBase: add,
+    sinadd: parsed.amplitude,
+    sinaddPeriod: parsed.period,
+    sinaddTime: 0,
+    add: palFxAddWithSin(add, parsed.amplitude, parsed.period, 0),
+  };
+}
+
+export function palFxAddWithSin(
+  add: [number, number, number],
+  amplitude: [number, number, number],
+  period: number,
+  time: number,
+): [number, number, number] {
+  if (period <= 1) {
+    return add;
+  }
+  let st = 2 * Math.PI * time;
+  if (period === 2) {
+    st += Math.PI / 2;
+  }
+  const wave = Math.sin(st / period);
+  return [
+    add[0] + Math.trunc(wave * amplitude[0]),
+    add[1] + Math.trunc(wave * amplitude[1]),
+    add[2] + Math.trunc(wave * amplitude[2]),
+  ];
 }
 
 function colorTriplet(

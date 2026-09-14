@@ -92,5 +92,11 @@ function staticTriplet(raw: string | undefined): [number, number, number] | unde
 }
 
 function clonePaletteFx(value: RuntimePaletteFxPayload): RuntimePaletteFxPayload {
-  return { ...value, add: [...value.add], mul: [...value.mul] };
+  return {
+    ...value,
+    add: [...value.add],
+    mul: [...value.mul],
+    ...(value.addBase ? { addBase: [...value.addBase] } : {}),
+    ...(value.sinadd ? { sinadd: [...value.sinadd] } : {}),
+  };
 }

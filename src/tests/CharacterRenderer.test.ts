@@ -341,6 +341,17 @@ describe("CharacterRenderer", () => {
     ]);
     expect(material.opacity).toBe(0.5);
     expect(material.blending).toBe(THREE.NormalBlending);
+
+    const quarter = { remaining: 7, time: 8, add: [80, 0, 0] as [number, number, number], mul: [256, 256, 256] as [number, number, number], color: 256, invert: false };
+    await renderer.update([actor({ paletteFx: quarter, renderOpacity: 1 })]);
+    const first = { r: material.color.r, g: material.color.g, b: material.color.b, opacity: material.opacity, blending: material.blending };
+    await renderer.update([actor({ paletteFx: quarter, renderOpacity: 1 })]);
+    expect(material.color.r).toBeCloseTo(first.r);
+    expect(material.color.g).toBeCloseTo(first.g);
+    expect(material.color.b).toBeCloseTo(first.b);
+    expect(material.opacity).toBe(first.opacity);
+    expect(material.blending).toBe(first.blending);
+    expect(material.blending).toBe(THREE.NormalBlending);
     renderer.dispose();
   });
 });
