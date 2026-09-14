@@ -388,6 +388,36 @@ describe("ThreeMugenRenderer stage BGPalFX", () => {
     expect((floor.material as THREE.MeshBasicMaterial).color.getHexString()).toBe("6b7280");
     renderer.dispose();
   });
+
+  it("renders more than eight authored stage layers in order", () => {
+    const renderer = new AxisRenderer({} as TextureStore);
+    renderer.update({
+      width: 640,
+      height: 360,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        id: "nine",
+        displayName: "Nine",
+        floorY: 0,
+        camera: { x: 0, y: 0, zoom: 1 },
+        layers: Array.from({ length: 9 }, (_, index) => ({
+          id: `layer-${index}`,
+          color: "#ffffff",
+          y: 0,
+          width: 40,
+          height: 40,
+          deltaX: 1,
+          opacity: 1,
+          layerNo: index === 8 ? 1 : 0,
+        })),
+      },
+    });
+    expect(renderer.getDiagnostics()).toHaveLength(9);
+    expect(renderer.getDiagnostics()[8]).toMatchObject({ id: "layer-8", layerNo: 1, authoredOrder: 8 });
+    renderer.dispose();
+  });
 });
 
 function actor(id: string): ActorSnapshot {

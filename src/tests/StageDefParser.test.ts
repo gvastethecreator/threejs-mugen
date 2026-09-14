@@ -161,6 +161,33 @@ describe("parseStageDef", () => {
     expect(continueBetweenRounds.resetBackgroundBetweenRounds).toBe(false);
   });
 
+  it("keeps more than eight authored BG sections in order", () => {
+    const sections = Array.from({ length: 9 }, (_, index) => `
+[BG Layer ${index}]
+type = normal
+id = ${10 + index}
+spriteno = ${index},0
+start = ${index},0
+delta = 1,1
+`).join("\n");
+    const runtime = stageDefToRuntime(
+      parseStageDef(`[BGDef]\nspr = many.sff\n${sections}`, "stages/nine.def"),
+      "stage-nine",
+    );
+
+    expect(runtime.layers).toHaveLength(9);
+    expect(runtime.layers.map((layer) => layer.sectionName)).toEqual(
+      Array.from({ length: 9 }, (_, index) => `BG Layer ${index}`),
+    );
+    expect(runtime.layers[8]).toMatchObject({
+      sectionName: "BG Layer 8",
+      controlId: 18,
+      spriteGroup: 8,
+      spriteIndex: 0,
+      startX: 8,
+    });
+  });
+
   it("preserves parent and controller BGCtrl loop periods separately", () => {
     const parsed = parseStageDef(`
 [BGDef]

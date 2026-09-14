@@ -152,7 +152,7 @@ function buildPlaceholderLayers(
 
   const layers: MugenStageLayer[] = [];
   let positionLinkBase: MugenStageLayer | undefined;
-  for (const [section, values] of bgSections.slice(0, 8)) {
+  for (const [section, values] of bgSections) {
     const index = layers.length;
     const start = pairValue(values, "start") ?? [0, index < 2 ? 88 - index * 40 : -42 + (index % 3) * 16];
     const delta = pairValue(values, "delta") ?? [1, 1];

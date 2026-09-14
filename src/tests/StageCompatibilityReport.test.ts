@@ -217,4 +217,31 @@ describe("createStageCompatibilityReport", () => {
       ["lab-pulse-core"],
     ]);
   });
+
+  it("reports every authored BG layer beyond the former eight-layer cap", () => {
+    const sections = Array.from({ length: 9 }, (_, index) => `
+[BG Extra ${index}]
+type = normal
+id = ${index + 1}
+spriteno = ${index},0
+`).join("\n");
+    const definition = parseStageDef(`[BGDef]\nspr = extra.sff\n${sections}`, "stages/extra.def");
+    const stage = stageDefToRuntime(definition, "extra");
+    const report = createStageCompatibilityReport({
+      sourceName: "extra.zip",
+      defPath: "stages/extra.def",
+      definition,
+      stage,
+      files: { def: "stages/extra.def", sprite: "stages/extra.sff", missing: [] },
+      diagnostics: [],
+    });
+
+    expect(report.backgrounds.total).toBe(9);
+    expect(report.backgrounds.layers).toHaveLength(9);
+    expect(report.backgrounds.layers[8]).toMatchObject({
+      section: "BG Extra 8",
+      controlId: 9,
+      sprite: { group: 8, index: 0 },
+    });
+  });
 });
