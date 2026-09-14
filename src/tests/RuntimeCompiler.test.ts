@@ -105,6 +105,7 @@ time = 20
     const dynamicRange = compileExpression("Time != [var(0),var(1))");
     const malformedRange = compileExpression("2 = [2");
     const remainder = compileExpression("Time % 4 = 0");
+    const bitwise = compileExpression("6 & 3 | 1");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && GameWidth >= 320 && GameHeight >= 240 && ScreenWidth >= 320 && ScreenHeight >= 240 && Const240p(3) = 6 && Const480p(6) = 6 && Const720p(12) = 6 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -288,6 +289,7 @@ time = 20
     expect(malformedRange.supportLevel).toBe("unsupported");
     expect(malformedRange.unsupportedFeatures).toEqual(["malformed expression"]);
     expect(remainder.supportLevel).toBe("executable");
+    expect(bitwise.supportLevel).toBe("executable");
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

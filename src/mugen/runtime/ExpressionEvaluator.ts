@@ -528,12 +528,43 @@ class ExpressionParser {
   }
 
   private parseAnd(): ExpressionValue {
-    let left = this.parseEquality();
+    let left = this.parseBitOr();
     while (this.matchOperator("&&")) {
-      const right = this.parseEquality();
+      const right = this.parseBitOr();
       left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) && truthy(right) ? 1 : 0;
     }
     return left;
+  }
+
+  private parseBitOr(): ExpressionValue {
+    let left = this.parseBitXor();
+    while (this.matchOperator("|")) {
+      const right = this.parseBitXor();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : this.toSignedInt(left) | this.toSignedInt(right);
+    }
+    return left;
+  }
+
+  private parseBitXor(): ExpressionValue {
+    let left = this.parseBitAnd();
+    while (this.matchOperator("^")) {
+      const right = this.parseBitAnd();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : this.toSignedInt(left) ^ this.toSignedInt(right);
+    }
+    return left;
+  }
+
+  private parseBitAnd(): ExpressionValue {
+    let left = this.parseEquality();
+    while (this.matchOperator("&")) {
+      const right = this.parseEquality();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : this.toSignedInt(left) & this.toSignedInt(right);
+    }
+    return left;
+  }
+
+  private toSignedInt(value: ExpressionValue): number {
+    return Math.trunc(numeric(value)) | 0;
   }
 
   private parseEquality(): ExpressionValue {
@@ -721,6 +752,10 @@ class ExpressionParser {
     if (this.matchOperator("-")) {
       const value = this.parseUnary();
       return isFailedRedirect(value) ? failedRedirectMarker : -numeric(value);
+    }
+    if (this.matchOperator("~")) {
+      const value = this.parseUnary();
+      return isFailedRedirect(value) ? failedRedirectMarker : ~this.toSignedInt(value);
     }
     return this.parsePrimary();
   }

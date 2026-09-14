@@ -65,6 +65,13 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("7 % 0", { self, reportUnsupported: report })).toBe(0);
     expect(evaluateExpression("7 % 0 = 0", { self, reportUnsupported: report })).toBe(0);
     expect(malformed).toContain("mod(0)");
+    expect(evaluateExpression("6 & 3", { self })).toBe(2);
+    expect(evaluateExpression("6 | 3", { self })).toBe(7);
+    expect(evaluateExpression("6 ^ 3", { self })).toBe(5);
+    expect(evaluateExpression("~0", { self })).toBe(-1);
+    expect(evaluateExpression("6 && 3", { self })).toBe(1);
+    expect(evaluateExpression("1 & Parent,Var(0)", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpression("1 & Parent,Var(0) = 0", { self, reportUnsupported: report })).toBe(0);
   });
 });
 

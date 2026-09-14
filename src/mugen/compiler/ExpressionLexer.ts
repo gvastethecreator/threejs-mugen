@@ -14,7 +14,7 @@ export type TokenizedMugenExpression = {
 };
 
 const expressionTokenPattern =
-  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||!=|<=|>=|[=<>+\-*/!%])|([()])|([\[\]])|(,))/gy;
+  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||\^\^|!=|<=|>=|[=<>+\-*/!%&|^~])|([()])|([\[\]])|(,))/gy;
 
 export function tokenizeMugenExpression(expression: string): TokenizedMugenExpression {
   const tokens: ExpressionLexToken[] = [];
@@ -85,7 +85,7 @@ export function isMalformedMugenExpression(lexed: TokenizedMugenExpression): boo
     return true;
   }
   const first = tokens[0];
-  if (first?.type === "operator" && first.value !== "-" && first.value !== "!") {
+  if (first?.type === "operator" && first.value !== "-" && first.value !== "!" && first.value !== "~") {
     return true;
   }
   const last = tokens[tokens.length - 1];
