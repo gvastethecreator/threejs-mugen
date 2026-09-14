@@ -151,10 +151,11 @@ export class AxisRenderer {
         this.group.add(createRect(0, y, options.width * 2, 1, this.materials.grid, -1));
       }
     }
-    this.group.add(createRect(0, 0, stageWidth, 2, this.materials.floor, 0));
+    const floorY = options.stage.floorY ?? 0;
+    this.group.add(createRect(0, floorY, stageWidth, 2, this.materials.floor, 0));
     if (options.showAxis) {
-      this.group.add(createRect(0, 0, 100, 2, this.materials.axisX, 1));
-      this.group.add(createRect(0, 40, 2, 80, this.materials.axisY, 1));
+      this.group.add(createRect(0, floorY, 100, 2, this.materials.axisX, 1));
+      this.group.add(createRect(0, floorY + 40, 2, 80, this.materials.axisY, 1));
     }
   }
 

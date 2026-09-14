@@ -394,6 +394,15 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
     "Parallax trapezoid rendering is skipped when tile or clip is authored",
   );
   push(
+    "zoffsetlink target missing",
+    stagePackage.stage.zOffsetLink !== undefined &&
+      stagePackage.stage.zOffsetLink >= 0 &&
+      !stagePackage.stage.layers.some((layer) => layer.controlId === stagePackage.stage.zOffsetLink)
+      ? 1
+      : 0,
+    "zoffsetlink keeps the authored zoffset when no BG control ID matches",
+  );
+  push(
     "exact window/maskwindow clipping",
     stagePackage.stage.layers.filter((layer) => layer.clip).length,
     "Renderer has bounded rectangular clipping for window/maskwindow, but exact zoom/windowdelta/render-mode parity remains partial",

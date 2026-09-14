@@ -103,6 +103,8 @@ describe("parseStageDef", () => {
     expect(runtime.depthBounds).toEqual({ top: -30, bottom: 40 });
     expect(runtime.camera.zoom).toBe(1);
     expect(runtime.resetBackgroundBetweenRounds).toBe(true);
+    expect(runtime.zOffset).toBe(200);
+    expect(runtime.zOffsetLink).toBeUndefined();
     expect(parsed.animations.get(10)?.frames).toHaveLength(2);
     expect(runtime.animations?.get(10)?.frames[1]).toMatchObject({ spriteGroup: 2, spriteIndex: 1, offsetX: 4 });
     expect(runtime.layers).toHaveLength(3);
@@ -276,6 +278,40 @@ yscaledelta = 1.2
     );
 
     expect(runtime.layers[0]).toMatchObject({ yScaleStart: 100, yScaleDelta: 1.2 });
+  });
+
+  it("parses zoffsetlink and ignores a negative control ID", () => {
+    const linked = stageDefToRuntime(
+      parseStageDef(`
+[StageInfo]
+zoffset = 180
+zoffsetlink = 4
+[BGDef]
+[BG Floor]
+type = normal
+id = 4
+spriteno = 0,0
+start = 0,12
+`, "stages/zoffsetlink.def"),
+      "stage-zoffsetlink",
+    );
+    const disabled = stageDefToRuntime(
+      parseStageDef(`
+[StageInfo]
+zoffset = 180
+zoffsetlink = -1
+[BGDef]
+[BG Floor]
+type = normal
+id = 4
+spriteno = 0,0
+`, "stages/zoffsetlink-off.def"),
+      "stage-zoffsetlink-off",
+    );
+
+    expect(linked.zOffset).toBe(180);
+    expect(linked.zOffsetLink).toBe(4);
+    expect(disabled.zOffsetLink).toBeUndefined();
   });
 
   it("keeps parallax width ahead of xscale and ignores xscale on normal layers", () => {

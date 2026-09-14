@@ -115,6 +115,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   }
 
   async render(snapshot: MugenSnapshot): Promise<void> {
+    const floorY = snapshot.stage.floorY ?? 0;
     this.axis.update({
       width: this.size.width,
       height: this.size.height,
@@ -123,6 +124,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
       stage: snapshot.stage,
       tick: snapshot.tick,
     });
+    this.characters.group.position.y = floorY;
+    this.boxes.group.position.y = floorY;
+    this.hitSparks.group.position.y = floorY;
     const effects = snapshot.effects ?? [];
     const presentedRoots = resolveRootPresentationActors(snapshot);
     await this.characters.update([...presentedRoots, ...effects], snapshot.stage.allPalFx);

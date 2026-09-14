@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { runtimeStageGameSpace } from "../mugen/runtime/RuntimeStageGameSpaceSystem";
+import type { MugenStageDefinition } from "../mugen/model/MugenStage";
+import { runtimeStageGameSpace, runtimeStageZOffsetLink } from "../mugen/runtime/RuntimeStageGameSpaceSystem";
 
 describe("RuntimeStageGameSpaceSystem", () => {
   it("derives Elecbyte game-space dimensions from stage localcoord and inverse zoom", () => {
@@ -29,5 +30,50 @@ describe("RuntimeStageGameSpaceSystem", () => {
       height: 480,
       zoom: 1,
     });
+  });
+
+  it("moves presentation floor with a zoffsetlink target and leaves physics zoffset unchanged", () => {
+    const platform = {
+      id: "BG Platform",
+      controlId: 4,
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 40,
+      deltaX: 1,
+      opacity: 1,
+      startX: 0,
+      startY: 12,
+      sinusoid: { y: { amplitude: 10, period: 8, phase: 0 } },
+    };
+    const stage = {
+      id: "link",
+      displayName: "Link",
+      floorY: 0,
+      zOffset: 180,
+      zOffsetLink: 4,
+      localCoord: { width: 320, height: 240 },
+      bounds: { left: -160, right: 160 },
+      camera: { startX: 0, startY: 0, zoom: 1 },
+      playerStart: {
+        p1: { x: -40, y: 0, facing: 1 },
+        p2: { x: 40, y: 0, facing: -1 },
+      },
+      layers: [platform],
+    } satisfies MugenStageDefinition;
+
+    const rest = runtimeStageZOffsetLink(stage, 0);
+    const first = runtimeStageZOffsetLink(stage, 2);
+    const second = runtimeStageZOffsetLink(stage, 2);
+    const missing = runtimeStageZOffsetLink({ ...stage, zOffsetLink: 99 }, 2);
+    const unlinked = runtimeStageZOffsetLink({ ...stage, zOffsetLink: undefined }, 2);
+
+    expect(rest).toEqual({ floorY: 0 });
+    expect(first.floorY).toBeCloseTo(-10);
+    expect(second.floorY).toBe(first.floorY);
+    expect(missing).toEqual({ floorY: 0, unsupported: "zoffsetlink target missing" });
+    expect(unlinked).toEqual({ floorY: 0 });
+    expect(stage.zOffset).toBe(180);
+    expect(stage.playerStart.p1.y).toBe(0);
   });
 });

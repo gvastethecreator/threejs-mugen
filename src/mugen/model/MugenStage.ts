@@ -147,6 +147,8 @@ export type MugenStageDefinition = {
   gameSpace?: MugenGameSpaceConfig;
   floorY: number;
   zOffset: number;
+  /** StageInfo `zoffsetlink` BG control ID. Negative/omitted means no link. */
+  zOffsetLink?: number;
   localCoord: {
     width: number;
     height: number;

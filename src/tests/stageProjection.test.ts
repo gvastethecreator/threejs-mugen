@@ -570,4 +570,23 @@ describe("stage layer material params", () => {
     ]);
     renderer.dispose();
   });
+
+  it("draws the stage floor at the presentation floorY from zoffsetlink", () => {
+    const renderer = new AxisRenderer({} as TextureStore);
+    renderer.update({
+      width: 640,
+      height: 360,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        ...stage,
+        floorY: -10,
+        layers: [{ id: "back", color: "#001", y: 0, width: 640, height: 360, deltaX: 1, opacity: 1, layerNo: 0 }],
+      },
+    });
+    const floor = renderer.group.children[renderer.getDiagnostics().reduce((count, layer) => count + layer.meshCount, 0)] as THREE.Mesh;
+    expect(floor.position.y).toBe(-10);
+    renderer.dispose();
+  });
 });

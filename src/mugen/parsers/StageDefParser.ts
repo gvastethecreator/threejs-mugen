@@ -86,6 +86,7 @@ export function stageDefToRuntime(
   const boundRight = numberValue(camera, "boundright") ?? 320;
   const localcoord = pairValue(stageInfo, "localcoord") ?? [320, 240];
   const zOffset = numberValue(stageInfo, "zoffset") ?? 200;
+  const zOffsetLink = numberValue(stageInfo, "zoffsetlink");
   const floorY = 0;
   const cameraStartY = localcoord[1] - zOffset + (numberValue(camera, "starty") ?? 0) + 72;
   const zoomOut = numberValue(camera, "zoomout") ?? 1;
@@ -99,6 +100,7 @@ export function stageDefToRuntime(
     ...(gameSpace ? { gameSpace } : {}),
     floorY,
     zOffset,
+    ...(zOffsetLink !== undefined && zOffsetLink >= 0 ? { zOffsetLink } : {}),
     localCoord: {
       width: localcoord[0],
       height: localcoord[1],
