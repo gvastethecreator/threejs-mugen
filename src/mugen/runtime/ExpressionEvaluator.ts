@@ -519,10 +519,19 @@ class ExpressionParser {
   }
 
   private parseOr(): ExpressionValue {
-    let left = this.parseAnd();
+    let left = this.parseBoolXor();
     while (this.matchOperator("||")) {
-      const right = this.parseAnd();
+      const right = this.parseBoolXor();
       left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) || truthy(right) ? 1 : 0;
+    }
+    return left;
+  }
+
+  private parseBoolXor(): ExpressionValue {
+    let left = this.parseAnd();
+    while (this.matchOperator("^^")) {
+      const right = this.parseAnd();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) !== truthy(right) ? 1 : 0;
     }
     return left;
   }

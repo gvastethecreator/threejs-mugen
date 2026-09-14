@@ -72,6 +72,19 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("6 && 3", { self })).toBe(1);
     expect(evaluateExpression("1 & Parent,Var(0)", { self, reportUnsupported: report })).toBe(0);
     expect(evaluateExpression("1 & Parent,Var(0) = 0", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpression("0 ^^ 1", { self })).toBe(1);
+    expect(evaluateExpression("1 ^^ 1", { self })).toBe(0);
+    expect(evaluateExpression("0.5 ^^ 0", { self })).toBe(1);
+    expect(evaluateExpression("6 ^^ 3", { self })).toBe(0);
+    const xorRandom: number[] = [];
+    evaluateExpression("Random ^^ Random", {
+      self,
+      random: () => {
+        xorRandom.push(xorRandom.length === 0 ? 0.1 : 0.2);
+        return xorRandom[xorRandom.length - 1] ?? 0;
+      },
+    });
+    expect(xorRandom).toHaveLength(2);
   });
 });
 
