@@ -37,12 +37,50 @@ describe("SffSpriteProvider", () => {
 
     await expect(provider.getSprite(10, 0, { paletteRemap: { source: [1, 1], dest: [1, 9] } })).resolves.toBe(sprite);
   });
+
+  it("remaps only sprites that use the authored source palette", async () => {
+    const matched = indexedSprite({ group: 10, index: 0, sourcePalette: [1, 1] });
+    const other = indexedSprite({ group: 20, index: 0, sourcePalette: [1, 3] });
+    const truecolor: MugenSprite = {
+      group: 30,
+      index: 0,
+      width: 2,
+      height: 2,
+      axisX: 0,
+      axisY: 0,
+      raw: { truecolor: true },
+    };
+    const dest = actPalette(1, 2, "pal2.act", [0, 0, 0, 10, 20, 30]);
+    const otherDest = actPalette(1, 4, "pal4.act", [0, 0, 0, 40, 50, 60]);
+    const provider = new SffSpriteProvider(
+      { version: "v1", warnings: [], sprites: [matched, other, truecolor] },
+      [dest, otherDest],
+    );
+    const remap = { source: [1, 1] as [number, number], dest: [1, 2] as [number, number] };
+
+    const remapped = await provider.getSprite(10, 0, { paletteRemap: remap });
+    const untouched = await provider.getSprite(20, 0, { paletteRemap: remap });
+    const skippedTruecolor = await provider.getSprite(30, 0, { paletteRemap: remap });
+
+    expect(remapped).not.toBe(matched);
+    expect(remapped?.indexed?.palette.bytes.slice(0, 6)).toEqual(new Uint8Array([0, 0, 0, 10, 20, 30]));
+    expect(untouched).toBe(other);
+    expect(skippedTruecolor).toBe(truecolor);
+
+    const recached = await provider.getSprite(10, 0, { paletteRemap: remap });
+    expect(recached).toBe(remapped);
+
+    const replaced = await provider.getSprite(10, 0, { paletteRemap: { source: [1, 1], dest: [1, 4] } });
+    expect(replaced).not.toBe(remapped);
+    expect(replaced?.indexed?.palette.bytes.slice(3, 6)).toEqual(new Uint8Array([40, 50, 60]));
+    expect(await provider.getSprite(10, 0)).toBe(matched);
+  });
 });
 
-function indexedSprite(): MugenSprite {
+function indexedSprite(options: { group?: number; index?: number; sourcePalette?: [number, number] } = {}): MugenSprite {
   return {
-    group: 10,
-    index: 0,
+    group: options.group ?? 10,
+    index: options.index ?? 0,
     width: 2,
     height: 2,
     axisX: 1,
@@ -54,6 +92,7 @@ function indexedSprite(): MugenSprite {
         stride: 3,
         transparentIndex: 0,
         key: "sff-v1:0",
+        sourcePalette: options.sourcePalette ?? [1, 1],
       },
     },
     raw: { sff: true },

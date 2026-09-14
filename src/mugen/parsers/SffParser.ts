@@ -164,6 +164,7 @@ function parseSffV1(bytes: Uint8Array): SffArchive {
               stride: 3 as const,
               transparentIndex: 0,
               key: `sff-v1:${palettes.length - 1}`,
+              sourcePalette: [1, palettes.indexOf(palette) + 1] as [number, number],
             },
           }
         : undefined;
@@ -293,6 +294,7 @@ function parseSffV2(bytes: Uint8Array): SffArchive {
 
     try {
       const decoded = decodeSffV2Sprite(record, data, palette);
+      const sourcePalette = sffV2SourcePalette(record.paletteIndex, palettes);
       const indexed =
         decoded.pixels && palette
           ? {
@@ -302,6 +304,7 @@ function parseSffV2(bytes: Uint8Array): SffArchive {
                 stride: 4 as const,
                 transparentIndex: 0,
                 key: `sff-v2:${record.paletteIndex}`,
+                ...(sourcePalette ? { sourcePalette } : {}),
               },
             }
           : undefined;
@@ -512,6 +515,17 @@ function decodeSffV2Palette(data: Uint8Array, colorCount: number): Uint8Array {
     palette[target + 3] = index === 0 ? 0 : data[source + 3] ?? 255;
   }
   return palette;
+}
+
+function sffV2SourcePalette(
+  paletteIndex: number,
+  palettes: SffV2PaletteRecord[],
+): [number, number] | undefined {
+  const record = palettes[paletteIndex];
+  if (!record) {
+    return undefined;
+  }
+  return [record.group, record.index];
 }
 
 function resolveSffV2Palette(

@@ -25,6 +25,7 @@ describe("SffParser", () => {
       stride: 3,
       transparentIndex: 0,
       key: "sff-v1:0",
+      sourcePalette: [1, 1],
     });
   });
 
@@ -106,7 +107,12 @@ describe("SffParser", () => {
     });
     expect((archive.sprites[0]?.raw as { pixels: Uint8Array }).pixels).toEqual(new Uint8Array([0, 1, 1, 2]));
     expect(archive.sprites[0]?.indexed?.pixels).toEqual(new Uint8Array([0, 1, 1, 2]));
-    expect(archive.sprites[0]?.indexed?.palette).toMatchObject({ stride: 4, transparentIndex: 0, key: "sff-v2:0" });
+    expect(archive.sprites[0]?.indexed?.palette).toMatchObject({
+      stride: 4,
+      transparentIndex: 0,
+      key: "sff-v2:0",
+      sourcePalette: [1, 1],
+    });
   });
 
   it("exposes FNT palette banks by group-zero slot with a deterministic fallback", async () => {

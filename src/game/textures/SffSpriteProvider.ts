@@ -34,6 +34,9 @@ export class SffSpriteProvider implements SpriteProvider {
     if (!remap || !sprite.indexed) {
       return sprite;
     }
+    if (!spriteUsesRemapSource(sprite, remap, this.archive.version)) {
+      return sprite;
+    }
     const palette = this.palettes.get(paletteKey(remap.dest[0], remap.dest[1]));
     if (!palette?.data) {
       return sprite;
@@ -74,6 +77,21 @@ export class SffSpriteProvider implements SpriteProvider {
     this.remappedSprites.set(cacheKey, remapped);
     return remapped;
   }
+}
+
+function spriteUsesRemapSource(
+  sprite: MugenSprite,
+  remap: NonNullable<SpriteLookupContext["paletteRemap"]>,
+  version: SffArchive["version"],
+): boolean {
+  const source = sprite.indexed?.palette.sourcePalette;
+  if (source && source[0] === remap.source[0] && source[1] === remap.source[1]) {
+    return true;
+  }
+  if (version === "v1" && remap.source[0] === 1 && remap.source[1] === 1) {
+    return (sprite.group === 0 && sprite.index === 0) || (sprite.group === 9000 && sprite.index === 0);
+  }
+  return false;
 }
 
 function spriteKey(group: number, index: number): string {

@@ -4,6 +4,8 @@ export type IndexedPaletteData = {
   colorCount?: number;
   transparentIndex?: number;
   key?: string;
+  /** SFF palette table identity matched by RemapPal source = group,index. */
+  sourcePalette?: [number, number];
 };
 
 export type IndexedSpriteData = {
