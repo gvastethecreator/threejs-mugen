@@ -84,6 +84,7 @@ export class CharacterRenderer {
       const projected = projectSprite(actor, sprite);
       mesh.material.map = this.textures.getTexture(sprite, ownerContext.ownerId ?? actor.id);
       applyPaletteFxMaterial(mesh.material, actor.runtime.paletteFx, actor.runtime.renderOpacity, allPalFx);
+      mesh.material.blending = actorRenderBlending(actor.runtime.renderBlend);
       mesh.material.needsUpdate = true;
       const priority = actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2);
       const orderBias = actor.id === "p2" ? 0.01 : 0.02;
@@ -635,6 +636,16 @@ function disposeMesh(group: THREE.Group, mesh: THREE.Mesh<THREE.BufferGeometry, 
   group.remove(mesh);
   mesh.geometry.dispose();
   mesh.material.dispose();
+}
+
+function actorRenderBlending(blend: ActorSnapshot["runtime"]["renderBlend"]): THREE.Blending {
+  if (blend === "additive") {
+    return THREE.AdditiveBlending;
+  }
+  if (blend === "subtractive") {
+    return THREE.SubtractiveBlending;
+  }
+  return THREE.NormalBlending;
 }
 
 function clamp01(value: number): number {

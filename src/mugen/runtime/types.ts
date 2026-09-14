@@ -132,6 +132,7 @@ export type CharacterRuntimeState = {
     samples: RuntimeAfterImageSample[];
   };
   renderOpacity?: number;
+  renderBlend?: "normal" | "additive" | "subtractive";
   renderScale?: { x: number; y: number };
   angle?: number;
   renderAngle?: number;

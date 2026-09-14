@@ -425,6 +425,44 @@ describe("CharacterRenderer", () => {
     renderer.dispose();
   });
 
+  it("keeps authored additive blending and transparent holes through PalFX", async () => {
+    const renderer = new CharacterRenderer(
+      new RecordingSpriteProvider(),
+      palFxTextureStore([40, 80, 120, 255, 10, 20, 30, 0]),
+    );
+    const add = {
+      remaining: 4,
+      time: 4,
+      add: [64, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    await renderer.update([actor({ paletteFx: add, renderOpacity: 0.78, renderBlend: "additive" })]);
+    const mesh = renderer.group.children.find((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    const material = mesh?.material as THREE.MeshBasicMaterial;
+    expect(material.blending).toBe(THREE.AdditiveBlending);
+    expect(material.opacity).toBe(0.78);
+    expect(sampledRgba(material.map)?.slice(0, 4)).toEqual([104, 80, 120, 255]);
+    expect(sampledRgba(material.map)?.slice(4, 8)).toEqual([74, 20, 30, 0]);
+
+    await renderer.update([actor({ paletteFx: { ...add, remaining: 0 }, renderOpacity: 0.78, renderBlend: "additive" })]);
+    expect(material.blending).toBe(THREE.AdditiveBlending);
+    expect(sampledRgba(material.map)?.slice(4, 8)).toEqual([10, 20, 30, 0]);
+
+    const other = actor({ paletteFx: add, renderOpacity: 1, renderBlend: "normal" });
+    other.id = "p2";
+    await renderer.update([
+      actor({ paletteFx: add, renderOpacity: 0.78, renderBlend: "additive" }),
+      other,
+    ]);
+    const meshes = renderer.group.children.filter((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    expect(meshes).toHaveLength(2);
+    const blends = meshes.map((item) => (item.material as THREE.MeshBasicMaterial).blending).sort();
+    expect(blends).toEqual([THREE.NormalBlending, THREE.AdditiveBlending].sort());
+    renderer.dispose();
+  });
+
   it("draws ontop Explods in the stage-foreground band above ordinary Explods", async () => {
     const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
     const ordinary = actor(

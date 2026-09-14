@@ -614,6 +614,7 @@ export function applyRuntimeTransController(
   const trans = operation?.trans ?? stripMugenString(findControllerParam(controller, "trans") ?? findControllerParam(controller, "value")) ?? "default";
   state.renderOpacity =
     operation?.opacity ?? parseTransOpacity(trans, findControllerParam(controller, "alpha"), resolveAlpha);
+  state.renderBlend = parseTransBlend(trans);
 }
 
 export function resolveRuntimeTransControllerOperation(
@@ -1151,6 +1152,17 @@ function parseAfterImageOpacity(value: string | undefined): number {
     return 0.25;
   }
   return 0.42;
+}
+
+function parseTransBlend(value: string): NonNullable<CharacterRuntimeState["renderBlend"]> {
+  const normalized = value.trim().toLowerCase();
+  if (normalized.includes("sub")) {
+    return "subtractive";
+  }
+  if (normalized.includes("add")) {
+    return "additive";
+  }
+  return "normal";
 }
 
 function parseTransOpacity(

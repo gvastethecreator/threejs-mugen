@@ -97,12 +97,35 @@ export function applyPaletteFxMaterial(
   globalPaletteFx?: RenderPaletteFx,
 ): void {
   material.opacity = renderOpacity;
-  material.blending = THREE.NormalBlending;
   material.transparent = true;
-  material.color.setRGB(1, 1, 1);
   const localOn = paletteFx && paletteFx.remaining > 0 ? paletteFx : undefined;
   const globalOn = globalPaletteFx && globalPaletteFx.remaining > 0 ? globalPaletteFx : undefined;
   bindPaletteFxMap(material, localOn, globalOn);
+  if (readTextureRgba(material.map)) {
+    delete material.userData.paletteFxAuthoredColor;
+    material.color.setRGB(1, 1, 1);
+    return;
+  }
+  const authored = (material.userData.paletteFxAuthoredColor as [number, number, number] | undefined) ?? [
+    material.color.r,
+    material.color.g,
+    material.color.b,
+  ];
+  if (!localOn && !globalOn) {
+    material.color.setRGB(authored[0], authored[1], authored[2]);
+    delete material.userData.paletteFxAuthoredColor;
+    return;
+  }
+  material.userData.paletteFxAuthoredColor = authored;
+  const [red, green, blue] = composePaletteFxRgba(
+    authored[0] * 255,
+    authored[1] * 255,
+    authored[2] * 255,
+    255,
+    localOn,
+    globalOn,
+  );
+  material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
 }
 
 const paletteFxTextureCache = new WeakMap<THREE.Texture, { key: string; texture: THREE.DataTexture }>();

@@ -392,6 +392,7 @@ describe("SpriteEffectSystem", () => {
 
     applyRuntimeTransController(state, controller("Trans", { trans: "addalpha,128,128" }));
     expect(state.renderOpacity).toBe(0.5);
+    expect(state.renderBlend).toBe("additive");
 
     applyRuntimeTransController(state, controller("Trans", { trans: "addalpha", alpha: "96,160" }));
     expect(state.renderOpacity).toBe(0.375);
@@ -404,6 +405,7 @@ describe("SpriteEffectSystem", () => {
 
     applyRuntimeTransController(state, controller("Trans", { value: "add" }));
     expect(state.renderOpacity).toBe(0.78);
+    expect(state.renderBlend).toBe("additive");
 
     applyRuntimeTransController(state, controller("Trans", { trans: "add" }), {
       kind: "sprite-effect",
@@ -412,6 +414,7 @@ describe("SpriteEffectSystem", () => {
       opacity: 0.65,
     });
     expect(state.renderOpacity).toBe(0.65);
+    expect(state.renderBlend).toBe("subtractive");
   });
 
   it("applies bounded AngleSet, AngleAdd, and AngleDraw telemetry", () => {
