@@ -287,6 +287,7 @@ export class FightScreenAnnouncementRenderer {
   private readonly textMeshes: Array<FightScreenMesh | undefined> = [];
   private readonly backgroundGroup = new THREE.Group();
   private readonly topGroup = new THREE.Group();
+  private globalPaletteFx?: RenderPaletteFx;
   private readonly backgroundMeshes: Array<FightScreenLayoutMesh | undefined> = [];
   private readonly topMeshes: Array<FightScreenLayoutMesh | undefined> = [];
   private readonly winTypeBackgroundGroup = new THREE.Group();
@@ -372,6 +373,7 @@ export class FightScreenAnnouncementRenderer {
   }
 
   async update(snapshot: MugenSnapshot, viewport: Omit<FightScreenAnnouncementViewport, "coordinateWidth" | "coordinateHeight">): Promise<void> {
+    this.globalPaletteFx = snapshot.stage.allPalFx;
     const selection = resolveFightScreenAnnouncementSelection(snapshot.round, this.display);
     const baseDiagnostics: FightScreenAnnouncementDiagnostics = {
       active: selection?.track.phase === "active",
@@ -637,7 +639,7 @@ export class FightScreenAnnouncementRenderer {
     this.mesh.visible = true;
     this.mesh.material.map = this.textures.getTexture(sprite, "fight-screen");
     const primaryPaletteFx = resolveFightScreenPaletteFx(selection.asset.paletteFx, frameTick);
-    applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx);
+    applyPaletteFxMaterial(this.mesh.material, primaryPaletteFx, 1, snapshot.stage.allPalFx);
     this.mesh.material.blending = isAdditiveBlend(animationFrame.frame.blend) ? THREE.AdditiveBlending : THREE.NormalBlending;
     applyThreePresentationOrder(this.mesh, this.mesh.material, primaryPresentationOrder);
     this.mesh.material.needsUpdate = true;
@@ -930,7 +932,7 @@ export class FightScreenAnnouncementRenderer {
       if (layout.paletteFx && !paletteFx) paletteFxExpired += 1;
       mesh.visible = true;
       mesh.material.map = this.textures.getTexture(sprite, `fight-screen-${kind}`);
-      applyPaletteFxMaterial(mesh.material, paletteFx);
+      applyPaletteFxMaterial(mesh.material, paletteFx, 1, this.globalPaletteFx);
       mesh.material.blending = blend === "additive" ? THREE.AdditiveBlending : THREE.NormalBlending;
       applyThreePresentationOrder(mesh, mesh.material, presentationOrder);
       mesh.material.needsUpdate = true;
@@ -1122,7 +1124,7 @@ export class FightScreenAnnouncementRenderer {
       textMesh.material.map = this.textures.getTexture(glyph.sprite, `fight-screen-font-${fontIndex}-${font.sourcePath}`);
       const color = asset.fontColor ?? [255, 255, 255, 255];
       const fontOpacity = Math.max(0, Math.min(1, color[3] / 255));
-      applyPaletteFxMaterial(textMesh.material, textPaletteFx, fontOpacity);
+      applyPaletteFxMaterial(textMesh.material, textPaletteFx, fontOpacity, this.globalPaletteFx);
       if (textPaletteFx) {
         textMesh.material.color.multiply(new THREE.Color(color[0] / 255, color[1] / 255, color[2] / 255));
       } else {

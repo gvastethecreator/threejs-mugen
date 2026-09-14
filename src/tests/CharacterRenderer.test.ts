@@ -6,7 +6,7 @@ import {
   resolveCharacterRenderDepth,
   shouldRenderActorReflection,
 } from "../game/render/CharacterRenderer";
-import { transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
+import { composePaletteFxRgba, transformPaletteFxRgba } from "../game/render/PaletteFxMaterial";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -352,6 +352,41 @@ describe("CharacterRenderer", () => {
     expect(material.opacity).toBe(first.opacity);
     expect(material.blending).toBe(first.blending);
     expect(material.blending).toBe(THREE.NormalBlending);
+    renderer.dispose();
+  });
+
+  it("composes actor PalFX then AllPalFX and restores local after global expiry", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const local = {
+      remaining: 8,
+      time: 8,
+      add: [-80, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const global = {
+      remaining: 3,
+      time: 3,
+      add: [0, -80, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const [composedR, composedG, composedB] = composePaletteFxRgba(255, 255, 255, 255, local, global);
+    const [localR, localG, localB] = transformPaletteFxRgba(255, 255, 255, 255, local);
+
+    await renderer.update([actor({ paletteFx: local, renderOpacity: 1 })], global);
+    const mesh = renderer.group.children.find((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    const material = mesh?.material as THREE.MeshBasicMaterial;
+    expect(material.color.r).toBeCloseTo(composedR / 255);
+    expect(material.color.g).toBeCloseTo(composedG / 255);
+    expect(material.color.b).toBeCloseTo(composedB / 255);
+
+    await renderer.update([actor({ paletteFx: local, renderOpacity: 1 })]);
+    expect(material.color.r).toBeCloseTo(localR / 255);
+    expect(material.color.g).toBeCloseTo(localG / 255);
+    expect(material.color.b).toBeCloseTo(localB / 255);
     renderer.dispose();
   });
 });

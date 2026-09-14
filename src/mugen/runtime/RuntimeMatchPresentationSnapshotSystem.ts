@@ -24,6 +24,9 @@ export type RuntimeMatchPresentationSnapshotInput<TActor extends RuntimeMatchPre
   bgPalFxWorld?: {
     snapshot(): RuntimePaletteFxState | undefined;
   };
+  allPalFxWorld?: {
+    snapshot(): RuntimePaletteFxState | undefined;
+  };
   effectLifecycleWorld: {
     snapshotGroups(actor: TActor): RuntimeEffectSnapshotGroups;
   };
@@ -40,6 +43,7 @@ export class RuntimeMatchPresentationSnapshotWorld {
   ): RuntimeMatchPresentationSnapshotResult {
     const actors = [input.p1, input.p2] as const;
     const bgPalFx = input.bgPalFxWorld?.snapshot();
+    const allPalFx = input.allPalFxWorld?.snapshot();
     return {
       stage: {
         stage: input.stage,
@@ -47,6 +51,7 @@ export class RuntimeMatchPresentationSnapshotWorld {
         cameraShake: input.envShakeWorld.snapshotCameraShake(input.tick, actors),
         envColor: input.envColorWorld.snapshotStageFlash(input.tick),
         ...(bgPalFx ? { bgPalFx } : {}),
+        ...(allPalFx ? { allPalFx } : {}),
         ...(input.backgroundTick === undefined ? {} : { backgroundTick: input.backgroundTick }),
       },
       effects: {

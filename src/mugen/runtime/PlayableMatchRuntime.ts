@@ -665,6 +665,7 @@ export class PlayableMatchRuntime {
   private readonly hitEffectWorld = new RuntimeHitEffectWorld();
   private readonly envColorWorld = new RuntimeEnvColorWorld();
   private readonly bgPalFxWorld = new RuntimeBgPalFxWorld();
+  private readonly allPalFxWorld = new RuntimeBgPalFxWorld();
   private readonly pauseWorld: RuntimePauseWorld;
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
@@ -1905,6 +1906,7 @@ export class PlayableMatchRuntime {
     this.lastPauseGlobalAssertSpecial = undefined;
     this.tick += 1;
     this.bgPalFxWorld.tick();
+    this.allPalFxWorld.tick();
     this.deferredInputControls.clear();
     const [activeP1, activeP2] = this.activePair();
     const introSkipButtonPressed = hasNewRuntimeIntroSkipButtonPress(
@@ -2221,6 +2223,7 @@ export class PlayableMatchRuntime {
                 (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
                 () => this.pauseWorld.current() !== undefined,
                 this.bgPalFxWorld,
+                this.allPalFxWorld,
               );
             },
             advanceHelper: (helper) => {
@@ -2336,6 +2339,7 @@ export class PlayableMatchRuntime {
               (target, dispatch) => this.deferRootConstraintRedirect(target, dispatch),
               () => this.pauseWorld.current() !== undefined,
               this.bgPalFxWorld,
+              this.allPalFxWorld,
             ),
           applyAutoGuardStart: (defender, attacker, checkpoint) => {
             recordPhase(`fighter:auto-guard-check:${checkpoint}`, defender.id);
@@ -2676,6 +2680,7 @@ export class PlayableMatchRuntime {
           undefined,
           () => this.pauseWorld.current() !== undefined,
           this.bgPalFxWorld,
+          this.allPalFxWorld,
         ),
     });
   }
@@ -2786,6 +2791,7 @@ export class PlayableMatchRuntime {
             undefined,
             () => this.pauseWorld.current() !== undefined,
             this.bgPalFxWorld,
+            this.allPalFxWorld,
           );
           fighter.targetWorld.advance(fighter);
           this.effectLifecycleWorld.advanceActive(fighter, this.stage, opponent, {
@@ -3713,6 +3719,7 @@ export class PlayableMatchRuntime {
       envShakeWorld: this.envShakeWorld,
       envColorWorld: this.envColorWorld,
       bgPalFxWorld: this.bgPalFxWorld,
+      allPalFxWorld: this.allPalFxWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
     });
     const teamRoundLifebar = this.runtimeProfile === "ikemen-go" && this.teamRoundMode !== "single"
@@ -4019,6 +4026,7 @@ export class PlayableMatchRuntime {
       pauseWorld: this.pauseWorld,
       envColorWorld: this.envColorWorld,
       bgPalFxWorld: this.bgPalFxWorld,
+      allPalFxWorld: this.allPalFxWorld,
       effectActorWorld: this.effectActorWorld,
       reserveActors: this.reserveRoots.map((actor) => ({
         actor,
@@ -5087,6 +5095,7 @@ function advanceFighter(
   deferRootConstraintRedirect?: RootConstraintRedirectDeferralHandler,
   isMatchPaused: () => boolean = () => false,
   bgPalFxWorld?: RuntimeBgPalFxWorld,
+  allPalFxWorld?: RuntimeBgPalFxWorld,
 ): void {
   const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
     prepareActTmp: (actor) => actTmpWorld.prepare(actor.runtime, isMatchPaused()),
@@ -5160,6 +5169,7 @@ function advanceFighter(
           runDeferredInputControl,
           deferRootConstraintRedirect,
           bgPalFxWorld,
+          allPalFxWorld,
         },
       );
     },
@@ -5312,6 +5322,7 @@ type ActiveControllerRunOptions = {
   runtimeProfile?: RuntimeCompatibilityProfile;
   roundNoDamage?: boolean;
   bgPalFxWorld?: RuntimeBgPalFxWorld;
+  allPalFxWorld?: RuntimeBgPalFxWorld;
 };
 
 function recordRootTargetLifeKoCause(
@@ -7470,6 +7481,27 @@ function runActiveStateControllers(
         runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
       }
       bgPalFxWorld.apply(controller.source, operation, resolvePaletteFx);
+    },
+    allPalFx: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
+      const allPalFxWorld = options.allPalFxWorld;
+      if (!allPalFxWorld) {
+        return;
+      }
+      const resolvePaletteFx = {
+        resolveNumber: (key: "time" | "color" | "invertall" | "invert") =>
+          resolvePaletteFxNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        resolveTriplet: (key: "add" | "mul") =>
+          resolvePaletteFxTripletParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+      };
+      const operation =
+        controller.operation?.kind === "allpalfx"
+          ? controller.operation
+          : allPalFxWorld.resolveAllOperation(controller.source, undefined, resolvePaletteFx);
+      runtimeActiveControllerTelemetryHooks.recordController(fighter, controller.source);
+      if (operation) {
+        runtimeActiveControllerTelemetryHooks.recordOperation(fighter, operation);
+      }
+      allPalFxWorld.apply(controller.source, operation, resolvePaletteFx);
     },
     envShake: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       matchEnvShakeBridgeWorld.applyController({

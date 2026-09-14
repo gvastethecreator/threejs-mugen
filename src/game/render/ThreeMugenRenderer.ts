@@ -125,7 +125,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     });
     const effects = snapshot.effects ?? [];
     const presentedRoots = resolveRootPresentationActors(snapshot);
-    await this.characters.update([...presentedRoots, ...effects]);
+    await this.characters.update([...presentedRoots, ...effects], snapshot.stage.allPalFx);
     await this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
     const collisionActors = [
       ...resolveRootCollisionActors(snapshot),

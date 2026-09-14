@@ -1186,6 +1186,17 @@ export type BgPalFxControllerOp = {
   sinaddPeriod?: number;
 };
 
+export type AllPalFxControllerOp = {
+  kind: "allpalfx";
+  time: number;
+  add: [number, number, number];
+  mul: [number, number, number];
+  color: number;
+  invert: boolean;
+  sinadd?: [number, number, number];
+  sinaddPeriod?: number;
+};
+
 export type MovementKinematicControllerOp = {
   kind: "kinematic";
   controllerType: "velset" | "veladd" | "velmul" | "hitvelset" | "posset" | "posadd";
@@ -1551,6 +1562,7 @@ export type ControllerOp =
   | EnvShakeControllerOp
   | EnvColorControllerOp
   | BgPalFxControllerOp
+  | AllPalFxControllerOp
   | KinematicControllerOp
   | BoundsControllerOp
   | CollisionControllerOp
@@ -1610,6 +1622,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "bgpalfx") {
     return compileBgPalFxControllerOp(controller);
+  }
+  if (type === "allpalfx") {
+    return compileAllPalFxControllerOp(controller);
   }
   if (type === "remappal") {
     return compileRemapPalControllerOp(controller);
@@ -2206,19 +2221,30 @@ function compilePalFxControllerOp(
 }
 
 function compileBgPalFxControllerOp(controller: MugenStateController): BgPalFxControllerOp | undefined {
+  return compileMatchPaletteFxControllerOp(controller, "bgpalfx");
+}
+
+function compileAllPalFxControllerOp(controller: MugenStateController): AllPalFxControllerOp | undefined {
+  return compileMatchPaletteFxControllerOp(controller, "allpalfx");
+}
+
+function compileMatchPaletteFxControllerOp<TKind extends "bgpalfx" | "allpalfx">(
+  controller: MugenStateController,
+  kind: TKind,
+): Extract<BgPalFxControllerOp | AllPalFxControllerOp, { kind: TKind }> | undefined {
   const palFx = compilePalFxControllerOp(controller);
   if (!palFx) {
     return undefined;
   }
   return {
-    kind: "bgpalfx",
+    kind,
     time: palFx.time,
     add: palFx.add,
     mul: palFx.mul,
     color: palFx.color,
     invert: palFx.invert,
     ...(palFx.sinadd ? { sinadd: palFx.sinadd, sinaddPeriod: palFx.sinaddPeriod } : {}),
-  };
+  } as Extract<BgPalFxControllerOp | AllPalFxControllerOp, { kind: TKind }>;
 }
 
 /** PalFX sinadd is `r, g, b[, period]`. A negative period flips RGB and uses abs(period). Period <= 1 does not oscillate. */

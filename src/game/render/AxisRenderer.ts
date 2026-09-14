@@ -78,6 +78,7 @@ export class AxisRenderer {
             stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
             createStageSprites(renderLayer, sprite, options.stage, this.textures, index, stageWidth),
             options.stage.bgPalFx,
+            options.stage.allPalFx,
           );
           return;
         }
@@ -91,6 +92,7 @@ export class AxisRenderer {
               stagePresentationBlendPolicy(renderLayer.trans, renderLayer.opacity),
               [assetLayer],
               options.stage.bgPalFx,
+              options.stage.allPalFx,
             );
           }
           return;
@@ -127,6 +129,7 @@ export class AxisRenderer {
             placement.uv,
           )],
           options.stage.bgPalFx,
+          options.stage.allPalFx,
         );
       });
     } else {
@@ -183,13 +186,14 @@ export class AxisRenderer {
     blendPolicy: "normal" | "alpha" | "additive" | "subtractive",
     meshes: THREE.Mesh[],
     paletteFx?: StageSnapshot["bgPalFx"],
+    globalPaletteFx?: StageSnapshot["allPalFx"],
   ): void {
     const presentationOrder = resolveStagePresentationOrder(layerNo, authoredOrder, { blendPolicy });
     for (const mesh of meshes) {
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       for (const material of materials) {
         if (material instanceof THREE.MeshBasicMaterial) {
-          applyStageLayerPaletteFx(material, paletteFx);
+          applyStageLayerPaletteFx(material, paletteFx, globalPaletteFx);
         }
         applyThreePresentationOrder(mesh, material, presentationOrder);
       }

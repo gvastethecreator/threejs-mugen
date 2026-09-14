@@ -10745,6 +10745,37 @@ value = 1
     expect(cleared.actors[0]?.runtime.paletteFx).toBeUndefined();
   });
 
+  it("keeps actor PalFX while AllPalFX is stored on the stage and restores local after expiry", () => {
+    const imported = createImportedFixture({ withStateMove: false, withAllPalFx: true });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    const applied = runtime.step({ p1: new Set(["x"]) });
+    expect(applied.actors[0]?.runtime.paletteFx).toMatchObject({
+      remaining: 20,
+      time: 20,
+      add: [80, 0, 0],
+    });
+    expect(applied.stage.allPalFx).toMatchObject({
+      remaining: 4,
+      time: 4,
+      add: [0, 80, 0],
+    });
+    expect(applied.compatibilitySession?.actors[0]?.executedControllers.AllPalFX).toBe(1);
+    expect(applied.compatibilitySession?.actors[0]?.executedOperations.allpalfx).toBe(1);
+
+    let current = applied;
+    for (let i = 0; i < 4; i += 1) {
+      current = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(current.stage.allPalFx).toBeUndefined();
+    expect(current.actors[0]?.runtime.paletteFx).toMatchObject({ add: [80, 0, 0] });
+    expect(current.actors[0]?.runtime.paletteFx?.remaining).toBeGreaterThan(0);
+
+    runtime.reset();
+    expect(runtime.getSnapshot().stage.allPalFx).toBeUndefined();
+    expect(runtime.getSnapshot().actors[0]?.runtime.paletteFx).toBeUndefined();
+  });
+
   it("executes imported Turn, PlayerPush, LifeSet, and PowerSet controllers", () => {
     const imported = createImportedFixture({ withStateMove: false, withRuntimeFlags: true });
     const closeStage = {
@@ -13946,6 +13977,7 @@ function createImportedFixture(
     withSideEffects?: boolean;
     withBgPalFx?: boolean;
     withBgPalFxClear?: boolean;
+    withAllPalFx?: boolean;
     passiveRemoveOnGetHitExplod?: boolean;
     withRuntimeFlags?: boolean;
     withPosFreeze?: boolean;
@@ -14442,6 +14474,25 @@ add = 80,0,0
 type = BGPalFX
 trigger1 = Time = 1
 time = 0
+`
+    : "";
+  const allPalFx = options.withAllPalFx
+    ? `
+[State 200, Local Palette]
+type = PalFX
+trigger1 = Time = 0
+time = 20
+add = 80,0,0
+mul = 256,256,256
+color = 256
+
+[State 200, Global Palette]
+type = AllPalFX
+trigger1 = Time = 0
+time = 4
+add = 0,80,0
+mul = 256,256,256
+color = 256
 `
     : "";
   const runtimeFlags = options.withRuntimeFlags
@@ -15106,6 +15157,7 @@ ${paletteUtilities}
 ${sideEffects}
 ${bgPalFx}
 ${bgPalFxClear}
+${allPalFx}
 ${runtimeFlags}
 ${posFreeze}
 ${screenBound}

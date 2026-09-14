@@ -1,4 +1,4 @@
-import type { BgPalFxControllerOp, SpriteEffectControllerOp } from "../compiler/ControllerOps";
+import type { AllPalFxControllerOp, BgPalFxControllerOp, SpriteEffectControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
 import {
   applyRuntimePaletteFxController,
@@ -19,7 +19,7 @@ export class RuntimeBgPalFxWorld {
 
   apply(
     controller: MugenStateController,
-    operation?: BgPalFxControllerOp,
+    operation?: BgPalFxControllerOp | AllPalFxControllerOp,
     resolvePaletteFx?: RuntimePaletteFxResolver,
   ): RuntimePaletteFxState | undefined {
     applyRuntimePaletteFxController(this.holder, controller, toPalFxControllerOp(operation), resolvePaletteFx);
@@ -35,6 +35,17 @@ export class RuntimeBgPalFxWorld {
       return operation;
     }
     return toBgPalFxControllerOp(resolveRuntimePaletteFxControllerOperation(controller, resolvePaletteFx));
+  }
+
+  resolveAllOperation(
+    controller: MugenStateController,
+    operation?: AllPalFxControllerOp,
+    resolvePaletteFx?: RuntimePaletteFxResolver,
+  ): AllPalFxControllerOp | undefined {
+    if (operation) {
+      return operation;
+    }
+    return toAllPalFxControllerOp(resolveRuntimePaletteFxControllerOperation(controller, resolvePaletteFx));
   }
 
   tick(): void {
@@ -54,7 +65,9 @@ export class RuntimeBgPalFxWorld {
   }
 }
 
-function toPalFxControllerOp(operation: BgPalFxControllerOp | undefined): PalFxControllerOp | undefined {
+function toPalFxControllerOp(
+  operation: BgPalFxControllerOp | AllPalFxControllerOp | undefined,
+): PalFxControllerOp | undefined {
   if (!operation) {
     return undefined;
   }
@@ -71,18 +84,29 @@ function toPalFxControllerOp(operation: BgPalFxControllerOp | undefined): PalFxC
 }
 
 export function toBgPalFxControllerOp(operation: PalFxControllerOp | undefined): BgPalFxControllerOp | undefined {
+  return toMatchPaletteFxControllerOp(operation, "bgpalfx");
+}
+
+export function toAllPalFxControllerOp(operation: PalFxControllerOp | undefined): AllPalFxControllerOp | undefined {
+  return toMatchPaletteFxControllerOp(operation, "allpalfx");
+}
+
+function toMatchPaletteFxControllerOp<TKind extends "bgpalfx" | "allpalfx">(
+  operation: PalFxControllerOp | undefined,
+  kind: TKind,
+): Extract<BgPalFxControllerOp | AllPalFxControllerOp, { kind: TKind }> | undefined {
   if (!operation) {
     return undefined;
   }
   return {
-    kind: "bgpalfx",
+    kind,
     time: operation.time,
     add: operation.add,
     mul: operation.mul,
     color: operation.color,
     invert: operation.invert,
     ...(operation.sinadd ? { sinadd: operation.sinadd, sinaddPeriod: operation.sinaddPeriod } : {}),
-  };
+  } as Extract<BgPalFxControllerOp | AllPalFxControllerOp, { kind: TKind }>;
 }
 
 function clonePaletteFxState(paletteFx: RuntimePaletteFxState): RuntimePaletteFxState {

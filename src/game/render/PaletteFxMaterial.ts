@@ -44,20 +44,43 @@ export function transformPaletteFxRgba(
   return [r, g, b, a];
 }
 
+/** Local PalFX then AllPalFX. Sequential ticket-35 RGBA, not indexed LUT synthesize. */
+export function composePaletteFxRgba(
+  red: number,
+  green: number,
+  blue: number,
+  alpha: number,
+  local: RenderPaletteFx | undefined,
+  global?: RenderPaletteFx,
+): [number, number, number, number] {
+  let color: [number, number, number, number] = [red, green, blue, alpha];
+  if (local && local.remaining > 0) {
+    color = transformPaletteFxRgba(color[0], color[1], color[2], color[3], local);
+  }
+  if (global && global.remaining > 0) {
+    color = transformPaletteFxRgba(color[0], color[1], color[2], color[3], global);
+  }
+  return color;
+}
+
 /** Tint a stage-layer material with PalFX without changing blend or opacity. */
 export function applyStageLayerPaletteFx(
   material: THREE.MeshBasicMaterial,
   paletteFx: RenderPaletteFx | undefined,
+  globalPaletteFx?: RenderPaletteFx,
 ): void {
-  if (!paletteFx || paletteFx.remaining <= 0) {
+  const localOn = paletteFx && paletteFx.remaining > 0 ? paletteFx : undefined;
+  const globalOn = globalPaletteFx && globalPaletteFx.remaining > 0 ? globalPaletteFx : undefined;
+  if (!localOn && !globalOn) {
     return;
   }
-  const [red, green, blue] = transformPaletteFxRgba(
+  const [red, green, blue] = composePaletteFxRgba(
     material.color.r * 255,
     material.color.g * 255,
     material.color.b * 255,
     255,
-    paletteFx,
+    localOn,
+    globalOn,
   );
   material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
 }
@@ -66,16 +89,19 @@ export function applyPaletteFxMaterial(
   material: THREE.MeshBasicMaterial,
   paletteFx: RenderPaletteFx | undefined,
   renderOpacity = 1,
+  globalPaletteFx?: RenderPaletteFx,
 ): void {
   material.opacity = renderOpacity;
   material.blending = THREE.NormalBlending;
   material.transparent = true;
-  if (!paletteFx || paletteFx.remaining <= 0) {
+  const localOn = paletteFx && paletteFx.remaining > 0 ? paletteFx : undefined;
+  const globalOn = globalPaletteFx && globalPaletteFx.remaining > 0 ? globalPaletteFx : undefined;
+  if (!localOn && !globalOn) {
     material.color.setRGB(1, 1, 1);
     return;
   }
 
-  const [red, green, blue] = transformPaletteFxRgba(255, 255, 255, 255, paletteFx);
+  const [red, green, blue] = composePaletteFxRgba(255, 255, 255, 255, localOn, globalOn);
   material.color.setRGB(clamp01(red / 255), clamp01(green / 255), clamp01(blue / 255));
 }
 

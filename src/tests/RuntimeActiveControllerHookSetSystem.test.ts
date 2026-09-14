@@ -39,6 +39,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       sound: () => calls.push("sound"),
       envColor: () => calls.push("envcolor"),
       bgPalFx: () => calls.push("bgpalfx"),
+      allPalFx: () => calls.push("allpalfx"),
       envShake: () => calls.push("envshake"),
       contact: () => calls.push("contact"),
       runtimeController: () => calls.push("runtime-controller"),
@@ -69,6 +70,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     expect(hookSet.sideEffectHooks.sound).toBe(input.sound);
     expect(hookSet.sideEffectHooks.envColor).toBe(input.envColor);
     expect(hookSet.sideEffectHooks.bgPalFx).toBe(input.bgPalFx);
+    expect(hookSet.sideEffectHooks.allPalFx).toBe(input.allPalFx);
     expect(hookSet.sideEffectHooks.envShake).toBe(input.envShake);
     expect(hookSet.sideEffectHooks.contact).toBe(input.contact);
     expect(hookSet.hooks.runtimeController).toBe(input.runtimeController);
@@ -99,6 +101,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
     hookSet.sideEffectHooks.sound?.(undefined as never);
     hookSet.sideEffectHooks.envColor?.(undefined as never);
     hookSet.sideEffectHooks.bgPalFx?.(undefined as never);
+    hookSet.sideEffectHooks.allPalFx?.(undefined as never);
     hookSet.sideEffectHooks.envShake?.(undefined as never);
     hookSet.sideEffectHooks.contact?.(undefined as never);
     hookSet.hooks.runtimeController?.(undefined as never);
@@ -127,6 +130,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       "sound",
       "envcolor",
       "bgpalfx",
+      "allpalfx",
       "envshake",
       "contact",
       "runtime-controller",
@@ -158,6 +162,7 @@ describe("RuntimeActiveControllerHookSetWorld", () => {
       sound: () => undefined,
       envColor: () => undefined,
       bgPalFx: () => undefined,
+      allPalFx: () => undefined,
       envShake: () => undefined,
       contact: () => undefined,
       runtimeController: () => undefined,

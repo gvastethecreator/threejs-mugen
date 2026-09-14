@@ -26,7 +26,7 @@ export class CharacterRenderer {
     private readonly textures: TextureStore,
   ) {}
 
-  async update(actors: ActorSnapshot[]): Promise<void> {
+  async update(actors: ActorSnapshot[], allPalFx?: ActorSnapshot["runtime"]["paletteFx"]): Promise<void> {
     const activeIds = new Set(actors.map((actor) => actor.id));
     for (const [id, mesh] of this.meshes) {
       if (!activeIds.has(id)) {
@@ -83,7 +83,7 @@ export class CharacterRenderer {
 
       const projected = projectSprite(actor, sprite);
       mesh.material.map = this.textures.getTexture(sprite, ownerContext.ownerId ?? actor.id);
-      applyPaletteFxMaterial(mesh.material, actor.runtime.paletteFx, actor.runtime.renderOpacity);
+      applyPaletteFxMaterial(mesh.material, actor.runtime.paletteFx, actor.runtime.renderOpacity, allPalFx);
       mesh.material.needsUpdate = true;
       const priority = actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2);
       const orderBias = actor.id === "p2" ? 0.01 : 0.02;

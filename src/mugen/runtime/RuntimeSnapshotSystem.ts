@@ -66,6 +66,7 @@ export type RuntimeStageSnapshotInput = {
   cameraShake?: StageSnapshot["camera"]["shake"];
   envColor?: RuntimeStageFlash;
   bgPalFx?: RuntimePaletteFxState;
+  allPalFx?: RuntimePaletteFxState;
   backgroundTick?: number;
 };
 
@@ -148,6 +149,7 @@ export class RuntimeSnapshotWorld {
       },
       ...(input.envColor ? { envColor: input.envColor } : {}),
       ...(input.bgPalFx ? { bgPalFx: input.bgPalFx } : {}),
+      ...(input.allPalFx ? { allPalFx: input.allPalFx } : {}),
       layers: input.stage.layers,
       animations: input.stage.animations,
       bgControllers: input.stage.bgControllers,
