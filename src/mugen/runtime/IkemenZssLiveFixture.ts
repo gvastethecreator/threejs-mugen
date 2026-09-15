@@ -69,6 +69,12 @@ export function createIkemenZssMalformedGrantedFixtureVfs(): VirtualFileSystem {
   return vfs;
 }
 
+export function createIkemenZssMalformedExpressionFixtureVfs(): VirtualFileSystem {
+  const vfs = createIkemenZssLiveFixtureVfs("direct");
+  vfs.addFile("chars/mugen-lite-journey/live.zss", text(MALFORMED_EXPRESSION_ZSS));
+  return vfs;
+}
+
 export function createMugenProfileZssFixtureVfs(mode: IkemenZssFixtureMode = "direct"): VirtualFileSystem {
   const vfs = createIkemenZssLiveFixtureVfs(mode);
   const root = "chars/mugen-lite-journey";
@@ -314,6 +320,11 @@ posAdd{x: 999; y: 0;}
 const MALFORMED_GRANTED_ZSS = `[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
 changeAnim{value: 200;}
 projectile{projanim: 200; velocity: ;}
+`;
+
+const MALFORMED_EXPRESSION_ZSS = `[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
+changeAnim{value: 200;}
+projectile{projanim: 200; velocity: 12, 0; forcestand: Sin();}
 `;
 
 const HITPAUSE_CNS = `[Statedef 200]

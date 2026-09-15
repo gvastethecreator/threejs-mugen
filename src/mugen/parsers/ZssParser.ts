@@ -5,6 +5,7 @@ import {
   type MugenStateSpecial,
   type MugenTrigger,
 } from "../model/MugenState";
+import { compileExpression } from "../compiler/ExpressionCompiler";
 import { applyMugenStateDefParam } from "./CnsParser";
 import { createDiagnostic } from "./text";
 
@@ -118,6 +119,7 @@ class ZssParser {
       this.skipTrivia();
     }
 
+    this.rejectInvalidAdmittedExpressions();
     const status = this.failed ? "blocked" : "compiled";
     return {
       states: status === "compiled" ? this.states : [],
@@ -544,6 +546,33 @@ class ZssParser {
       }
     }
     return lower + 1;
+  }
+
+  private rejectInvalidAdmittedExpressions(): void {
+    if (this.failed) {
+      return;
+    }
+    for (const controller of this.controllers) {
+      const expressions = [
+        ...controller.triggers.map((trigger) => trigger.expression),
+        ...Object.values(controller.params),
+      ];
+      for (const expression of expressions) {
+        if (!expression) {
+          continue;
+        }
+        const compiled = compileExpression(expression);
+        if (!compiled.unsupportedFeatures.some((feature) => feature.endsWith("(arity)"))) {
+          continue;
+        }
+        this.fail(
+          "Admitted ZSS expression is invalid; the source contributes no states",
+          this.lineStarts[Math.max(0, (controller.line ?? 1) - 1)] ?? 0,
+          this.position,
+        );
+        return;
+      }
+    }
   }
 
   private fail(message: string, start: number, end: number): void {

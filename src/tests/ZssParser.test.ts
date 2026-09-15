@@ -106,4 +106,24 @@ projectile{projanim: 200; velocity: ;}
       }),
     ]);
   });
+
+  it("fails the whole source when an admitted Projectile expression has the wrong arity after ChangeAnim", () => {
+    const parsed = parseZss(`
+[StateDef 0; type: S; physics: S; anim: 0; ctrl: 1;]
+changeAnim{value: 200;}
+projectile{projanim: 200; velocity: 12, 0; forcestand: Sin();}
+`, "chars/zss/blocked-arity.zss");
+
+    expect(parsed.zss.status).toBe("blocked");
+    expect(parsed.states).toEqual([]);
+    expect(parsed.controllers).toEqual([]);
+    expect(parsed.diagnostics).toEqual([
+      expect.objectContaining({
+        severity: "error",
+        format: "zss",
+        file: "chars/zss/blocked-arity.zss",
+        message: "Admitted ZSS expression is invalid; the source contributes no states",
+      }),
+    ]);
+  });
 });
