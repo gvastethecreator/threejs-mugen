@@ -14713,7 +14713,7 @@ anim = 5120
 ctrl = 1
 `).states;
   defender.states = [
-    ...defender.states.filter((state) => ![5050, 5100, 5101, 5110, 5120].includes(state.id)),
+    ...(defender.states ?? []).filter((state) => ![5050, 5100, 5101, 5110, 5120].includes(state.id)),
     ...impactStates,
   ];
   return defender;
@@ -14756,7 +14756,7 @@ anim = 5210
 ctrl = 0
 `).states;
   defender.states = [
-    ...defender.states.filter((state) => state.id !== 5050 && state.id !== 5210),
+    ...(defender.states ?? []).filter((state) => state.id !== 5050 && state.id !== 5210),
     ...recoveryStates,
   ];
   return defender;

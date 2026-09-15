@@ -311,7 +311,7 @@ function describeBackgroundLayer(
     ...(layer.parallaxWidth ? { parallaxWidth: layer.parallaxWidth } : {}),
     ...(layer.parallaxXScale ? { parallaxXScale: layer.parallaxXScale } : {}),
     projected: false,
-    renderObserved: false,
+    renderObserved: false as const,
     targetedByUnsupportedControllers,
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),

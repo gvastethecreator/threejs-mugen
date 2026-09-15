@@ -23,7 +23,7 @@ const frameWorld = new RuntimeFrameWorld();
 export type RuntimeSnapshotActor = {
   runtime: {
     pos: CharacterRuntimeState["pos"];
-    screenBound?: Pick<NonNullable<CharacterRuntimeState["screenBound"]>, "moveCameraX">;
+    screenBound?: Partial<Pick<NonNullable<CharacterRuntimeState["screenBound"]>, "moveCameraX" | "moveCameraY">>;
   };
 };
 

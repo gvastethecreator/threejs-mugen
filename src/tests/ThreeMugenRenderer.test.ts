@@ -888,8 +888,29 @@ function captureCompositionTick(renderer: AxisRenderer, stage: MugenStageDefinit
 function compositionFighter(): ActorSnapshot {
   return {
     id: "p1",
-    runtime: { pos: { x: -40, y: 0 }, facing: 1 },
+    label: "P1",
+    actorKind: "player",
+    ownerId: "p1",
+    rootId: "p1",
+    parentId: "p1",
+    runtime: {
+      pos: { x: -40, y: 0 },
+      vel: { x: 0, y: 0 },
+      facing: 1,
+      stateNo: 0,
+      animNo: 0,
+      animTime: 0,
+      frameIndex: 0,
+      life: 1000,
+      power: 0,
+      ctrl: true,
+      stateType: "S",
+      moveType: "I",
+      physics: "S",
+      vars: [],
+      fvars: [],
+    },
     clsn1: [],
     clsn2: [{ x1: -10, y1: 0, x2: 10, y2: 60 }],
-  } as ActorSnapshot;
+  };
 }

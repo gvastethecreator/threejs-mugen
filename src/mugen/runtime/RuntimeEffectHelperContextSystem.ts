@@ -57,6 +57,7 @@ export type RuntimeEffectHelperContextOptions = Pick<
   | "onModifyProjectile"
   | "enterRedirectedTargetState"
   | "onStateTransitionCycle"
+  | "ownerAnimations"
 > & {
   opponents?: readonly RuntimeEffectHelperContextOpponent[];
 };
@@ -70,6 +71,7 @@ export type RuntimeEffectHelperContext = {
   commandInput?: RuntimeHelperAdvanceOptions["commandInput"];
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
+  ownerAnimations?: RuntimeHelperAdvanceOptions["ownerAnimations"];
   opponentId?: string;
   opponentState?: CharacterRuntimeState;
   opponentRoster?: RuntimeHelperAdvanceOptions["opponentRoster"];

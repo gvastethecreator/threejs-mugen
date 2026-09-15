@@ -580,11 +580,11 @@ ${extraLayers}
       winner: live.round?.winner,
     },
     tick: live.tick,
-    layerCount: live.stage.layers.length,
+    layerCount: live.stage.layers?.length ?? 0,
     resetEffects: (reset.effects ?? []).length,
     resetHelpers: effectActorWorld.helpers("p1").length,
     resetExplods: effectActorWorld.countExplods("p1"),
     resetProjectiles: effectActorWorld.projectiles("p1").length,
-    resetLayers: reset.stage.layers.length,
+    resetLayers: reset.stage.layers?.length ?? 0,
   };
 }

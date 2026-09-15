@@ -19,7 +19,7 @@ import type { ExpressionContext, ExpressionGameSpace } from "./ExpressionEvaluat
 import { CommandBuffer } from "./CommandBuffer";
 import { matchesMugenStateIdentity, type MugenStateController, type MugenStateDef, type MugenStateSpecial } from "../model/MugenState";
 import { compileExpression } from "../compiler/ExpressionCompiler";
-import { evaluateExpression } from "./ExpressionEvaluator";
+import { evaluateExpression, evaluateExpressionNumeric } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent, type RuntimeResolvedSoundValue } from "./AudioEventSystem";
 import {
   advanceRuntimeContactTimers,
@@ -723,6 +723,7 @@ export function runRuntimeHelperStateControllers(
     | "parentState"
     | "rootState"
     | "helpers"
+    | "ownerAnimations"
     | "opponentState"
     | "opponentStates"
     | "opponentRoster"
@@ -3549,8 +3550,11 @@ function resolveHelperNumber(
   if (!expression) {
     return undefined;
   }
-  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, options)));
-  return Number.isFinite(result) ? Math.trunc(result) : undefined;
+  const result = evaluateExpressionNumeric(expression, helperExpressionContext(helper, options));
+  if (result.kind === "invalid") {
+    return undefined;
+  }
+  return Number.isFinite(result.value) ? Math.trunc(result.value) : undefined;
 }
 
 export function resolveRuntimeHelperIntegerExpression(
@@ -3570,8 +3574,11 @@ function resolveHelperFloat(
   options: Parameters<typeof resolveHelperNumber>[3],
 ): number | undefined {
   if (!expression) return undefined;
-  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, options)));
-  return Number.isFinite(result) ? result : undefined;
+  const result = evaluateExpressionNumeric(expression, helperExpressionContext(helper, options));
+  if (result.kind === "invalid") {
+    return undefined;
+  }
+  return Number.isFinite(result.value) ? result.value : undefined;
 }
 
 function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?: number): void {
@@ -3746,9 +3753,8 @@ function applyHelperParentVariableController(
     let refused = false;
     const evaluated = evaluateExpression(raw, {
       ...context,
-      reportUnsupported: (reason) => {
+      reportUnsupported: () => {
         refused = true;
-        context.reportUnsupported?.(reason);
       },
     });
     if (refused) {

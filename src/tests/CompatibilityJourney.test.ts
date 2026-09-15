@@ -178,8 +178,8 @@ describe("CompatibilityJourney/v1", () => {
     });
 
     expect(result.status).toBe("passed");
-    expect(result.package.packageDigest).toBe("sha256:b8e917e9b968f86765db017388823e897779d46041b3738a47c702ce57adfc50");
-    expect(result.checksum).toBe("4d8c59fc");
+    expect(result.package.packageDigest).toBe("sha256:12f8ad69efa5f6338d166a30d59d307c6d3ebc535d31ff821ead54aa6b50f1f1");
+    expect(result.checksum).toBe("4a1a2e0b");
     expect(result.runtime.artifacts.map((artifact) => artifact.checksum)).toEqual(["4cbfb57d", "09e0e8d5", "1291909d"]);
     expect(result.loader.compatibility.unsupported.some((item) => item.feature === "JourneyUnknownController")).toBe(true);
     expect(JSON.stringify(result)).toContain("sha256:");

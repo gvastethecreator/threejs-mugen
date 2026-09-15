@@ -601,7 +601,6 @@ export type ProjectileControllerOp = {
   /** Up to eight HitDef IDs that block repeat contact from the same source player. */
   noChainIds?: number[];
   hitDefHitCount?: number;
-  p1StateNo?: number;
   affectTeam?: MugenAffectTeam;
   teamSide?: 1 | 2;
   projAnim?: number;

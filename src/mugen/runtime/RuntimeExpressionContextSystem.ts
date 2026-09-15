@@ -484,7 +484,7 @@ export class RuntimeExpressionContextWorld {
 
 }
 
-function resolveActorRoundDecision<TActor>(
+function resolveActorRoundDecision<TActor extends RuntimeExpressionContextActor>(
   roundDecision: RuntimeExpressionContextInput<TActor>["roundDecision"] | undefined,
   actor: TActor,
   inheritStatic = false,

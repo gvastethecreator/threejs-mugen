@@ -505,7 +505,8 @@ describe("CharacterRenderer", () => {
     );
     expect(named["explod-ontop"]?.position.z).toBe(0);
     expect(named["p1"]?.position.z).toBeGreaterThan(named["explod-ontop"]?.position.z ?? -1);
-    expect(named["explod-ontop"]?.material.depthTest).toBe(false);
+    const explodMaterial = named["explod-ontop"]?.material;
+    expect(Array.isArray(explodMaterial) ? explodMaterial[0]?.depthTest : explodMaterial?.depthTest).toBe(false);
 
     await renderer.update([fighter]);
     const remaining = renderer.group.children.filter((child): child is THREE.Mesh => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);

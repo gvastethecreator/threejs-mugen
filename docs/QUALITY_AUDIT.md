@@ -1,8 +1,29 @@
 # Quality audit
 
-Latest verification: 2026-09-07
+Latest verification: 2026-09-15
 
 ## Current verification
+
+The tune-up repaired the typecheck gate that failed on `master` in the last
+three CI runs (2026-08-27, 2026-09-09, 2026-09-15). The default suite also had
+two failing tests. Local gates for this cut: `pnpm typecheck` (exit 0),
+`pnpm check` (typecheck plus CSS budgets, exit 0), `pnpm test` (4,237 tests in
+329 files, 92.68 seconds, exit 0), `pnpm audit --audit-level=high` (no known
+vulnerabilities), and `pnpm build` (exit 0, existing chunk-size warning).
+`pnpm qa:trace` passed all 890 trace artifacts with 0 failures (exit 0).
+`pnpm qa:smoke` failed the same 15 entries on this cut and on a pristine
+`master` tree: 12 mugen-lite visual assertions, 2 studio-build package
+assertions, and the Canvas2D `getImageData` console warning. Those failures are
+pre-existing and are not attributed to this cut; the DA32 smoke lane remains
+open. Remote CI status was not rerun in this batch.
+
+Behavior-affecting fixes in this cut: Helper float and integer expression
+resolution treats invalid or non-finite results as unresolved instead of `0`,
+so fresh Helper Projectile fall-impact components fail closed; the legal journey
+package digest and checksum goldens were refreshed after the lite fixture
+palette-seed change. The remaining changes are type-only corrections, test
+fixture updates, and removal of duplicated or failed QA artifacts. No
+compatibility claim changed.
 
 DA29 measured-evidence publication now writes a unique sibling temporary file
 and replaces the final document only after the write completes. A deterministic

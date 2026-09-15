@@ -122,6 +122,7 @@ function helperState(stateNo: number | undefined): RuntimeHelper {
     action: { id: 0, frames: [], rawLines: [] },
     stateNo,
     animNo: 0,
+    animTime: 0,
     moveTick: 0,
     hasHit: false,
     firedHitDefs: new Set(),

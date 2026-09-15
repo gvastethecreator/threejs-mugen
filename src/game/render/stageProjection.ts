@@ -565,9 +565,7 @@ function clipTrapezoidPlacement(placement: StageSpritePlacement, clip: StageLaye
   const origBottom = placement.y - placement.height / 2;
   const origTop = placement.y + placement.height / 2;
   const origTopLeft = placement.x + topOffset - topWidth / 2;
-  const origTopRight = placement.x + topOffset + topWidth / 2;
   const origBottomLeft = placement.x + bottomOffset - bottomWidth / 2;
-  const origBottomRight = placement.x + bottomOffset + bottomWidth / 2;
   const clippedBottom = Math.max(origBottom, clip.bottom);
   const clippedTop = Math.min(origTop, clip.top);
   if (clippedTop <= clippedBottom || placement.height <= 0) {

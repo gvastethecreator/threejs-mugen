@@ -1,15 +1,15 @@
 # Code map: mugen-web-sandbox
 
-Generated: 2026-09-14T02:06:12Z | Commit: `933d52298964` | Schema: 2
-Generation: `f10e7efefbf7f92058702b2eaab6e9a89298ca6bf31ca3bef78b84f2f7a1c1ea`
+Generated: 2026-09-15T04:58:07Z | Commit: `aeb84379e7d3` | Schema: 2
+Generation: `a4bae72ba8ca60cd8315c44cf5c548c5cf9b0212a5713e0134547a8a314554c6`
 Scope: . | Inventory: working-tree
-Nodes: 944 | Edges: 5258 | Flows: 2
+Nodes: 947 | Edges: 5365 | Flows: 2
 
 ## Coverage
 
-- Analysis: **partial**; 904 analyzed of 909 included files.
+- Analysis: **partial**; 907 analyzed of 912 included files.
 - Configuration files: 1; omitted untracked files: 0.
-- Unresolved references and analysis limits: 6328.
+- Unresolved references and analysis limits: 6447.
 - Static references and call paths do not prove runtime execution or test coverage.
 
 ## Modules
@@ -23,18 +23,18 @@ Nodes: 944 | Edges: 5258 | Flows: 2
 - `external:javascript:node:buffer` | external | External | callers: scripts/qa_traces.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:child_process` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/close_da29_batch.cjs | callees: none | tests: 2 | entry: none
 - `external:javascript:node:crypto` | external | External | callers: scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_001_hold_references.cjs, scripts/audit_da30_005_control_references.cjs, scripts/audit_da30_005_control_references.cjs | callees: none | tests: 16 | entry: none
-- `external:javascript:node:fs` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 33 | entry: none
+- `external:javascript:node:fs` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 31 | entry: none
 - `external:javascript:node:http` | external | External | callers: scripts/qa_browser_gate_da32_023_source_write_intent.cjs, scripts/qa_browser_gate_da32_024_source_intent_write_recovery.cjs, scripts/qa_browser_gate_da32_025_source_write_phase_recovery.cjs, scripts/qa_browser_gate_da32_026_source_write_receipt_recovery.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:module` | external | External | callers: src/tests/ControlAuthorityAudit.test.ts, src/tests/ControlAuthorityAudit.test.ts | callees: none | tests: 1 | entry: none
 - `external:javascript:node:net` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_da29_003.cjs, scripts/qa_browser_gate_da29_003.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:node:os` | external | External | callers: src/tests/FightScreenFixture.test.ts, src/tests/FightScreenFixture.test.ts, src/tests/MaterializeControlProjections.test.ts, src/tests/MaterializeControlProjections.test.ts | callees: none | tests: 2 | entry: none
-- `external:javascript:node:path` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 32 | entry: none
+- `external:javascript:node:path` | external | External | callers: scripts/audit_authority_references.cjs, scripts/audit_authority_references.cjs, scripts/audit_css_duplication.cjs, scripts/audit_css_duplication.cjs | callees: none | tests: 33 | entry: none
 - `external:javascript:node:url` | external | External | callers: scripts/materialize_sandbox_fightscreen.cjs, scripts/materialize_sandbox_fightscreen.cjs, scripts/qa_traces.cjs, scripts/qa_traces.cjs | callees: none | tests: 1 | entry: none
 - `external:javascript:path` | external | External | callers: scripts/qa_asset_path_hygiene.cjs, scripts/qa_asset_path_hygiene.cjs, scripts/qa_repository_stage_compatibility.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
 - `external:javascript:playwright` | external | External | callers: scripts/qa_browser_gate_da26_13.cjs, scripts/qa_browser_gate_da27_07_turns.cjs, scripts/qa_browser_gate_da27_09_fightscreen.cjs, scripts/qa_browser_gate_da28_09_turns.cjs | callees: none | tests: 0 | entry: none
-- `external:javascript:three` | external | External | callers: src/game/render/AxisRenderer.ts, src/game/render/CharacterRenderer.ts, src/game/render/CollisionBoxRenderer.ts, src/game/render/FightScreenAnnouncementRenderer.ts | callees: none | tests: 4 | entry: none
+- `external:javascript:three` | external | External | callers: src/game/render/AxisRenderer.ts, src/game/render/CharacterRenderer.ts, src/game/render/CollisionBoxRenderer.ts, src/game/render/FightScreenAnnouncementRenderer.ts | callees: none | tests: 6 | entry: none
 - `external:javascript:vite` | external | External | callers: scripts/qa_browser_gate_da28_09_turns.cjs, scripts/qa_browser_gate_fighter_lab.cjs, scripts/qa_content_pack_stages.cjs, scripts/qa_repository_stage_compatibility.cjs | callees: none | tests: 0 | entry: none
-- Showing 20 of 944 nodes. Query `impact --module <path>` or open the HTML hierarchy for the rest.
+- Showing 20 of 947 nodes. Query `impact --module <path>` or open the HTML hierarchy for the rest.
 
 ## Edges
 
@@ -88,7 +88,7 @@ Nodes: 944 | Edges: 5258 | Flows: 2
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:crypto` | imports
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | calls
 - `scripts/build_da29_verdict_ledger.cjs` -> `external:javascript:node:fs` | imports
-- Showing 50 of 5258 edges; JSON contains every edge and its evidence.
+- Showing 50 of 5365 edges; JSON contains every edge and its evidence.
 
 ## Unknown
 
@@ -112,7 +112,7 @@ Nodes: 944 | Edges: 5258 | Flows: 2
 
 ## Architecture changes
 
-- Nodes: +0 / -0; edges: +0 / -0.
+- Nodes: +3 / -0; edges: +116 / -9.
 - Boundary changes: 0; new cycles: 0.
 
 ## Read next

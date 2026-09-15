@@ -71,7 +71,7 @@ export class RuntimeActiveExpressionContextWorld {
   }
 }
 
-function resolveActiveTeamMode<TActor>(
+function resolveActiveTeamMode<TActor extends RuntimeExpressionContextActor>(
   teamMode: RuntimeActiveExpressionContextFactoryInput<TActor>["teamMode"],
   actor: TActor,
 ): string | undefined {

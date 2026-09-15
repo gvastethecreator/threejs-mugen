@@ -210,7 +210,7 @@ export function readTextureRgba(texture: THREE.Texture | null | undefined): {
     const pixels = context.getImageData(0, 0, image.width, image.height);
     return { data: pixels.data, width: pixels.width, height: pixels.height };
   }
-  if (image.data && image.width && image.height) {
+  if ("data" in image && image.data && image.width && image.height) {
     return {
       data: image.data instanceof Uint8Array || image.data instanceof Uint8ClampedArray
         ? image.data

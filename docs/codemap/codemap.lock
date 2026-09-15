@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "source_commit": "933d52298964b92f046d8fe29462df3fc5dcfc70",
+  "source_commit": "aeb84379e7d31beb5d2bac0e6935420ed1fd12dc",
   "working_tree_dirty": true,
-  "generated_at": "2026-09-14T02:06:12Z",
-  "generation_id": "f10e7efefbf7f92058702b2eaab6e9a89298ca6bf31ca3bef78b84f2f7a1c1ea",
+  "generated_at": "2026-09-15T04:58:07Z",
+  "generation_id": "a4bae72ba8ca60cd8315c44cf5c548c5cf9b0212a5713e0134547a8a314554c6",
   "analysis": {
     "version": "syntax-1",
     "digest": "ef0bef6b47dc8f80a59969a7c79bee202c17ea461e36fb268705b34c880b9749"
@@ -536,8 +536,8 @@
         "path": "scripts/qa_browser_gate_fighter_lab.cjs",
         "origin": "tracked",
         "state": "present",
-        "digest": "ed66df18d59a746e6a6b5f28aa4472cf9a6ee9ea0718a1efa61b336c065a8c15",
-        "size": 18857
+        "digest": "6bb03394417d528e6f412ef137e3476812024df31836d148ed29068be3c92282",
+        "size": 20890
       },
       {
         "path": "scripts/qa_browser_gate_t426_select_def.cjs",
@@ -585,8 +585,8 @@
         "path": "scripts/qa_smoke.cjs",
         "origin": "tracked",
         "state": "present",
-        "digest": "49db3f4ffe8c157798d59891fba3683be8ec75ee0878df4507c38a7d80f62747",
-        "size": 365525
+        "digest": "74687f44382c2f9ddd7e564164b31449c6780a2a92efb24175fe495b6255b108",
+        "size": 366025
       },
       {
         "path": "scripts/qa_stage_compatibility.cjs",
@@ -669,8 +669,8 @@
         "path": "src/app/App.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "95c024399b74a648c0e20d47c2744a3117cc3174942c5e35a9d0bb88811b2625",
-        "size": 794697
+        "digest": "3c9a287ac8a8b290b570a4c79a208db28764a08c3f4d5d21f9a55ce84a7a872f",
+        "size": 799115
       },
       {
         "path": "src/app/AssetReleasePolicyV1.ts",
@@ -683,8 +683,8 @@
         "path": "src/app/DebugPanel.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e068a760478ad0a3e0b1688df4f49b0746c42f1891e583fc1ac505d98231567a",
-        "size": 43671
+        "digest": "7c6678909119780efb12f6d7b67700262876567361d85e90ba076a288cb73a98",
+        "size": 43679
       },
       {
         "path": "src/app/DualCharacterLegalJourney.ts",
@@ -704,8 +704,8 @@
         "path": "src/app/EvidenceEnvelopeFactsBridge.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c8f2faa4ec86d18d0ebd73ca98412f67da9bb132812db19da0c098e0f5a991d7",
-        "size": 3684
+        "digest": "b0056fbb88cb30931c54ead031773e61cf11f1dfc8ac0ec36b7d7ff424d8d9fb",
+        "size": 3780
       },
       {
         "path": "src/app/EvidenceSubject.ts",
@@ -725,8 +725,8 @@
         "path": "src/app/GateEvidence.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c80b9d9c5c9738fbc58753aa21a3dbeb22d275b358821675cf410bb1cc8fbfd4",
-        "size": 9986
+        "digest": "9e1ac9947358f9c091c87bcf00892e36aa1579585c924bc818ad3f91b760a573",
+        "size": 10460
       },
       {
         "path": "src/app/ProjectAssetClosure.ts",
@@ -837,8 +837,8 @@
         "path": "src/app/StudioEvidenceEnvelope.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b880929188518b94ffcc25df2f89ef95f6d10209fe6780b35ed74b06b3a478e0",
-        "size": 6194
+        "digest": "24bcc8b3c027abcaaee758c0ccf6f5f4ba6f6af976b1c8c29962d88a8bfe52e0",
+        "size": 10641
       },
       {
         "path": "src/app/StudioEvidenceStorage.ts",
@@ -984,8 +984,8 @@
         "path": "src/game/audio/MugenAudioSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "acda09926a4ae8c77a439f18fd7a120e95b9dbab108d58f5e5e5d4e8d62baba3",
-        "size": 20311
+        "digest": "d32eec0c571536e7775b55ce61fbd2f5d11dd96c615c20f588c45ac38f811435",
+        "size": 23332
       },
       {
         "path": "src/game/input/GamepadInputAdapter.ts",
@@ -1012,15 +1012,15 @@
         "path": "src/game/render/AxisRenderer.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f548d33b1670e5e1026f45bffe526141131351aef55c1e3e204e28df1eff7abe",
-        "size": 16113
+        "digest": "ed90ef702c2db4193153c6f1c90b818d39de4120f48d1cbe7d7554ccc6424e62",
+        "size": 18778
       },
       {
         "path": "src/game/render/CharacterRenderer.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9dd69b1c08ebe814835de72c722f808a2e2e0f9418d4a7192fe8abad6a895933",
-        "size": 24172
+        "digest": "29b36654c06e33aafe835f1d9b78a4b9f343e49beb41c1d40fa8b53e4bfeeca1",
+        "size": 24805
       },
       {
         "path": "src/game/render/CollisionBoxRenderer.ts",
@@ -1033,8 +1033,8 @@
         "path": "src/game/render/FightScreenAnnouncementRenderer.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6d7310d895ebd856c1c32eddaefae9f417739f1ad9f29a5d5ec6a2ea9207f62e",
-        "size": 73514
+        "digest": "1f4fa77a8ada2cbcc3c799f6b44f97e2ee1caa11af9d8b6cdc72df8dfee52d06",
+        "size": 73688
       },
       {
         "path": "src/game/render/FightScreenFontRenderer.ts",
@@ -1054,8 +1054,8 @@
         "path": "src/game/render/PaletteFxMaterial.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d8ba7fe7a1b7e9677d26c9da35492d9386c42670de0c4539aea89381b92c2f2e",
-        "size": 1649
+        "digest": "c0306bf98f1aefff1cdd85ed26170bdd51b655323a7423e2f24ec9c8402d630a",
+        "size": 7186
       },
       {
         "path": "src/game/render/PresentationOrder.ts",
@@ -1096,8 +1096,8 @@
         "path": "src/game/render/ThreeMugenRenderer.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9cbad0f14c97a7e18019970e63902180c5644c8554133ace46fc4b9b47de4657",
-        "size": 15599
+        "digest": "f622db906f88119dcd43d48e00598a11b7aad30b86da0edb2182d77524ea4239",
+        "size": 16254
       },
       {
         "path": "src/game/render/projection.ts",
@@ -1110,8 +1110,8 @@
         "path": "src/game/render/stageProjection.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "5ff0ba359a1132ea21f4bf7254c53707c236d462baf06cb21a817bb3058d9e53",
-        "size": 17379
+        "digest": "38b3d59a23478bdb3e88dc85728c18f85e088de7876caeeac321fcf6291d4520",
+        "size": 23445
       },
       {
         "path": "src/game/render/types.ts",
@@ -1166,8 +1166,8 @@
         "path": "src/game/textures/SffSpriteProvider.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c546e3222c26c4e3db513b6f6272b4c70cfd138cd53fd889c73fac18840cfdc9",
-        "size": 3081
+        "digest": "be706c4ad3904ed9ff4e8982b1c746e858fb00545f5bbdff287b581f43751216",
+        "size": 3467
       },
       {
         "path": "src/main.ts",
@@ -1257,8 +1257,8 @@
         "path": "src/mugen/compatibility/IkemenFeatureScanner.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "61035aa5f0ec4d78e740405d17b565b9e17e35170fd31667ba99677b33cfc095",
-        "size": 20908
+        "digest": "76712a27796d91d32d9a2533af0b17c82e7d9155799504a15246635be65a01d3",
+        "size": 21167
       },
       {
         "path": "src/mugen/compatibility/MugenVersionDetector.ts",
@@ -1271,8 +1271,8 @@
         "path": "src/mugen/compatibility/PackageAnalysis.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "99175074c0616abda0a9491adf76bb70d48408cc4c274db99a8af35a904ec886",
-        "size": 38767
+        "digest": "bdf7c8767ad1fb75d0c0394d2698d9124ad1e32a67777d08a9635a6158488926",
+        "size": 38800
       },
       {
         "path": "src/mugen/compatibility/PackageAnalysisRevision.ts",
@@ -1334,8 +1334,8 @@
         "path": "src/mugen/compatibility/StageCompatibilityReport.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "45b26c9a62ed4774302ae4d1b06f5f7816679aac109db533077ebd98a4a81548",
-        "size": 16624
+        "digest": "5c163b9d574b0f1df3b61b190619c9a0a3df12dab5131c63f1837b4961e4435a",
+        "size": 20663
       },
       {
         "path": "src/mugen/compatibility/UnsupportedFeatureTracker.ts",
@@ -1348,36 +1348,43 @@
         "path": "src/mugen/compiler/CommandCompiler.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "837819633b14416f952ebf8cba089bc96be799f12d6211d93466f21660585e5d",
-        "size": 2813
+        "digest": "db8580d0a9f625fd76203c113f51c7d86665535c85fe36b7760f52c68c143e19",
+        "size": 2799
       },
       {
         "path": "src/mugen/compiler/ControllerOps.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "5a41c1b48e20d132aba3ca8f16c8956c4b911aa23e04836714298268c357949d",
-        "size": 279917
+        "digest": "01cc492ea073d0c00689a6e73b0a4d99fb3b6a3824314c2e8b2df03f8ad9b5a5",
+        "size": 286788
       },
       {
         "path": "src/mugen/compiler/ExpressionCompiler.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "ad6777a412c7ccc2bb2fe1c35187193d11c5dd5ede10d40a90a85783fcf4efb3",
-        "size": 10308
+        "digest": "a1c26e2a961c1c0582ebb10ec0879f6c4666422855ba54837384edd2f8b03948",
+        "size": 14819
+      },
+      {
+        "path": "src/mugen/compiler/ExpressionLexer.ts",
+        "origin": "tracked",
+        "state": "present",
+        "digest": "93e3654445e5be4b10b38e5f235dd6073b90602a1573a55f20c8497ce0eb7b3e",
+        "size": 5363
       },
       {
         "path": "src/mugen/compiler/RuntimeIr.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e0e0c1a19b87e9520d45a0aa0703a979cf279825e314a509e96009fd9c747f98",
-        "size": 2541
+        "digest": "7df2224cbd9c241136f6a1067c39f2acc1058ffe0c16dafb652caa20dfafe730",
+        "size": 2562
       },
       {
         "path": "src/mugen/compiler/StateControllerCompiler.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9a904308af9c6ba44f938c0b98dd339a142ea8df2dc14b03fe643c978141c8f4",
-        "size": 12978
+        "digest": "3475d21a2b2942e0bf261684fa1a5a6c327fc6d57ba95d00eca71a1537e978f2",
+        "size": 13130
       },
       {
         "path": "src/mugen/compiler/StateSourceResolver.ts",
@@ -1971,8 +1978,8 @@
         "path": "src/mugen/da30/SelectionStateModel.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "db83c0940db82a6f406516039637089cec6687f8526208cfc23221e69d0499d0",
-        "size": 1836
+        "digest": "6b9ac669026b68a73401c2f7a5a1f9727652309ec82c1a573c09ccffab51fc95",
+        "size": 1995
       },
       {
         "path": "src/mugen/da30/SocdProfileStore.ts",
@@ -2195,22 +2202,22 @@
         "path": "src/mugen/loader/MugenSelectionImport.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c80395f4ad4325deb28697a2b635b468b24d22ffbb5157a711b414fe982977d7",
-        "size": 2760
+        "digest": "99ad2531166670364e6639704affbf78197a0d35b989f29291faaddbd0d08061",
+        "size": 3681
       },
       {
         "path": "src/mugen/loader/MugenSelectionManifest.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "112fd6c050673c0303bcae5b87629fd269df321b6c986f50b8ec38b852d74f79",
-        "size": 9662
+        "digest": "129616c3a083118e57f50dbfd4815821221894d3f0074d1955571e69606177cb",
+        "size": 10476
       },
       {
         "path": "src/mugen/loader/MugenStageLoader.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "cc2ead0f2fefe34e21bf75fbbf9a1bf0d873d197f8043625043328355a790e61",
-        "size": 6478
+        "digest": "8c53a1ce4019030bf097f5e003f83765053429195b733f229176b4c0e5bb7b27",
+        "size": 6910
       },
       {
         "path": "src/mugen/loader/MugenSystemAssetsLoader.ts",
@@ -2258,8 +2265,8 @@
         "path": "src/mugen/model/IndexedImage.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0e645b87366c2f89d21b29909bedcbd375772e8b1177f00f0bccf6c91a183c73",
-        "size": 1362
+        "digest": "121dc00e971d96ef2d10a3a907323adf3d21206925de690ed91afb1ee5e6007b",
+        "size": 1476
       },
       {
         "path": "src/mugen/model/MugenAnimation.ts",
@@ -2314,15 +2321,15 @@
         "path": "src/mugen/model/MugenStage.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "ffa0cdd372bb9422eaec1b4c3457db9783570332463cad06eebb160e663540cd",
-        "size": 3320
+        "digest": "8b25a4a42ae0650ab4ef087316afba59da8222f7194ec916d1bfa73498552fb7",
+        "size": 4380
       },
       {
         "path": "src/mugen/model/MugenStagePackage.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0d1c8dcf87e99c26c642732424fea9f91a7f81f9b0425cab4dc4efa3030a13dc",
-        "size": 968
+        "digest": "a3b47a5cc4d1f4725c8dae24d5809265c26b4e044879fe447996d6938c12a5f7",
+        "size": 1310
       },
       {
         "path": "src/mugen/model/MugenState.ts",
@@ -2344,6 +2351,13 @@
         "state": "present",
         "digest": "18309845b1a5e5e59387528b117dbda90e12fb8daf12681dc779674e6179e455",
         "size": 518
+      },
+      {
+        "path": "src/mugen/model/PcmWave.ts",
+        "origin": "tracked",
+        "state": "present",
+        "digest": "b404f15ddfdb08b5ff8ca4fbc797fe149a6dc41ed86cdc9a29d342ef345ee99b",
+        "size": 1353
       },
       {
         "path": "src/mugen/parsers/ActParser.ts",
@@ -2391,8 +2405,8 @@
         "path": "src/mugen/parsers/SffParser.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e6353fb2350fbc6ae61a878b065f2d2a8076bb777b045761ef4bfa63e54ed02a",
-        "size": 33258
+        "digest": "24a894ef3db8740605ea29fcdd7cd0b0c8836c3bf23c54574e3b8d98e4d121a0",
+        "size": 33708
       },
       {
         "path": "src/mugen/parsers/SndParser.ts",
@@ -2405,15 +2419,15 @@
         "path": "src/mugen/parsers/StageDefParser.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "02f68f186b7c9fb03f9b994288623647cba6754eea574ebbb6c41ee0ea5e7c73",
-        "size": 15189
+        "digest": "4b36faf0f54349310242de6e67ffae4c619fd91d04318d33dba9907d36f786ca",
+        "size": 17486
       },
       {
         "path": "src/mugen/parsers/ZssParser.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4e64d175997797458f5e9e8f42ecdcc15b2d02f6cd0289c9fe3eeb7549c98637",
-        "size": 20351
+        "digest": "3c6ed54b0e472185e0ae6c801a77e5d1c538675e8ba11a78007d5129f3a20c39",
+        "size": 21559
       },
       {
         "path": "src/mugen/parsers/text.ts",
@@ -2454,8 +2468,8 @@
         "path": "src/mugen/runtime/CharacterInstance.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e7c8f34270d7576d70465411081939cb7ff16a76b1fa3c4426bf6497fac66ad0",
-        "size": 2316
+        "digest": "caeb9646a79fab4dc946fad0ae000ea1cd79cc47539a3994a970fe4d1690cc1c",
+        "size": 2541
       },
       {
         "path": "src/mugen/runtime/CombatController.ts",
@@ -2475,8 +2489,8 @@
         "path": "src/mugen/runtime/CommandBuffer.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "3ed8a98e82b30b289432dd681571d5510c865439d74e8123469d647f1f29d29a",
-        "size": 7157
+        "digest": "75945266e3d0a2a255f6e5b10b9aced83753f04203af265c8e4d9d50406564c2",
+        "size": 8659
       },
       {
         "path": "src/mugen/runtime/CommonFxFightScreenProof.ts",
@@ -2524,22 +2538,22 @@
         "path": "src/mugen/runtime/EffectActorSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "cb698aab4d2a7872d32f1b3c79613a3b38bfdde45c256fb2eec7db3a3237907d",
-        "size": 45140
+        "digest": "d8340b2f88f031ddba5ad096d05d20a2300039210788139c3ad01b1320948dd6",
+        "size": 46015
       },
       {
         "path": "src/mugen/runtime/EffectLifecycleSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "7751fe4393f3a59e26de315071fdf7142a9ca0f7d44d8b0230510606a42b7eb2",
-        "size": 5795
+        "digest": "41575c11aa48fb9259468c724c440978d63d8d03ce8f1390e8323e44919bc355",
+        "size": 5961
       },
       {
         "path": "src/mugen/runtime/EffectSpawnSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "84bd4a1def53a5c2f3983742c464044b0a2e3d9662035e0cb241481f3a3e693b",
-        "size": 38984
+        "digest": "3abc2a80052bd527ea1076ac571dabddc485830de12a0893ed4aa3730143ae49",
+        "size": 40560
       },
       {
         "path": "src/mugen/runtime/EnvColorSystem.ts",
@@ -2559,15 +2573,15 @@
         "path": "src/mugen/runtime/ExplodSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "45e61828aada9cce1526c894d0b72f596c15c280661e3f5e39a7dc8200766dd3",
-        "size": 15372
+        "digest": "29c3a19ca129d3458d41f52d5f20c49f6a9b3d135168b8561079a522780594ef",
+        "size": 15941
       },
       {
         "path": "src/mugen/runtime/ExpressionEvaluator.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b9ac1fbb67da6645b45cd7dfb7ed686e240e1a2b3b598e0a33f46bc3f5356cbc",
-        "size": 72775
+        "digest": "cedf24075b7aac7942efd43e65d289e24c0b029946206931f3d0a8a0e46575be",
+        "size": 88627
       },
       {
         "path": "src/mugen/runtime/FightScreenAnimationSemantics.ts",
@@ -2608,8 +2622,8 @@
         "path": "src/mugen/runtime/HelperSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "de4868f280321fddf53ebf305732a0bffa5c445f241d8c3f0776ee67d16619a8",
-        "size": 169854
+        "digest": "0d40bb24496f40f8242a1febd333619e5eed0c56a1afb38719852b0e654df097",
+        "size": 182963
       },
       {
         "path": "src/mugen/runtime/HitDefContactPriority.ts",
@@ -2636,8 +2650,8 @@
         "path": "src/mugen/runtime/HitDefPaletteFx.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6124672b56314cf1853257791666f4c4282d986358fa945789041936adad7698",
-        "size": 4691
+        "digest": "62889ba88f3699f553dba03b61bcb3a1eb030672ad242d4aa99490beed0e6ac1",
+        "size": 4829
       },
       {
         "path": "src/mugen/runtime/HitDefPriorityPolicy.ts",
@@ -2720,8 +2734,8 @@
         "path": "src/mugen/runtime/IkemenZssLiveFixture.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f4c5737abb47ca96f37bb46379b86203bbdf133af5c7c7a2963ac32958b7b955",
-        "size": 10720
+        "digest": "671d8fd76ae251c868283a87eeceb82942e4bbdf7fb41813bc8aa56c49df75c0",
+        "size": 13043
       },
       {
         "path": "src/mugen/runtime/KinematicControllerSystem.ts",
@@ -2860,22 +2874,22 @@
         "path": "src/mugen/runtime/MugenLiteJourneyFixture.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f3d2954e99f9b76a62e059e25da8e015bc4b1a6b2775cc2cb4f950d470e43725",
-        "size": 13110
+        "digest": "2d62070dde210df507fcdcd6f22a703d02717ede9eef4633478879c7df7f050f",
+        "size": 13157
       },
       {
         "path": "src/mugen/runtime/MugenRuntime.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b3f6315906d1ebc430bbf0265044d4dd1b04c6e3c65473b38c597a174d9670d7",
-        "size": 3859
+        "digest": "07008b0f551ea57e12f0f7870f7bd3c3982a09eebf5d4fcc272547898e8f833e",
+        "size": 4007
       },
       {
         "path": "src/mugen/runtime/MugenSelectDefPlayableFixture.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "1a93aee8df26a524379042d3d8b910111a704345560f4e59efe3b511b803dd74",
-        "size": 3967
+        "digest": "c71376f45e25712c056bc6416ead533ebe57516d90e89d43e56c6fa1af0c7c4e",
+        "size": 3985
       },
       {
         "path": "src/mugen/runtime/NativeDualLiveExecution.ts",
@@ -2916,8 +2930,8 @@
         "path": "src/mugen/runtime/PlayableMatchRuntime.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9a288a703f9ee12f2d937dd97deef30e7a99fc118322140018921a4ed8f30dfd",
-        "size": 422795
+        "digest": "d8aa9373898603418fdc13c39c21d9d262b387728edd72b5ab9b19211e20291a",
+        "size": 437795
       },
       {
         "path": "src/mugen/runtime/PluralCombatOracle.ts",
@@ -2944,8 +2958,8 @@
         "path": "src/mugen/runtime/ProjectileSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "cf3008b964b0a5e7055ef9954e155bd73f87e51a1565d2fbd74ef66177505cec",
-        "size": 175276
+        "digest": "926cf936169c3a155a4b8dc3b5c93fa0988c89d5c7b455d1c2663b41170380f0",
+        "size": 178617
       },
       {
         "path": "src/mugen/runtime/RedLifeDefaults.ts",
@@ -3000,8 +3014,8 @@
         "path": "src/mugen/runtime/RuntimeActiveControllerHookSetSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "67cb6864069aff674e75307c8cee053cf837430b274bd4959e14acfea4ebcdaf",
-        "size": 4152
+        "digest": "22757e5956b057d7edc7bfe2027b117f4bd6128e22fea98f520db70039c3b0a9",
+        "size": 4382
       },
       {
         "path": "src/mugen/runtime/RuntimeActiveControllerRunSystem.ts",
@@ -3028,15 +3042,15 @@
         "path": "src/mugen/runtime/RuntimeActiveExpressionContextSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f93fa23835888fedcf518f74edb130e4a7019aff157e1ab60eba76752486ed14",
-        "size": 3033
+        "digest": "94eeeef8c910332bc307a0f90f7bc7667587dbc5b823dd95a3f3f079a6458809",
+        "size": 3745
       },
       {
         "path": "src/mugen/runtime/RuntimeActiveSideEffectDispatchSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "ac6788246d155a88fcfe3b01d5713bd870bcd6d372876044651162b59052f1b3",
-        "size": 10072
+        "digest": "a50387878423ee5b619c64e85398cd4b56b74f92f7e9885c8772dc77bfef9c9e",
+        "size": 10830
       },
       {
         "path": "src/mugen/runtime/RuntimeActiveStateDispatchSystem.ts",
@@ -3056,15 +3070,15 @@
         "path": "src/mugen/runtime/RuntimeAfterImageSampleSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4a069396af2470065b6dd9c17bb777d908659919a3dd40c7db2bb1d3f0d3b565",
-        "size": 1440
+        "digest": "6980dbfa550103de603c5ebd3bd168d21934296e91c96b92b34a26e37af5763b",
+        "size": 2119
       },
       {
         "path": "src/mugen/runtime/RuntimeAnimationSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d0978fb0e2d5188da4d0b2423b9fd38f4dea98e01f3f6f0008246c53a6722611",
-        "size": 10085
+        "digest": "2b0497d4d0eb18f9637f403faf15b5e855e5502672dd0cad73ffad35a9fa8ee9",
+        "size": 11908
       },
       {
         "path": "src/mugen/runtime/RuntimeAssertSpecialSystem.ts",
@@ -3086,6 +3100,13 @@
         "state": "present",
         "digest": "5ec49d5b70c3e58267daeb25babc147c862def2c5c91313886712bae9ec5e902",
         "size": 11064
+      },
+      {
+        "path": "src/mugen/runtime/RuntimeBgPalFxSystem.ts",
+        "origin": "tracked",
+        "state": "present",
+        "digest": "392b9d62ae554e4edfd9d05d2d2d20e1a1ae0ef68962bbe352dbc9daa2790b31",
+        "size": 4298
       },
       {
         "path": "src/mugen/runtime/RuntimeChainIdPolicy.ts",
@@ -3168,8 +3189,8 @@
         "path": "src/mugen/runtime/RuntimeControllerExpressionContextSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e0479c81c6a1142e32e4f36951bb716fde2884951460df663183b6a6d2ea7d89",
-        "size": 7526
+        "digest": "d52bc79f58abb77cf08d7ecf722efbd768dd68c37a86e3d06a742b992e02cbe3",
+        "size": 8022
       },
       {
         "path": "src/mugen/runtime/RuntimeDispatchEvaluationSystem.ts",
@@ -3182,15 +3203,15 @@
         "path": "src/mugen/runtime/RuntimeEffectHelperContextSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "27c13567c212ea66ea5c8e209edfa7c5ea22e899f3c083c554dc964ab0b744a7",
-        "size": 8631
+        "digest": "2ce22d46ea1443bb5f8b55d0a99d84baf446b6c593b83ab4dcfdefe0ae712ecd",
+        "size": 9413
       },
       {
         "path": "src/mugen/runtime/RuntimeExpressionContextSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b867b9e61623ec673843cb6977ce4283fe8f35891a938489e9ecc0cad76c3a3b",
-        "size": 27150
+        "digest": "da8d74b189d0b092660080a9b2ea15394dee8b395ff1c23275502e7de36c1cae",
+        "size": 30714
       },
       {
         "path": "src/mugen/runtime/RuntimeFightScreenTriggerSystem.ts",
@@ -3224,8 +3245,8 @@
         "path": "src/mugen/runtime/RuntimeFighterStateSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b10d6079a2048381e615cbc6e542662890ce4bbe6bfb7911c38579130b6a771e",
-        "size": 9572
+        "digest": "3ca2f98a89b643cf9e5210e5522865d29a920c6806506af0728c9124f12d8fa0",
+        "size": 9738
       },
       {
         "path": "src/mugen/runtime/RuntimeFrameSystem.ts",
@@ -3504,15 +3525,15 @@
         "path": "src/mugen/runtime/RuntimeMatchPresentationSnapshotSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "206054a43bd5b5a3049a4eb8dbab72b63dd877e23ebd062c50fde66f46330216",
-        "size": 2093
+        "digest": "24e029da28c940b3a76551b2debd647797cec3eba6d0ccf83a9fa180d44eed13",
+        "size": 2457
       },
       {
         "path": "src/mugen/runtime/RuntimeMatchResetSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "bd09ee9c0ef36a6448e139adaf192c139120f5a2cdca9287926af2c36dcc910e",
-        "size": 2461
+        "digest": "246d508ae7cfb4b9408a0ba443edf22b41b6d93f6a6debdeabe1bf1ba01bce70",
+        "size": 2621
       },
       {
         "path": "src/mugen/runtime/RuntimeMatchRoundSystem.ts",
@@ -3595,8 +3616,8 @@
         "path": "src/mugen/runtime/RuntimeRecoverySystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6aac6e1cfa67b8f25e204ec433152fcee6a032885a6eaedc2fb64e9821013f84",
-        "size": 7722
+        "digest": "c1e9f9b15fc6a87a582148985722840eb4488c032b07a6799c804bfbe8f15002",
+        "size": 7759
       },
       {
         "path": "src/mugen/runtime/RuntimeRedLifeShareSystem.ts",
@@ -3616,8 +3637,8 @@
         "path": "src/mugen/runtime/RuntimeResourceSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "04dadd3683967c8ac7549e47cba50b587af95f563005c98b9edf709ab0408f75",
-        "size": 16515
+        "digest": "a5e1f1844f7811992fbd8eed257b42ffb9c813da70d03cc0b05a3f872f4351f2",
+        "size": 16887
       },
       {
         "path": "src/mugen/runtime/RuntimeRootAdvancePhaseSystem.ts",
@@ -3735,8 +3756,8 @@
         "path": "src/mugen/runtime/RuntimeRoundSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "ce9d4b113035b5472160a366d186807cddb22f56c6f6e60da1178a5270859cd2",
-        "size": 39873
+        "digest": "1d03d440a6b1c1aca18e908e9870d62aff2f0b6e99c438560c63e52462e9a21a",
+        "size": 40003
       },
       {
         "path": "src/mugen/runtime/RuntimeRoundWinPoseSystem.ts",
@@ -3763,8 +3784,8 @@
         "path": "src/mugen/runtime/RuntimeSnapshotSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6d3da66e48c31eabe108fe528c5c38d46e1b0bc5f6e4721ddcd8d3f2eede4f33",
-        "size": 10840
+        "digest": "3af5c87df666df261f1fe62c0d02c4c5ea465559639e9f9592421b528d1209df",
+        "size": 16587
       },
       {
         "path": "src/mugen/runtime/RuntimeStageGameSpaceSystem.ts",
@@ -3903,8 +3924,8 @@
         "path": "src/mugen/runtime/RuntimeTraceGatePresets.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0d5b456c14bde389155a992200ebee43c1bb4aa30bf762dfc57b806dae8f5689",
-        "size": 3522098
+        "digest": "fe02e3619e23a1602116bef61cfc79993e1bac2bbd8759e1a5f181ccdb468372",
+        "size": 3524471
       },
       {
         "path": "src/mugen/runtime/RuntimeTracePresets.ts",
@@ -3966,8 +3987,8 @@
         "path": "src/mugen/runtime/SpriteEffectSystem.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "cb941799766bf3d0e05038ed1e74e52d00ff534772d94c9e946a30f5fbff96fd",
-        "size": 42937
+        "digest": "9b21e476e2151ee6820d0001bafa4402790b7319f672b52689cedc17ed081ba1",
+        "size": 45391
       },
       {
         "path": "src/mugen/runtime/StateAvailabilitySystem.ts",
@@ -3980,8 +4001,8 @@
         "path": "src/mugen/runtime/StateControllerExecutor.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "93d96bcfae4937fe13515f1752b5419b45e26115f7f091bd000a2284b390fe7a",
-        "size": 29567
+        "digest": "b774273f507256fa79a9458938a43b1ee3b78698c38d94d0ab6758d98970a68f",
+        "size": 29615
       },
       {
         "path": "src/mugen/runtime/StateMachine.ts",
@@ -3994,8 +4015,8 @@
         "path": "src/mugen/runtime/StateProgramExecutor.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6ee9cf4b0fa8689d75fccd7767d701e0861a48a88d22bd7ccc527ae5fc9d2de2",
-        "size": 7805
+        "digest": "d0263e63e3d1fee195fe9cf8cf9b71aa379134d87a7e4c6d602d54950cd174ec",
+        "size": 7952
       },
       {
         "path": "src/mugen/runtime/StateTransitionControllerSystem.ts",
@@ -4078,8 +4099,8 @@
         "path": "src/mugen/runtime/types.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "3ca5429c99d4df9b892d668c80cd194f35821f40519a48f2b887a759843ad03d",
-        "size": 32303
+        "digest": "39e9ee69d143c5dfd520250a37ff8cf26d67e128e9cddceda42c214cce7128be",
+        "size": 32804
       },
       {
         "path": "src/tests/ActParser.test.ts",
@@ -4176,8 +4197,8 @@
         "path": "src/tests/CharacterRenderer.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "853a8229338e90215b9da34bb7767b16c79601757e2b22817d7e750aadcf8400",
-        "size": 15056
+        "digest": "ff863d5ae90197bbf47e1a8b1a8f73ef36dfea4f1e7aa24e69d4cb173b4d5397",
+        "size": 32128
       },
       {
         "path": "src/tests/CmdCnsParser.test.ts",
@@ -4204,8 +4225,8 @@
         "path": "src/tests/CommandBuffer.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a66197592713cb4fd34a52b2484b0ead7ece636db9c07ca52637efbe82402c85",
-        "size": 11429
+        "digest": "59b65c92c600e66977c5092326d1cb8cb8e2b12f897716b367fcf4032e4ce4fb",
+        "size": 12209
       },
       {
         "path": "src/tests/CommonEvidenceFacts.test.ts",
@@ -4225,8 +4246,8 @@
         "path": "src/tests/CompatibilityCorpus.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "3e3b9d234521241bced1fe9453492404db30ea48108e6c79e7d30fcab1b488a9",
-        "size": 10309
+        "digest": "da29a30fd68e44b50cb9e772e42edfd716f424436b0f6e76d19ad44e425e9686",
+        "size": 10402
       },
       {
         "path": "src/tests/CompatibilityCorpusSnapshot.test.ts",
@@ -4253,7 +4274,7 @@
         "path": "src/tests/CompatibilityJourney.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "ca3793b15e2cd1ddf5b664cf85394b85c279e515089cd50aaf7f561539ec6fad",
+        "digest": "e0438d60e475315064a8455b3669cd8e3a2322eb83900a32168e79f225ba19e4",
         "size": 11479
       },
       {
@@ -4302,15 +4323,15 @@
         "path": "src/tests/Da29MeasuredPublication.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a1f441e95915ea615820039bb8e9ec95d2c8e841b8dce26523353805ee37d7aa",
-        "size": 1627
+        "digest": "2f4542f0997c77b524af2325a213d15d438d147d4f51fb1075ff862cdfd90acf",
+        "size": 3313
       },
       {
         "path": "src/tests/Da29RemainingOpenCuts.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a8cf163be70d3dbf5fa2fc199599b1aae2da392f2092bad55a7e979779fb579a",
-        "size": 6236
+        "digest": "016a4225c22474f647289a228c0a3de6bc8e901e5c751b4ccb9a7ff20ceb8988",
+        "size": 6195
       },
       {
         "path": "src/tests/Da29SeriesCloseout.test.ts",
@@ -4323,22 +4344,22 @@
         "path": "src/tests/Da29Wave10ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "253f83d2c2dfaa2ae43a5125d62eb3a825a7b0c2270ed3ac3972e897a0e805e3",
-        "size": 3473
+        "digest": "635d8a0dac3ce41f0439efe539074d37d7d8281b616340053bcc45efeb1ec878",
+        "size": 3432
       },
       {
         "path": "src/tests/Da29Wave1ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e265f21889c01bdcaf8a383e4a2a6b3f5feb06463cb6f0ab8c09b823046292ab",
-        "size": 3848
+        "digest": "0b571e5f3889c057ed935d8ea0e22caaa5f7cc50b3f8602536ff53999077f92a",
+        "size": 3834
       },
       {
         "path": "src/tests/Da29Wave5ConsecutiveEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0fad09b3303abc9bb6c24b445103346879913cd735aca276873e5f59079e520b",
-        "size": 2716
+        "digest": "fd5ef366cd0b64be2a4444a45c303ccb39d117ed47b62947d19d45432e16afeb",
+        "size": 2675
       },
       {
         "path": "src/tests/Da30BrowserGates.test.ts",
@@ -4351,8 +4372,8 @@
         "path": "src/tests/Da30OpenWaveModules.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "da7e2a1ff4462591da61043af13e18db2b386f0619a6d971d10b22f1c587d42c",
-        "size": 4734
+        "digest": "1445e6a46533ec2a3837fd024bba58b78fcf611748735847076cf2552e005837",
+        "size": 4702
       },
       {
         "path": "src/tests/Da30Wave0And1Recovery.test.ts",
@@ -4379,15 +4400,15 @@
         "path": "src/tests/Da30_039_to_048.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "5407067671a8fc522ff4add7a3a746bf86e2a063e6fe7bbdb484d62c353078c4",
-        "size": 2512
+        "digest": "4ce011b1b0d96163b047eeff2d39cf12580e8a016d7aa5d07a8e990157218847",
+        "size": 2459
       },
       {
         "path": "src/tests/Da30_052_to_120.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "34b40c3f6b877e5152b3e42898d52483b45eb901067cb42b8d4f2fac775e822d",
-        "size": 13989
+        "digest": "45f45d40e5cc85554bacff54cbd4502af8537d5e01ab7eebe777b1ef7cf18dad",
+        "size": 13936
       },
       {
         "path": "src/tests/Da31Phase0Control.test.ts",
@@ -4456,8 +4477,8 @@
         "path": "src/tests/EffectActorSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "30486016c8014fd6cb2165a3fb68090b6b3733df982cfc5657a4c34a47714f27",
-        "size": 186943
+        "digest": "1fd0048c4fd4eeb2e46f504593bf5b069ab04c0e5ac71837746334f919c5e773",
+        "size": 189926
       },
       {
         "path": "src/tests/EffectLifecycleSystem.test.ts",
@@ -4498,8 +4519,8 @@
         "path": "src/tests/EvidenceEnvelopeFactsBridge.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4fd84b38ee8e5f42abb74f380a0b91b1135343ce81940b320bc2f3f47aa20450",
-        "size": 1914
+        "digest": "49b5d9591c40060e62c895f9fd0910d48b2c8d1e723c97b76d5b156131f5f3e2",
+        "size": 3100
       },
       {
         "path": "src/tests/EvidenceSubject.test.ts",
@@ -4512,8 +4533,8 @@
         "path": "src/tests/ExplodSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "92296a0a443f4ddde79c0c72d5ff319c04501f5eb5859d7fe9bf0ca6cbd2fdcd",
-        "size": 12721
+        "digest": "35d018df65e8ae33102cbdb8440f7c96fcaa309947977d2d87b4219d997ac594",
+        "size": 13839
       },
       {
         "path": "src/tests/FightScreenAnnouncementRenderer.font.test.ts",
@@ -4554,8 +4575,8 @@
         "path": "src/tests/GateEvidence.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f8a86955059d059bd2ccb4bdce3951eda9ed7c6993f6f8e054bbae4a92f7736b",
-        "size": 3309
+        "digest": "70e436caef8b117acd37806f6d8cf39aa10cb5a9ef2b4631e85cddd317f54c7e",
+        "size": 3928
       },
       {
         "path": "src/tests/GetHitStateSystem.test.ts",
@@ -4582,8 +4603,8 @@
         "path": "src/tests/HelperSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "0ea3d4bfe0dc1c9254e417fd89589712730f4dc24abe8d9fa0382234e7dd3af1",
-        "size": 107297
+        "digest": "61cb680d617196028e1835f89fedae78a28bbdc2bbc81f25da08930642a29e3b",
+        "size": 118228
       },
       {
         "path": "src/tests/HitDefPriorityPolicy.test.ts",
@@ -4652,8 +4673,8 @@
         "path": "src/tests/IkemenFeatureScanner.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "2dfcce99ff852d0d8fe91ddabf59430044e34b8ea8ed0217b22b08a804d744f3",
-        "size": 13245
+        "digest": "ee3105cb1f8e1d0006fdee2e594b90c765bc16784835a0a0c277e1e93307331a",
+        "size": 14233
       },
       {
         "path": "src/tests/IkemenZssCombinedPersistentFixture.test.ts",
@@ -4673,8 +4694,8 @@
         "path": "src/tests/IkemenZssLiveFixture.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d1a96757a2a6c56a44879bfded4bebf6ffc40ccc461b78af640ebfa0e6b1fd3a",
-        "size": 7087
+        "digest": "efa958b14b80fbbb9866efa377c720efd6c2976a2ef0273f0c0e94badfd8114c",
+        "size": 28202
       },
       {
         "path": "src/tests/KeyboardInputAdapter.test.ts",
@@ -4757,8 +4778,8 @@
         "path": "src/tests/MugenAudioSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d2aa5992506a77bb35c588ffa3fa3c1109e6fe0da4bb16a0ce3c0ba0e85908ed",
-        "size": 22862
+        "digest": "050b3215f38f8c4c132be44fcd3b6d62939edb1ed60f66d1889f9d5ae84eab60",
+        "size": 28788
       },
       {
         "path": "src/tests/MugenCharacterLoader.test.ts",
@@ -4855,29 +4876,29 @@
         "path": "src/tests/MugenLiteJourneyFixture.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "7566abf96c5e8ddcdef09e18bf5f638a3c7b6ba2d7ff8fc61e93e49ad550ebfc",
-        "size": 10176
+        "digest": "6e6672f2a76e2b4216048f4f52abe7add7a0be1000b24b8a8fd972e93da67ab5",
+        "size": 13397
       },
       {
         "path": "src/tests/MugenRuntime.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "bd0db7c60fad66ef6a5b1c95d0b7dae68f90660aec0e7293937a05c0d103f3c4",
-        "size": 1196
+        "digest": "1708bdc51ed93da05be52abfc85b41f713349aa368892632b9981d3e47275ce6",
+        "size": 19367
       },
       {
         "path": "src/tests/MugenSelectDefPlayableFixture.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b82d6ff68660c7eafd9f270901800308be6472b65853a42e8c9af66b8810e8b1",
-        "size": 3889
+        "digest": "8b774510dfecc2d3be8b6e7490f123103c80399201b0e86ba07d4c98410b1b9e",
+        "size": 6210
       },
       {
         "path": "src/tests/MugenSelectionManifest.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f011bffb5ffa8570ea02cd9973af21d2fde159aa829d27714c16267308ef7d40",
-        "size": 4740
+        "digest": "66829b5386f3d6776df1f0fa1609c036250922ff28223a0be2b5ba85721e99d1",
+        "size": 4773
       },
       {
         "path": "src/tests/MugenSystemAssetsLoader.test.ts",
@@ -4932,8 +4953,8 @@
         "path": "src/tests/PlayableMatchRuntime.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "71465de27ef00035462f5ed970898267f4b11da68646aef683c0f70fcf89e5ab",
-        "size": 548219
+        "digest": "d716b2080ae66dab314848f4a1da7798c8875554150ccb10310a5ca1226d0d2d",
+        "size": 589115
       },
       {
         "path": "src/tests/PluralCombatOracle.test.ts",
@@ -4946,8 +4967,8 @@
         "path": "src/tests/PresentationOrder.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a6363cc0fba1f3c7546bc4632b36d3d4b2c193478a354844bf2d60c15c3a45d8",
-        "size": 4825
+        "digest": "921c0203994d9fa0577c3294e86d99921ff0873b50b8548065f82e8a1c71e972",
+        "size": 5611
       },
       {
         "path": "src/tests/ProjectAssetClosure.test.ts",
@@ -4988,15 +5009,15 @@
         "path": "src/tests/ProjectileCombatSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "505b0938a28ce95e3124bfd51f49784ec5b899ca79e7948dabb0ab39e1988f2e",
-        "size": 154398
+        "digest": "f2e664b59108ca58db6d9cd4d4be433b777c91346c546ee9b2e6f31660c91aa9",
+        "size": 156233
       },
       {
         "path": "src/tests/ProjectileSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "bc99b9c9b9dca17e68a080ccc89e1a9ba3f94dc5c544382eaa158db7c394b16e",
-        "size": 175381
+        "digest": "3935d8b3eba348264436d6f0f4faf2dc65c2ec689196bf4c23f01e9651b8f8df",
+        "size": 182806
       },
       {
         "path": "src/tests/RendererInfoBaseline.test.ts",
@@ -5009,15 +5030,15 @@
         "path": "src/tests/RepositoryStageFixture.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "700c1e704c6b0ab2633cb8ac36655c12b2e664003d47ab8483034eb388e61e05",
-        "size": 3580
+        "digest": "064ac94eab6fcd32e7a0781e1c498f95c038507fe9857eec8c52ab561070749a",
+        "size": 5478
       },
       {
         "path": "src/tests/RepositoryStageJourney.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "30d1437f4be7ef8353f17e937578589bd723994954c04dbc09b7661973acdc2a",
-        "size": 3114
+        "digest": "87d259feab9826474edaf751e0ab4bae513bd60db7cc8b59e3069df3528541d2",
+        "size": 3174
       },
       {
         "path": "src/tests/RepositoryStageJourneyMaterializer.test.ts",
@@ -5072,8 +5093,8 @@
         "path": "src/tests/RuntimeActiveControllerHookSetSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f1d104046c5b6ad4971fcfc0c40793d755a66c067a09f8703022fdabe04451fb",
-        "size": 8045
+        "digest": "ed6cd226b3e599bacdbf74f105e77b9d2f28489408d2811c050bf2e09e7f4fed",
+        "size": 8486
       },
       {
         "path": "src/tests/RuntimeActiveControllerRunSystem.test.ts",
@@ -5100,15 +5121,15 @@
         "path": "src/tests/RuntimeActiveExpressionContextSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6cda812fb03eda6ec4c8a73e1c8ae7ba84977a44deee6154ddf1c90d20e55bc6",
-        "size": 8353
+        "digest": "716afd86738627df3052f2e74be5e49ded01932c51d411d1a78c35a9d7fb3a3b",
+        "size": 9551
       },
       {
         "path": "src/tests/RuntimeActiveSideEffectDispatchSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "a643e0ad9f768a3029693c2d4931fdabed2fb5f0f02779eca6a8a36fdf55f7bd",
-        "size": 5808
+        "digest": "13db4b35fd3bd6b9379a016496784ef3a450d695b01726fff10443775c179e7a",
+        "size": 5951
       },
       {
         "path": "src/tests/RuntimeActiveStateDispatchSystem.test.ts",
@@ -5128,15 +5149,15 @@
         "path": "src/tests/RuntimeAfterImageSampleSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4e8f7391f43e2e459390d8602cefefed4aa53f45aab8412fcf1603f328432685",
-        "size": 2368
+        "digest": "a7de09ba47398bdc985ce57fc0a147ab9998867f741339077531a26021ac5676",
+        "size": 3849
       },
       {
         "path": "src/tests/RuntimeAnimationSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "087a5f47ac15b9b8d8880978ac305076084126a53f2fe5d0c135f39e67c61500",
-        "size": 10383
+        "digest": "c0c369409353c5e44827437c48d6ed6723841fe3e5d2a2e7dcd78367ec98b8ef",
+        "size": 11783
       },
       {
         "path": "src/tests/RuntimeAssertSpecialSystem.test.ts",
@@ -5205,8 +5226,8 @@
         "path": "src/tests/RuntimeCompiler.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9fff9643ebb34cd5bc8c2f5bd40200459c971dfdf1d8be2a505df99cf3c54eb8",
-        "size": 237764
+        "digest": "f3b1658ec2e84e1fd89207922b91fa044dfdae212411e14df750c4dc2da11d6c",
+        "size": 249801
       },
       {
         "path": "src/tests/RuntimeContactPresentationSystem.test.ts",
@@ -5233,8 +5254,8 @@
         "path": "src/tests/RuntimeControllerExpressionContextSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e351f7d82e830f4c0e0be1b20968dcb2e34e14d70ba33f23fc75323f62a7f8f9",
-        "size": 6122
+        "digest": "a9bcc0f2d3c324899b96f4ee0cddf8f728caba6921d4904b9dcb646cd8ad9310",
+        "size": 6546
       },
       {
         "path": "src/tests/RuntimeDispatchEvaluationSystem.test.ts",
@@ -5254,8 +5275,8 @@
         "path": "src/tests/RuntimeExpressionContextSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "c1591ed21b67182122518dd57b65c3118ed3229f42e1735c2ede3eb35f3ef19d",
-        "size": 58805
+        "digest": "9cf6c61dcde29efd2d15afb1289b3152a7d727c3568eec27be24915e045b39ab",
+        "size": 65965
       },
       {
         "path": "src/tests/RuntimeFightScreenTriggerSystem.test.ts",
@@ -5352,8 +5373,8 @@
         "path": "src/tests/RuntimeHelperTelemetrySystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "e690fee87629db4abd5a865dc5ab1e358f4394fcae9ccdf44ef097de6365aafd",
-        "size": 7264
+        "digest": "cd5d79ca91bb36935295bc9610e6d2357e16b85617755d005c2ff99ad6aa939b",
+        "size": 7281
       },
       {
         "path": "src/tests/RuntimeHitDefContactMemorySystem.test.ts",
@@ -5653,8 +5674,8 @@
         "path": "src/tests/RuntimeRecoverySystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6cca5fbbf547c2841d87ca3e9a63d5e34a2b2d57e9705d6968bb30fcad28e942",
-        "size": 11388
+        "digest": "57062a9fba7891915688470c2d38832c2ab5a20af75018bc1720ad6927f69ecb",
+        "size": 12674
       },
       {
         "path": "src/tests/RuntimeRedLifeShareSystem.test.ts",
@@ -5674,8 +5695,8 @@
         "path": "src/tests/RuntimeResourceSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "4679b0c5de651bb49fbbfdfdae2b0ed1bc337164a3e3c2095ff026f458479644",
-        "size": 12509
+        "digest": "1d5abcaf430800ceb3af8b37a99afe9c8a8d3a85422b68b619a6246f38789be4",
+        "size": 13137
       },
       {
         "path": "src/tests/RuntimeRootAdvancePhaseSystem.test.ts",
@@ -5821,15 +5842,15 @@
         "path": "src/tests/RuntimeSnapshotSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "24bd5283ec42b3516006528cda43c50081e9eec316e273e810f6543d28bf2540",
-        "size": 19229
+        "digest": "df7a4b1c964ab21aa64281f788fd61d1467169d49e8e86e22bf7858099ddfc6b",
+        "size": 24945
       },
       {
         "path": "src/tests/RuntimeStageGameSpaceSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "3e104b5d6b08b096f455379d820ae89813251c2adf8e182a418bbaef6ffbd8bc",
-        "size": 1156
+        "digest": "904e449efe551515bd443be3c964dae5d3b746427d82884371934bb2679b9e5f",
+        "size": 3063
       },
       {
         "path": "src/tests/RuntimeStateChangeTmpSystem.test.ts",
@@ -6038,15 +6059,15 @@
         "path": "src/tests/SffParser.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "737f164e649038ec621005fb59b24ed40e12dfb170ffd87eeb2163f1a160ff07",
-        "size": 13052
+        "digest": "af66d5c06f73d10cd010580261bbc54cb147dca4a1b318ae4917f00ede87013e",
+        "size": 13920
       },
       {
         "path": "src/tests/SffSpriteProvider.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9ff248aface068972cd6c5e0649b43ea461786db8b628ca918222bf3355872d9",
-        "size": 2245
+        "digest": "62f11a8b34835d371d90cf7bb1abb880c54c17b135bcd3d4946f66c2f1c734e7",
+        "size": 5979
       },
       {
         "path": "src/tests/SndParser.test.ts",
@@ -6087,29 +6108,29 @@
         "path": "src/tests/SpriteEffectSystem.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b4d9dc09733ac59012a0fb41491ddf57a62e5773d8894acc791a96a377662a8c",
-        "size": 32132
+        "digest": "bc8af5ab7e9285ec3ac98edab9484d4179637d739fcff2bfdcc4b1c743919927",
+        "size": 33708
       },
       {
         "path": "src/tests/StageCompatibilityJourney.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "994bf069a6843c230efc6ea265b4e374fdc42470fb06f0c4147999a127de4729",
-        "size": 10700
+        "digest": "6a9fe0aac788298d67219622861bd2b50723539b15bc468a1038f9886bb1acdd",
+        "size": 10793
       },
       {
         "path": "src/tests/StageCompatibilityReport.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "9e2f46f6a3e022503c403935999b530a22ba94d4f655ff70e65dec0d511c3fc2",
-        "size": 6109
+        "digest": "5b95b0b1c015a5704097d2469c26614e5b6f5fad7f067cab5b810b75f1cb4854",
+        "size": 15448
       },
       {
         "path": "src/tests/StageDefParser.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "b22df7468c7269995cf171d181b2f362650a52a38889238dde1e0ba334f7244c",
-        "size": 7156
+        "digest": "6d0b738e272319e7e8a2027e88d6cf07acb9e261398a068d2483219a954ad10b",
+        "size": 11188
       },
       {
         "path": "src/tests/StateAvailabilitySystem.test.ts",
@@ -6192,8 +6213,8 @@
         "path": "src/tests/StudioEvidenceEnvelope.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "779db630785b7ce36faa2a6dc2e99f50982f8c188d8f93a167caf1ab9de4cf04",
-        "size": 4357
+        "digest": "669d5ab32f2e9357b4abee51a5a7fe861d09dfa17d0c6541a7ff0e5afe93d363",
+        "size": 7405
       },
       {
         "path": "src/tests/StudioEvidenceStorage.test.ts",
@@ -6220,8 +6241,8 @@
         "path": "src/tests/StudioModel.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "f77e48b790c07a195e4fb1a6f8b66096b67eb3795ec5bbe55942372b3314ac0d",
-        "size": 19377
+        "digest": "5d29ea7ddbca4adc5552c9b7c32bb26db269f15212dd6cde8692d76611b8ebad",
+        "size": 19651
       },
       {
         "path": "src/tests/StudioProjectNavigationGuard.test.ts",
@@ -6255,8 +6276,8 @@
         "path": "src/tests/StudioSemanticExport.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "6f35e6455d456c25310ed123c7134b9b2841a98da112c7ca28c8042c6d743d91",
-        "size": 4865
+        "digest": "388f794f43e0050f0efb2949339fa90a12f4446562fe4a897fa40c8e66741b89",
+        "size": 6708
       },
       {
         "path": "src/tests/StudioSourceDiagnostics.test.ts",
@@ -6332,8 +6353,8 @@
         "path": "src/tests/ThreeMugenRenderer.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "29c9726742e72fe187da3260457efeb7b12a81d8a4ffba3f28c2bbf361895c84",
-        "size": 11904
+        "digest": "e44a71d9f4cd23a7fd2a1438e88322a64f7b6dd76bba7087fcf7b1f050bdf89f",
+        "size": 33276
       },
       {
         "path": "src/tests/TurnsBrowserHudJourney.test.ts",
@@ -6360,15 +6381,15 @@
         "path": "src/tests/ZssParser.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "5b7a7912c22dd977ffb487e74fa822c3496320f21fdef909bde6b69f0551950a",
-        "size": 2958
+        "digest": "1d9a12f2fcce7f4a793be56360a8b44f581646cf0049975e3566be91bec22541",
+        "size": 4377
       },
       {
         "path": "src/tests/da29/writeMeasuredJson.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "eb61e9633be2ce5a1be8795298d7781173c6b18384d9a849862f73432d92b582",
-        "size": 559
+        "digest": "5629c4a023e1fafac35df1b66d6f40846e02828c3b188b459220c860a67da8cc",
+        "size": 1926
       },
       {
         "path": "src/tests/importedFighter.test.ts",
@@ -6388,8 +6409,8 @@
         "path": "src/tests/stageProjection.test.ts",
         "origin": "tracked",
         "state": "present",
-        "digest": "d50502ceb05e23ff7ed8a9c488afd1766ee4125eb22119482cd61009d9dcc211",
-        "size": 15018
+        "digest": "a7b804404f2e96765f226b368020984f64e94e2fd54432a6552b7def88f52bed",
+        "size": 23058
       },
       {
         "path": "tsconfig.json",
@@ -6406,12 +6427,12 @@
         "size": 235
       }
     ],
-    "digest": "ba9adb81f20697214203d62fc3860850ef8d1c064e728cc130ca67d561801abc"
+    "digest": "98e7106ef70403fa7dd04edc1f80b7e829a6d375f51946f868573202ec5a6ba8"
   },
-  "source_digest": "06c2fc51f62455bba17b64970616f97641fc5e7f589c73d2fd94bec8ce6cc7e6",
+  "source_digest": "58c6b171bf3ca49615bbf03027e93fc6317465a120d6dd005ef9622f49ff6cb7",
   "artifact_hashes": {
-    "codemap.json": "4b459f0cb7ea5a0f9a2934ac93f6fb1d47259dcb22abff89e1a673388d535fe8",
-    "codemap.md": "63720c0e3c769d24722548c21c1dd84aea4089d5977d0eec42c5a3299423d1de",
-    "codemap.html": "1318902b6ac430fe3848fcde5e12bc1a5012ffcd448144bb1a39399a7a6f2932"
+    "codemap.json": "e1da4cdacde18e65e35a2b0a239a0e75b38f00f31c6a997a5cd3212e8e866bfc",
+    "codemap.md": "a3e402002baac4b00b2c790d67c360ed2f65c885079a74544d5c4928d67eeb2b",
+    "codemap.html": "9270a1756f789782d6c7300d82d674c6c0eab36acbd5fd1bce634c0260736ed7"
   }
 }
