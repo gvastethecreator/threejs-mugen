@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
+import { tokenizeMugenExpression } from "../mugen/compiler/ExpressionLexer";
+import { evaluateExpression, evaluateExpressionNumeric } from "../mugen/runtime/ExpressionEvaluator";
 import { MugenRuntime } from "../mugen/runtime/MugenRuntime";
 import { executeStateController } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -24,6 +25,16 @@ describe("MugenRuntime frame selection", () => {
     const malformed: string[] = [];
     const report = (feature: string) => malformed.push(feature);
 
+    expect(tokenizeMugenExpression("7").tokens[0]).toMatchObject({ type: "number", value: "7", kind: "int" });
+    expect(tokenizeMugenExpression("7.0").tokens[0]).toMatchObject({ type: "number", value: "7.0", kind: "float" });
+    expect(evaluateExpressionNumeric("7", { self })).toEqual({ kind: "int", value: 7 });
+    expect(evaluateExpressionNumeric("7.0", { self })).toEqual({ kind: "float", value: 7 });
+    expect(evaluateExpressionNumeric("7 + 1", { self })).toEqual({ kind: "int", value: 8 });
+    expect(evaluateExpressionNumeric("7.0 + 1", { self })).toEqual({ kind: "float", value: 8 });
+    expect(evaluateExpressionNumeric("var(0)", { self: expressionSelf({ vars: [7] }) })).toEqual({ kind: "int", value: 7 });
+    expect(evaluateExpressionNumeric("fvar(0)", { self: expressionSelf({ fvars: [7] }) })).toEqual({ kind: "float", value: 7 });
+    expect(evaluateExpressionNumeric("Parent,Var(0)", { self, parent: expressionSelf({ vars: [11] }) })).toEqual({ kind: "int", value: 11 });
+    expect(evaluateExpressionNumeric("Parent,FVar(0)", { self, parent: expressionSelf({ fvars: [3.5] }) })).toEqual({ kind: "float", value: 3.5 });
     expect(evaluateExpression("5-2", { self })).toBe(3);
     expect(evaluateExpression("5 - 2", { self })).toBe(3);
     expect(evaluateExpression("-(2+3)", { self })).toBe(-5);
@@ -92,6 +103,7 @@ describe("MugenRuntime frame selection", () => {
     expect(xorRandom).toHaveLength(2);
     expect(evaluateExpression("Sin(0)", { self })).toBe(0);
     expect(evaluateExpression("Sin()", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpressionNumeric("Sin()", { self, reportUnsupported: report }).kind).toBe("invalid");
     expect(malformed).toContain("sin(arity)");
     expect(evaluateExpression("Cos(0,1)", { self, reportUnsupported: report })).toBe(0);
     expect(malformed).toContain("cos(arity)");

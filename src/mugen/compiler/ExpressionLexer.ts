@@ -1,5 +1,7 @@
+export type ExpressionNumericKind = "int" | "float";
+
 export type ExpressionLexToken =
-  | { type: "number"; value: string }
+  | { type: "number"; value: string; kind: ExpressionNumericKind }
   | { type: "string"; value: string }
   | { type: "identifier"; value: string }
   | { type: "operator"; value: string }
@@ -36,7 +38,7 @@ export function tokenizeMugenExpression(expression: string): TokenizedMugenExpre
     }
     cursor = expressionTokenPattern.lastIndex;
     if (match[1] !== undefined) {
-      tokens.push({ type: "number", value: match[1] });
+      tokens.push({ type: "number", value: match[1], kind: match[1].includes(".") ? "float" : "int" });
     } else if (match[2] !== undefined) {
       tokens.push({ type: "string", value: match[2] });
     } else if (match[3] !== undefined) {

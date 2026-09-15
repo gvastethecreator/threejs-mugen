@@ -1,5 +1,5 @@
 import { mathFunctionArity, normalizeMugenExpression } from "../compiler/ExpressionCompiler";
-import { tokenizeMugenExpression, type ExpressionLexToken } from "../compiler/ExpressionLexer";
+import { tokenizeMugenExpression, type ExpressionLexToken, type ExpressionNumericKind } from "../compiler/ExpressionLexer";
 import { runtimeRoundStateFromPhase } from "./RuntimeRoundPhaseSystem";
 import {
   runtimeFightScreenStateValue,
@@ -205,7 +205,20 @@ export type ExpressionRedirectTarget = {
   roundDecision?: ExpressionContext["roundDecision"];
 };
 
+export type ExpressionNumericResult = {
+  kind: ExpressionNumericKind | "invalid";
+  value: number;
+};
+
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
+  return unwrapExpressionValue(evaluateExpressionRaw(expression, context));
+}
+
+export function evaluateExpressionNumeric(expression: string, context: ExpressionContext): ExpressionNumericResult {
+  return classifyExpressionValue(evaluateExpressionRaw(expression, context));
+}
+
+function evaluateExpressionRaw(expression: string, context: ExpressionContext): ExpressionValue {
   const normalized = normalizeMugenExpression(expression);
   const redirected = evaluateActorRedirect(normalized, context);
   if (redirected !== undefined) {
@@ -213,17 +226,17 @@ export function evaluateExpression(expression: string, context: ExpressionContex
   }
   const animElemTrigger = evaluateAnimElemTrigger(normalized, context);
   if (animElemTrigger !== undefined) {
-    return animElemTrigger;
+    return taggedNumber("int", animElemTrigger);
   }
   const commandMatch = /^(?:command|selfcommand)\s*(=|!=)\s*"([^"]+)"$/i.exec(normalized.trim());
   if (commandMatch) {
     const active = context.commandActive?.(commandMatch[2] ?? "") ? 1 : 0;
-    return commandMatch[1] === "!=" ? (active ? 0 : 1) : active;
+    return taggedNumber("int", commandMatch[1] === "!=" ? (active ? 0 : 1) : active);
   }
   const hitDefAttrMatch = /^hitdefattr\s*(=|!=)\s*(.+)$/i.exec(normalized.trim());
   if (hitDefAttrMatch) {
     const active = context.hitDefAttr?.(hitDefAttrMatch[2] ?? "") ? 1 : 0;
-    return hitDefAttrMatch[1] === "!=" ? (active ? 0 : 1) : active;
+    return taggedNumber("int", hitDefAttrMatch[1] === "!=" ? (active ? 0 : 1) : active);
   }
 
   const executable = rewriteProjVarFlagComparisons(
@@ -234,10 +247,15 @@ export function evaluateExpression(expression: string, context: ExpressionContex
     ),
   );
   const parser = new ExpressionParser(tokenize(executable), context);
-  return parser.parse();
+  return parser.parsePreservingBottom();
 }
 
-type ExpressionValue = boolean | number | string;
+type TaggedNumber = {
+  readonly numericKind: ExpressionNumericKind;
+  readonly value: number;
+};
+
+type ExpressionValue = boolean | number | string | TaggedNumber;
 
 const commandIdentifierMarker = "__mugen_command_identifier__";
 const failedRedirectMarker = "__mugen_failed_redirect__";
@@ -269,7 +287,7 @@ function evaluateAnimElemTrigger(expression: string, context: ExpressionContext)
 
 function evaluateExpressionFragment(expression: string, context: ExpressionContext): ExpressionValue {
   const parser = new ExpressionParser(tokenize(normalizeMugenExpression(expression)), context);
-  return parser.parse();
+  return parser.parsePreservingBottom();
 }
 
 function evaluateExpressionFragmentPreservingBottom(expression: string, context: ExpressionContext): ExpressionValue {
@@ -444,53 +462,53 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   if (target === "enemynear") {
     const redirected = enemyNearRedirectContext(index, context);
     if (redirected === "fail") {
-      return 0;
+      return failedRedirectMarker;
     }
-    return evaluateExpression(expressionBody, {
+    return evaluateExpressionRaw(expressionBody, {
       ...redirected,
     });
   }
   if (target === "partner" || target === "enemy") {
     const redirected = rosterRedirectContext(target, index, context);
     if (redirected === "fail") {
-      return 0;
+      return failedRedirectMarker;
     }
-    return evaluateExpression(expressionBody, redirected);
+    return evaluateExpressionRaw(expressionBody, redirected);
   }
   if (target === "target") {
     const targetId = resolveRedirectTargetId(index, context);
     if (targetId === "unsupported") {
-      return 0;
+      return failedRedirectMarker;
     }
     const redirected = context.target?.(targetId);
     if (!redirected) {
-      return 0;
+      return failedRedirectMarker;
     }
-    return evaluateExpression(expressionBody, redirectedTargetContext(context, redirected));
+    return evaluateExpressionRaw(expressionBody, redirectedTargetContext(context, redirected));
   }
   if (target === "playerid") {
     const playerId = resolvePlayerIdIndex(index, context);
     if (playerId === "unsupported") {
-      return 0;
+      return failedRedirectMarker;
     }
     const redirected = context.playerIdTarget?.(playerId);
     if (!redirected) {
       if (!context.playerIdTarget) {
         context.reportUnsupported?.("playerid");
       }
-      return 0;
+      return failedRedirectMarker;
     }
-    return evaluateExpression(expressionBody, redirectedTargetContext(context, redirected));
+    return evaluateExpressionRaw(expressionBody, redirectedTargetContext(context, redirected));
   }
   if (index) {
     context.reportUnsupported?.(`${target}(index)`);
-    return 0;
+    return failedRedirectMarker;
   }
   const redirected = parentOrRootRedirectContext(target === "parent" ? "parent" : "root", context);
   if (redirected === "fail") {
-    return 0;
+    return failedRedirectMarker;
   }
-  return evaluateExpression(expressionBody, redirected);
+  return evaluateExpressionRaw(expressionBody, redirected);
 }
 
 type Token = ExpressionLexToken;
@@ -505,8 +523,7 @@ class ExpressionParser {
   ) {}
 
   parse(): ExpressionValue {
-    const value = this.parsePreservingBottom();
-    return isFailedRedirect(value) ? 0 : value;
+    return unwrapExpressionValue(this.parsePreservingBottom());
   }
 
   parsePreservingBottom(): ExpressionValue {
@@ -515,12 +532,12 @@ class ExpressionParser {
     }
     if (this.tokens.some((token) => token.type === "invalid")) {
       this.reportMalformed();
-      return 0;
+      return failedRedirectMarker;
     }
     const value = this.parseOr();
     if (this.malformed || this.cursor < this.tokens.length) {
       this.reportMalformed();
-      return 0;
+      return failedRedirectMarker;
     }
     return value;
   }
@@ -753,11 +770,9 @@ class ExpressionParser {
     let left = this.parseFactor();
     while (true) {
       if (this.matchOperator("+")) {
-        const right = this.parseFactor();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) + numeric(right);
+        left = combineArithmetic(left, this.parseFactor(), (a, b) => a + b);
       } else if (this.matchOperator("-")) {
-        const right = this.parseFactor();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) - numeric(right);
+        left = combineArithmetic(left, this.parseFactor(), (a, b) => a - b);
       } else {
         return left;
       }
@@ -768,12 +783,15 @@ class ExpressionParser {
     let left = this.parseUnary();
     while (true) {
       if (this.matchOperator("*")) {
-        const right = this.parseUnary();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) * numeric(right);
+        left = combineArithmetic(left, this.parseUnary(), (a, b) => a * b);
       } else if (this.matchOperator("/")) {
         const right = this.parseUnary();
         const divisor = numeric(right);
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : divisor === 0 ? 0 : numeric(left) / divisor;
+        left = isFailedRedirect(left) || isFailedRedirect(right)
+          ? failedRedirectMarker
+          : divisor === 0
+            ? taggedNumber("int", 0)
+            : combineArithmetic(left, right, (a, b) => a / b);
       } else if (this.matchOperator("%")) {
         const right = this.parseUnary();
         if (isFailedRedirect(left) || isFailedRedirect(right)) {
@@ -800,7 +818,12 @@ class ExpressionParser {
     }
     if (this.matchOperator("-")) {
       const value = this.parseUnary();
-      return isFailedRedirect(value) ? failedRedirectMarker : -numeric(value);
+      if (isFailedRedirect(value)) {
+        return failedRedirectMarker;
+      }
+      const kind = numericKindOf(value);
+      const result = -numeric(value);
+      return kind === "float" ? taggedNumber("float", result) : taggedNumber("int", result);
     }
     if (this.matchOperator("~")) {
       const value = this.parseUnary();
@@ -816,7 +839,11 @@ class ExpressionParser {
       return false;
     }
     if (token.type === "number") {
-      return Number(token.value);
+      const parsed = Number(token.value);
+      if (!Number.isFinite(parsed)) {
+        return failedRedirectMarker;
+      }
+      return taggedNumber(token.kind, parsed);
     }
     if (token.type === "string") {
       return token.value;
@@ -1456,13 +1483,13 @@ class ExpressionParser {
       return this.context.stateExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
     }
     if (lower === "sysvar") {
-      return this.context.self.sysvars?.[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
+      return taggedNumber("int", this.context.self.sysvars?.[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0);
     }
     if (lower === "var") {
-      return this.context.self.vars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
+      return taggedNumber("int", this.context.self.vars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0);
     }
     if (lower === "fvar") {
-      return this.context.self.fvars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
+      return taggedNumber("float", this.context.self.fvars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0);
     }
     if (lower === "animelemvar") {
       return this.context.animElemVar?.(String(args[0] ?? "")) ?? 0;
@@ -1953,6 +1980,9 @@ function truthy(value: ExpressionValue): boolean {
   if (isFailedRedirect(value)) {
     return false;
   }
+  if (isTaggedNumber(value)) {
+    return value.value !== 0;
+  }
   if (typeof value === "number") {
     return value !== 0;
   }
@@ -2296,7 +2326,73 @@ function normalizePlayerId(value: number, context: ExpressionContext): number | 
   return playerId;
 }
 
+function taggedNumber(kind: ExpressionNumericKind, value: number): TaggedNumber {
+  return { numericKind: kind, value };
+}
+
+function isTaggedNumber(value: ExpressionValue): value is TaggedNumber {
+  return typeof value === "object" && value !== null && "numericKind" in value;
+}
+
+function numericKindOf(value: ExpressionValue): ExpressionNumericKind {
+  if (isTaggedNumber(value)) {
+    return value.numericKind;
+  }
+  if (typeof value === "number") {
+    return Number.isInteger(value) ? "int" : "float";
+  }
+  return "int";
+}
+
+function combineArithmetic(
+  left: ExpressionValue,
+  right: ExpressionValue,
+  operate: (left: number, right: number) => number,
+): ExpressionValue {
+  if (isFailedRedirect(left) || isFailedRedirect(right)) {
+    return failedRedirectMarker;
+  }
+  const result = operate(numeric(left), numeric(right));
+  if (!Number.isFinite(result)) {
+    return failedRedirectMarker;
+  }
+  const kind = numericKindOf(left) === "float" || numericKindOf(right) === "float" || !Number.isInteger(result) ? "float" : "int";
+  return taggedNumber(kind, result);
+}
+
+function unwrapExpressionValue(value: ExpressionValue): boolean | number | string {
+  if (isFailedRedirect(value)) {
+    return 0;
+  }
+  if (isTaggedNumber(value)) {
+    return value.value;
+  }
+  return value;
+}
+
+function classifyExpressionValue(value: ExpressionValue): ExpressionNumericResult {
+  if (isFailedRedirect(value)) {
+    return { kind: "invalid", value: Number.NaN };
+  }
+  if (isTaggedNumber(value)) {
+    return { kind: value.numericKind, value: value.value };
+  }
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) {
+      return { kind: "invalid", value: Number.NaN };
+    }
+    return { kind: Number.isInteger(value) ? "int" : "float", value };
+  }
+  if (typeof value === "boolean") {
+    return { kind: "int", value: value ? 1 : 0 };
+  }
+  return { kind: "invalid", value: Number.NaN };
+}
+
 function numeric(value: ExpressionValue): number {
+  if (isTaggedNumber(value)) {
+    return value.value;
+  }
   if (typeof value === "number") {
     return value;
   }
@@ -2308,8 +2404,8 @@ function numeric(value: ExpressionValue): number {
 }
 
 function compareValues(left: ExpressionValue, right: ExpressionValue): number {
-  const leftNumber = Number(left);
-  const rightNumber = Number(right);
+  const leftNumber = isTaggedNumber(left) ? left.value : Number(left);
+  const rightNumber = isTaggedNumber(right) ? right.value : Number(right);
   if (Number.isFinite(leftNumber) && Number.isFinite(rightNumber)) {
     return leftNumber === rightNumber ? 0 : leftNumber < rightNumber ? -1 : 1;
   }
