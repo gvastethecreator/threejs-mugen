@@ -212,6 +212,33 @@ sin.y = 4,16,0
     });
   });
 
+  it("parses vertical camera tension and bound fields without scaling them", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[Camera]
+startx = 0
+starty = 0
+floortension = 20
+verticalfollow = .5
+boundhigh = -8
+boundlow = 0
+[StageInfo]
+zoffset = 200
+localcoord = 320,240
+[BGDef]
+spr = cam.sff
+`, "stages/vertical-cam.def"),
+      "stage-vertical-cam",
+    );
+
+    expect(runtime.camera).toMatchObject({
+      floorTension: 20,
+      verticalFollow: 0.5,
+      boundHigh: -8,
+      boundLow: 0,
+    });
+  });
+
   it("keeps sinusoid amplitudes in stage pixels for a 640 localcoord stage", () => {
     const runtime = stageDefToRuntime(
       parseStageDef(`

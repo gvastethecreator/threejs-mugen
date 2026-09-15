@@ -117,6 +117,10 @@ export function stageDefToRuntime(
       startX: numberValue(camera, "startx") ?? 0,
       startY: cameraStartY,
       zoom: clampZoom((zoomOut + zoomIn) / 2),
+      ...(numberValue(camera, "floortension") === undefined ? {} : { floorTension: numberValue(camera, "floortension") }),
+      ...(numberValue(camera, "verticalfollow") === undefined ? {} : { verticalFollow: numberValue(camera, "verticalfollow") }),
+      ...(numberValue(camera, "boundhigh") === undefined ? {} : { boundHigh: numberValue(camera, "boundhigh") }),
+      ...(numberValue(camera, "boundlow") === undefined ? {} : { boundLow: numberValue(camera, "boundlow") }),
     },
     ...(booleanValue(stageInfo, "resetbg") === undefined
       ? {}

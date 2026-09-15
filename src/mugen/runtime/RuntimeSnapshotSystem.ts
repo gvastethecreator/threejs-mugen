@@ -137,7 +137,7 @@ export class RuntimeSnapshotWorld {
     const center = cameraCenterX(input.actors);
     const camera = {
       x: center + input.stage.camera.startX,
-      y: input.stage.camera.startY,
+      y: cameraCenterY(input.actors, input.stage),
       zoom: input.stage.camera.zoom,
       ...(input.cameraShake ? { shake: input.cameraShake } : {}),
     };
@@ -255,6 +255,22 @@ export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {
   const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraX !== false);
   const source = cameraActors.length > 0 ? cameraActors : actors;
   return source.reduce((sum, actor) => sum + actor.runtime.pos.x, 0) / Math.max(1, source.length);
+}
+
+export function cameraCenterY(actors: RuntimeSnapshotActor[], stage: RuntimeStageSnapshotInput["stage"]): number {
+  const startY = stage.camera.startY;
+  const follow = stage.camera.verticalFollow ?? 0;
+  const tension = stage.camera.floorTension ?? 0;
+  if (follow <= 0) {
+    return startY;
+  }
+  const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraY !== false);
+  const source = cameraActors.length > 0 ? cameraActors : actors;
+  const highest = source.reduce((min, actor) => Math.min(min, actor.runtime.pos.y), 0);
+  const lift = Math.max(0, -highest - tension) * follow;
+  const maxLift = stage.camera.boundHigh === undefined ? Number.POSITIVE_INFINITY : Math.abs(stage.camera.boundHigh);
+  const minLift = stage.camera.boundLow ?? 0;
+  return startY + Math.min(maxLift, Math.max(minLift, lift));
 }
 
 function spriteOwnerSnapshot(actor: RuntimePlayerSnapshotActor): {

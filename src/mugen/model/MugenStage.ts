@@ -173,6 +173,10 @@ export type MugenStageDefinition = {
     startX: number;
     startY: number;
     zoom: number;
+    floorTension?: number;
+    verticalFollow?: number;
+    boundHigh?: number;
+    boundLow?: number;
   };
   resetBackgroundBetweenRounds?: boolean;
   playerStart: {

@@ -3,6 +3,7 @@ import type { MugenAnimationFrame } from "../mugen/model/MugenAnimation";
 import { trainingStage } from "../mugen/runtime/demoStage";
 import {
   cameraCenterX,
+  cameraCenterY,
   RuntimeSnapshotWorld,
   type RuntimePlayerSnapshotActor,
   type RuntimeSnapshotActor,
@@ -24,6 +25,37 @@ describe("RuntimeSnapshotWorld", () => {
     const actors = [actorAt(-120, { moveCameraX: false }), actorAt(40, { moveCameraX: false })];
 
     expect(cameraCenterX(actors)).toBe(-40);
+  });
+
+  it("keeps camera Y fixed below floor tension and follows a jump within boundhigh", () => {
+    const tall = {
+      ...trainingStage,
+      camera: {
+        ...trainingStage.camera,
+        floorTension: 20,
+        verticalFollow: 0.5,
+        boundHigh: -8,
+        boundLow: 0,
+      },
+      zOffsetLink: 4,
+      floorY: -10,
+    };
+    const grounded = [actorAt(-40, undefined, 0), actorAt(40, undefined, 0)];
+    const belowTension = [actorAt(-40, undefined, -10), actorAt(40, undefined, 0)];
+    const jump = [actorAt(-40, undefined, -40), actorAt(40, undefined, 0)];
+    const landed = [actorAt(-40, undefined, 0), actorAt(40, undefined, 0)];
+
+    expect(cameraCenterY(grounded, tall)).toBe(tall.camera.startY);
+    expect(cameraCenterY(belowTension, tall)).toBe(tall.camera.startY);
+    expect(cameraCenterY(jump, tall)).toBe(tall.camera.startY + 8);
+    expect(jump[0]?.runtime.pos.y).toBe(-40);
+    expect(cameraCenterY(landed, tall)).toBe(tall.camera.startY);
+
+    const world = new RuntimeSnapshotWorld();
+    const snapshot = world.stage({ stage: tall, actors: jump });
+    expect(snapshot.camera.y).toBe(tall.camera.startY + 8);
+    expect(snapshot.floorY).toBe(-10);
+    expect(snapshot.zOffsetLink).toBe(4);
   });
 
   it("owns stage snapshot projection for camera, shake, env color, and stage data", () => {
@@ -500,10 +532,14 @@ describe("RuntimeSnapshotWorld", () => {
   });
 });
 
-function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"]): RuntimeSnapshotActor {
+function actorAt(
+  x: number,
+  screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"],
+  y = 0,
+): RuntimeSnapshotActor {
   return {
     runtime: {
-      pos: { x, y: 0 },
+      pos: { x, y },
       screenBound,
     },
   };
