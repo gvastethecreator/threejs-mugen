@@ -9,7 +9,7 @@ export const MUGEN_SELECT_DEF_PLAYABLE_FIXTURE_MANIFEST = Object.freeze({
   license: "CC0-1.0",
   provenance: "Repository-authored deterministic select.def roster and stage fixture",
   selectPath: "data/select.def",
-  characterEntries: ["select-alpha/journey", "select-beta/journey"] as const,
+  characterEntries: ["select-alpha/journey, pal = 2", "select-beta/journey, pal = 1"] as const,
   stageEntries: ["skyline-relay/skyline"] as const,
 });
 

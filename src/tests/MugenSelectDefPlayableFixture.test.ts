@@ -10,6 +10,7 @@ import {
   createMugenSelectDefPlayableFixtureVfs,
   createMugenSelectDefPlayableReimportFixtureVfs,
 } from "../mugen/runtime/MugenSelectDefPlayableFixture";
+import { assignSeat, clearSeat, createEmptySelection } from "../mugen/da30/SelectionStateModel";
 
 describe("MugenSelectDefPlayableFixture", () => {
   it("loads the manifest-selected two-fighter roster and stage into a real MatchWorld launch", async () => {
@@ -46,8 +47,50 @@ describe("MugenSelectDefPlayableFixture", () => {
     expect(stages.map((item) => item.files.def)).toEqual(["stages/skyline-relay/skyline.def"]);
     expect(imported.usesSelectionManifest).toBe(true);
     expect(imported.characterEntries.map((entry) => entry.id)).toEqual(["character-1", "character-2"]);
+    expect(imported.characterEntries.map((entry) => entry.pal)).toEqual([2, 1]);
+    expect(imported.palettes).toEqual([
+      {
+        characterPath: "chars/select-alpha/journey.def",
+        pal: 2,
+        palettePath: "chars/select-alpha/journey-palette.act",
+      },
+      {
+        characterPath: "chars/select-beta/journey.def",
+        pal: 1,
+        palettePath: "chars/select-beta/journey-source.act",
+      },
+    ]);
+    expect(world.getSnapshot().stage.id).toBe(stage.id);
     expect(world.getSnapshot().actors).toHaveLength(2);
     expect(MUGEN_SELECT_DEF_PLAYABLE_FIXTURE_MANIFEST.license).toBe("CC0-1.0");
+  });
+
+  it("reports an invalid palette and a missing stage instead of substituting another resource", async () => {
+    const vfs = createMugenSelectDefPlayableFixtureVfs();
+    vfs.addFile(
+      "data/select.def",
+      new TextEncoder().encode([
+        "[Characters]",
+        "select-alpha/journey, pal = 99",
+        "select-beta/journey",
+        "",
+        "[Stages]",
+        "missing-stage/none",
+        "",
+      ].join("\n")),
+    );
+
+    const imported = await loadMugenSelectionImport({
+      sourceName: "select-def-invalid-options",
+      vfs,
+    });
+
+    expect(imported.usesSelectionManifest).toBe(false);
+    expect(imported.manifest?.characters[0]?.options).toBe("pal = 99");
+    expect(imported.manifest?.characters[0]?.pal).toBeUndefined();
+    expect(imported.manifest?.diagnostics.map((diagnostic) => diagnostic.code)).toEqual(["invalid-palette", "missing-entry"]);
+    expect(imported.palettes).toEqual([]);
+    expect(imported.diagnostics[0]).toContain("not launch-ready");
   });
 
   it("retains the existing manual/demo import fallback when select.def is not launch-ready", async () => {
@@ -92,5 +135,25 @@ describe("MugenSelectDefPlayableFixture", () => {
       "Select Alpha",
     ]);
     expect(imported.stages.map((stage) => stage.stage.id)).toEqual(["stage-skyline-relay-reimport"]);
+  });
+
+  it("clears a prior seat palette on cancel so reselect does not keep the old option", () => {
+    const first = assignSeat(createEmptySelection(), "p1", {
+      packageId: "select-alpha",
+      revision: "1",
+      legal: true,
+      palette: 2,
+    });
+    expect(first.ok).toBe(true);
+    expect(first.state.seats.p1?.palette).toBe(2);
+    const cancelled = clearSeat(first.state, "p1");
+    expect(cancelled.seats.p1).toBeNull();
+    const second = assignSeat(cancelled, "p1", {
+      packageId: "select-beta",
+      revision: "1",
+      legal: true,
+    });
+    expect(second.state.seats.p1).toEqual({ packageId: "select-beta", revision: "1", legal: true });
+    expect(second.state.seats.p1?.palette).toBeUndefined();
   });
 });

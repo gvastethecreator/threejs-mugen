@@ -59,9 +59,9 @@ describe("MugenSelectionManifest", () => {
       },
       packageDigest: "package-digest",
     });
-    expect(manifest.characters.map((entry) => [entry.order, entry.reference, entry.options, entry.status, entry.resolvedPath])).toEqual([
-      [0, "alpha", undefined, "resolved", "chars/alpha/alpha.def"],
-      [1, "beta", "order = 2", "resolved", "chars/beta/beta.def"],
+    expect(manifest.characters.map((entry) => [entry.order, entry.reference, entry.options, entry.pal, entry.status, entry.resolvedPath])).toEqual([
+      [0, "alpha", undefined, undefined, "resolved", "chars/alpha/alpha.def"],
+      [1, "beta", "order = 2", undefined, "resolved", "chars/beta/beta.def"],
     ]);
     expect(manifest.stages.map((entry) => [entry.order, entry.reference, entry.status, entry.resolvedPath])).toEqual([
       [0, "skyline", "resolved", "stages/skyline.def"],

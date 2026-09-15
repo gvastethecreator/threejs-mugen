@@ -42,13 +42,14 @@ export type MugenSelectionManifestEntry = {
   raw: string;
   reference: string;
   options?: string;
+  pal?: number;
   status: MugenSelectionManifestEntryStatus;
   resolvedPath?: string;
   duplicateOf?: string;
 };
 
 export type MugenSelectionManifestDiagnostic = {
-  code: "unsafe-reference" | "missing-entry" | "duplicate-entry" | "unsupported-entry" | "malformed-entry";
+  code: "unsafe-reference" | "missing-entry" | "duplicate-entry" | "unsupported-entry" | "malformed-entry" | "invalid-palette";
   location: MugenSelectionManifestLocation;
   message: string;
 };
@@ -255,7 +256,32 @@ function parseSelectionEntry(input: {
     return { ...base, status: "duplicate", resolvedPath, duplicateOf };
   }
   input.seen.set(resolvedPath.toLowerCase(), id);
-  return { ...base, status: "resolved", resolvedPath };
+  const pal = parseSelectionPalette(options);
+  if (pal.invalid) {
+    input.diagnostics.push({
+      code: "invalid-palette",
+      location,
+      message: "Selection palette '" + pal.invalid + "' is not a usable pal 1-12 value.",
+    });
+    return { ...base, status: "resolved", resolvedPath };
+  }
+  return { ...base, status: "resolved", resolvedPath, ...(pal.value === undefined ? {} : { pal: pal.value }) };
+}
+
+export function parseSelectionPalette(options: string | undefined): { value?: number; invalid?: string } {
+  if (!options) {
+    return {};
+  }
+  const match = /(?:^|,)\s*pal\s*=\s*([^,]+)/i.exec(options);
+  if (!match) {
+    return {};
+  }
+  const raw = match[1]!.trim();
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 1 || value > 12) {
+    return { invalid: raw };
+  }
+  return { value };
 }
 
 function splitSelectionRow(content: string): [string, string | undefined] {

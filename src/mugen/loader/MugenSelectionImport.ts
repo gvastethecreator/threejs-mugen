@@ -11,11 +11,18 @@ import { MugenCharacterLoader } from "./MugenCharacterLoader";
 import { MugenStageLoader } from "./MugenStageLoader";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
 
+export type MugenSelectionImportPalette = {
+  characterPath: string;
+  pal?: number;
+  palettePath?: string;
+};
+
 export type MugenSelectionImportResult = {
   manifest?: MugenSelectionManifest;
   characters: MugenCharacter[];
   characterEntries: MugenSelectionManifestEntry[];
   stages: MugenStagePackage[];
+  palettes?: MugenSelectionImportPalette[];
   usesSelectionManifest: boolean;
   diagnostics: string[];
 };
@@ -54,13 +61,27 @@ export async function loadMugenSelectionImport(
       input.vfs,
       stageEntries.map((entry) => entry.resolvedPath!),
     );
+    const diagnostics: string[] = [];
+    const palettes = characterEntries.map((entry, index) => {
+      const character = characters[index];
+      if (entry.pal === undefined) {
+        return { characterPath: entry.resolvedPath!, pal: undefined, palettePath: undefined };
+      }
+      const palette = character?.palettes?.find((item) => item.index === entry.pal) ?? character?.palettes?.[entry.pal - 1];
+      if (!palette) {
+        diagnostics.push("invalid palette " + String(entry.pal) + " for " + entry.resolvedPath);
+        return { characterPath: entry.resolvedPath!, pal: entry.pal, palettePath: undefined };
+      }
+      return { characterPath: entry.resolvedPath!, pal: entry.pal, palettePath: palette.path };
+    });
     return {
       manifest,
       characters,
       characterEntries,
       stages,
+      palettes,
       usesSelectionManifest: true,
-      diagnostics: [],
+      diagnostics,
     };
   }
 
@@ -71,6 +92,7 @@ export async function loadMugenSelectionImport(
     characters: [character],
     characterEntries: [],
     stages,
+    palettes: [],
     usesSelectionManifest: false,
     diagnostics: manifest
       ? ["select.def manifest is not launch-ready; retained the existing single-character/manual fallback."]

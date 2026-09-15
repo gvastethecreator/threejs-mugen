@@ -28,6 +28,13 @@ export function createEmptySelection(): SelectionState {
   };
 }
 
+export function clearSeat(state: SelectionState, seat: string): SelectionState {
+  return {
+    ...state,
+    seats: { ...state.seats, [seat]: null },
+  };
+}
+
 export function assignSeat(
   state: SelectionState,
   seat: string,
