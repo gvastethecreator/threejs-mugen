@@ -15,6 +15,8 @@ export type StageSpritePlacement = {
   uv?: StageSpritePlacementUv;
   topWidth?: number;
   bottomWidth?: number;
+  topOffsetX?: number;
+  bottomOffsetX?: number;
 };
 
 export type StageSpritePlacementUv = {
@@ -22,6 +24,10 @@ export type StageSpritePlacementUv = {
   v1: number;
   u2: number;
   v2: number;
+  uTop1?: number;
+  uTop2?: number;
+  uBottom1?: number;
+  uBottom2?: number;
 };
 
 export type StageLayerClipRect = {
@@ -520,6 +526,13 @@ export function projectStageLayerClip(layer: Pick<MugenStageLayer, "clip">, stag
 }
 
 export function clipStagePlacement(placement: StageSpritePlacement, clip: StageLayerClipRect): StageSpritePlacement | undefined {
+  if (
+    placement.topWidth !== undefined &&
+    placement.bottomWidth !== undefined &&
+    (placement.topWidth !== placement.bottomWidth || placement.topOffsetX || placement.bottomOffsetX)
+  ) {
+    return clipTrapezoidPlacement(placement, clip);
+  }
   const left = placement.x - placement.width / 2;
   const right = placement.x + placement.width / 2;
   const bottom = placement.y - placement.height / 2;
@@ -541,6 +554,67 @@ export function clipStagePlacement(placement: StageSpritePlacement, clip: StageL
     width: clippedRight - clippedLeft,
     height: clippedTop - clippedBottom,
     uv: { u1, v1, u2, v2 },
+  };
+}
+
+function clipTrapezoidPlacement(placement: StageSpritePlacement, clip: StageLayerClipRect): StageSpritePlacement | undefined {
+  const topWidth = placement.topWidth ?? placement.width;
+  const bottomWidth = placement.bottomWidth ?? placement.width;
+  const topOffset = placement.topOffsetX ?? 0;
+  const bottomOffset = placement.bottomOffsetX ?? 0;
+  const origBottom = placement.y - placement.height / 2;
+  const origTop = placement.y + placement.height / 2;
+  const origTopLeft = placement.x + topOffset - topWidth / 2;
+  const origTopRight = placement.x + topOffset + topWidth / 2;
+  const origBottomLeft = placement.x + bottomOffset - bottomWidth / 2;
+  const origBottomRight = placement.x + bottomOffset + bottomWidth / 2;
+  const clippedBottom = Math.max(origBottom, clip.bottom);
+  const clippedTop = Math.min(origTop, clip.top);
+  if (clippedTop <= clippedBottom || placement.height <= 0) {
+    return undefined;
+  }
+  const tBottom = (clippedBottom - origBottom) / placement.height;
+  const tTop = (clippedTop - origBottom) / placement.height;
+  const widthAt = (t: number) => bottomWidth + (topWidth - bottomWidth) * t;
+  const centerXAt = (t: number) => placement.x + bottomOffset + (topOffset - bottomOffset) * t;
+  let topLeft = centerXAt(tTop) - widthAt(tTop) / 2;
+  let topRight = centerXAt(tTop) + widthAt(tTop) / 2;
+  let bottomLeft = centerXAt(tBottom) - widthAt(tBottom) / 2;
+  let bottomRight = centerXAt(tBottom) + widthAt(tBottom) / 2;
+  topLeft = Math.max(topLeft, clip.left);
+  topRight = Math.min(topRight, clip.right);
+  bottomLeft = Math.max(bottomLeft, clip.left);
+  bottomRight = Math.min(bottomRight, clip.right);
+  if (topRight <= topLeft || bottomRight <= bottomLeft) {
+    return undefined;
+  }
+  const newX = (Math.min(topLeft, bottomLeft) + Math.max(topRight, bottomRight)) / 2;
+  const newY = (clippedBottom + clippedTop) / 2;
+  const newTopWidth = topRight - topLeft;
+  const newBottomWidth = bottomRight - bottomLeft;
+  const uTop1 = topWidth === 0 ? 0 : (topLeft - origTopLeft) / topWidth;
+  const uTop2 = topWidth === 0 ? 1 : (topRight - origTopLeft) / topWidth;
+  const uBottom1 = bottomWidth === 0 ? 0 : (bottomLeft - origBottomLeft) / bottomWidth;
+  const uBottom2 = bottomWidth === 0 ? 1 : (bottomRight - origBottomLeft) / bottomWidth;
+  return {
+    x: newX,
+    y: newY,
+    width: Math.max(newTopWidth, newBottomWidth),
+    height: clippedTop - clippedBottom,
+    topWidth: newTopWidth,
+    bottomWidth: newBottomWidth,
+    topOffsetX: (topLeft + topRight) / 2 - newX,
+    bottomOffsetX: (bottomLeft + bottomRight) / 2 - newX,
+    uv: {
+      u1: uBottom1,
+      v1: tBottom,
+      u2: uBottom2,
+      v2: tTop,
+      uTop1,
+      uTop2,
+      uBottom1,
+      uBottom2,
+    },
   };
 }
 

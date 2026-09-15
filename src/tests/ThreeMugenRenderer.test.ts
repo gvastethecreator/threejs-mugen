@@ -573,6 +573,61 @@ describe("ThreeMugenRenderer stage BGPalFX", () => {
     renderer.dispose();
   });
 
+  it("clips parallax trapezoid vertices and per-edge UVs at the authored window", () => {
+    const textures = { getTexture: () => new THREE.Texture() } as unknown as TextureStore;
+    const renderer = new AxisRenderer(textures);
+    const sprite = { group: 0, index: 0, width: 100, height: 40, axisX: 10, axisY: 5 };
+    renderer.setStageSpriteArchives([{ stageId: "clip", archive: { version: "v1", sprites: [sprite], warnings: [] } }]);
+    renderer.update({
+      width: 320,
+      height: 240,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        id: "clip",
+        displayName: "Clip",
+        floorY: 0,
+        zOffset: 200,
+        camera: { x: 80, y: 112, zoom: 1 },
+        layers: [
+          {
+            id: "floor",
+            type: "parallax",
+            color: "#fff",
+            y: 0,
+            width: 320,
+            height: 40,
+            deltaX: 0.5,
+            opacity: 1,
+            startX: 20,
+            startY: 30,
+            spriteGroup: 0,
+            spriteIndex: 0,
+            parallaxWidth: { top: 200, bottom: 80 },
+            clip: { source: "window", x1: 50, y1: 25, x2: 150, y2: 65 },
+          },
+        ],
+      },
+    });
+    const mesh = renderer.group.children.find((child): child is THREE.Mesh => {
+      if (!(child instanceof THREE.Mesh)) {
+        return false;
+      }
+      const pos = child.geometry.getAttribute("position") as THREE.BufferAttribute;
+      return pos.getX(1) - pos.getX(0) !== pos.getX(3) - pos.getX(2);
+    });
+    const pos = mesh?.geometry.getAttribute("position") as THREE.BufferAttribute;
+    const uv = mesh?.geometry.getAttribute("uv") as THREE.BufferAttribute;
+    expect(pos.getX(1) - pos.getX(0)).toBe(100);
+    expect(pos.getX(3) - pos.getX(2)).toBe(80);
+    expect(uv.getX(0)).toBeCloseTo(0.25);
+    expect(uv.getX(1)).toBeCloseTo(0.75);
+    expect(uv.getX(2)).toBeCloseTo(0);
+    expect(uv.getX(3)).toBeCloseTo(1);
+    renderer.dispose();
+  });
+
   it("renders a nine-layer loaded stage with sinusoid, trapezoid and linked floor together", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile("stages/composition-nine/stage.def", new TextEncoder().encode(NINE_LAYER_COMPOSITION_DEF));

@@ -173,6 +173,53 @@ describe("projectStageSpriteLayer", () => {
     )).toEqual([]);
   });
 
+  it("clips a parallax trapezoid against the authored window without flattening UV", () => {
+    const parallax: MugenStageLayer = {
+      id: "BG Floor",
+      type: "parallax",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 0.5,
+      opacity: 1,
+      startX: 20,
+      startY: 30,
+      spriteGroup: 1,
+      spriteIndex: 0,
+      parallaxWidth: { top: 200, bottom: 80 },
+      clip: { source: "window", x1: 50, y1: 25, x2: 150, y2: 65 },
+    };
+    const [clipped] = projectStageSpriteLayer(parallax, sprite, stage, 640);
+    expect(clipped).toMatchObject({
+      topWidth: 100,
+      bottomWidth: 80,
+      height: 40,
+      uv: {
+        uTop1: 0.25,
+        uTop2: 0.75,
+        uBottom1: 0,
+        uBottom2: 1,
+        v1: 0,
+        v2: 1,
+      },
+    });
+    expect(clipped?.uv?.uTop1).not.toBe(clipped?.uv?.uBottom1);
+    expect(clipped?.topWidth).not.toBe(clipped?.bottomWidth);
+
+    const [moved] = projectStageSpriteLayer(parallax, sprite, { ...stage, camera: { ...stage.camera, x: 160 } }, 640);
+    expect(moved).toMatchObject({ topWidth: 100, bottomWidth: 50 });
+    expect(moved?.uv).not.toEqual(clipped?.uv);
+    expect(moved?.bottomWidth).not.toBe(clipped?.bottomWidth);
+
+    expect(projectStageSpriteLayer(
+      { ...parallax, clip: { source: "window", x1: 400, y1: 0, x2: 500, y2: 40 } },
+      sprite,
+      stage,
+      640,
+    )).toEqual([]);
+  });
+
   it("emits bounded horizontal parallax tiles that keep trapezoid edges at a camera seam", () => {
     const parallax: MugenStageLayer = {
       id: "BG Floor",

@@ -460,7 +460,7 @@ function createStageSpriteMesh(
   if (
     placement.topWidth !== undefined &&
     placement.bottomWidth !== undefined &&
-    placement.topWidth !== placement.bottomWidth
+    (placement.topWidth !== placement.bottomWidth || placement.topOffsetX || placement.bottomOffsetX)
   ) {
     return createTrapezoid(
       placement.x,
@@ -471,6 +471,8 @@ function createStageSpriteMesh(
       material,
       z,
       placement.uv,
+      placement.topOffsetX,
+      placement.bottomOffsetX,
     );
   }
   return createRect(
@@ -512,9 +514,11 @@ function createTrapezoid(
   material: THREE.Material,
   z: number,
   uv?: StageSpritePlacementUv,
+  topOffsetX = 0,
+  bottomOffsetX = 0,
 ): THREE.Mesh {
   const geometry = new THREE.PlaneGeometry(1, 1);
-  applyTrapezoid(geometry, topWidth, bottomWidth, height);
+  applyTrapezoid(geometry, topWidth, bottomWidth, height, topOffsetX, bottomOffsetX);
   if (uv) {
     applyUv(geometry, uv);
   }
@@ -523,24 +527,35 @@ function createTrapezoid(
   return mesh;
 }
 
-function applyTrapezoid(geometry: THREE.PlaneGeometry, topWidth: number, bottomWidth: number, height: number): void {
+function applyTrapezoid(
+  geometry: THREE.PlaneGeometry,
+  topWidth: number,
+  bottomWidth: number,
+  height: number,
+  topOffsetX = 0,
+  bottomOffsetX = 0,
+): void {
   const position = geometry.getAttribute("position") as THREE.BufferAttribute;
   const halfHeight = height / 2;
   const halfTop = topWidth / 2;
   const halfBottom = bottomWidth / 2;
-  position.setXYZ(0, -halfTop, halfHeight, 0);
-  position.setXYZ(1, halfTop, halfHeight, 0);
-  position.setXYZ(2, -halfBottom, -halfHeight, 0);
-  position.setXYZ(3, halfBottom, -halfHeight, 0);
+  position.setXYZ(0, topOffsetX - halfTop, halfHeight, 0);
+  position.setXYZ(1, topOffsetX + halfTop, halfHeight, 0);
+  position.setXYZ(2, bottomOffsetX - halfBottom, -halfHeight, 0);
+  position.setXYZ(3, bottomOffsetX + halfBottom, -halfHeight, 0);
   position.needsUpdate = true;
   geometry.computeBoundingSphere();
 }
 
 function applyUv(geometry: THREE.PlaneGeometry, uv: StageSpritePlacementUv): void {
   const attribute = geometry.getAttribute("uv") as THREE.BufferAttribute;
-  attribute.setXY(0, uv.u1, uv.v2);
-  attribute.setXY(1, uv.u2, uv.v2);
-  attribute.setXY(2, uv.u1, uv.v1);
-  attribute.setXY(3, uv.u2, uv.v1);
+  const uTop1 = uv.uTop1 ?? uv.u1;
+  const uTop2 = uv.uTop2 ?? uv.u2;
+  const uBottom1 = uv.uBottom1 ?? uv.u1;
+  const uBottom2 = uv.uBottom2 ?? uv.u2;
+  attribute.setXY(0, uTop1, uv.v2);
+  attribute.setXY(1, uTop2, uv.v2);
+  attribute.setXY(2, uBottom1, uv.v1);
+  attribute.setXY(3, uBottom2, uv.v1);
   attribute.needsUpdate = true;
 }

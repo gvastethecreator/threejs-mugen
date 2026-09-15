@@ -277,7 +277,7 @@ sin.x = 12,8,0
     });
   });
 
-  it("keeps sprite-backed and horizontal tiled parallax rendered and reports clip parallax as unsupported", () => {
+  it("keeps sprite-backed, tiled, and clipped parallax rendered and reports vertical tile as unsupported", () => {
     const definition = parseStageDef(`
 [BGDef]
 spr = floor.sff
@@ -296,6 +296,11 @@ type = parallax
 spriteno = 0,0
 width = 200,80
 window = 0,0,80,40
+[BG Vertical]
+type = parallax
+spriteno = 0,0
+width = 200,80
+tile = 0,1
 `, "stages/parallax.def");
     const report = createStageCompatibilityReport({
       sourceName: "parallax.zip",
@@ -327,16 +332,24 @@ window = 0,0,80,40
     });
     expect(report.backgrounds.layers[2]).toMatchObject({
       section: "BG Clipped",
+      status: "rendered",
+      projected: true,
+      sprite: { group: 0, index: 0, decoded: true },
+      unsupported: [],
+    });
+    expect(report.backgrounds.layers[3]).toMatchObject({
+      section: "BG Vertical",
       status: "unsupported",
       projected: false,
       sprite: { group: 0, index: 0, decoded: true },
-      unsupported: ["clip+parallax"],
-      fallback: "Parallax clip or vertical tile combinations are not rendered as trapezoids",
+      unsupported: ["tile+parallax"],
+      fallback: "Parallax vertical tile combinations are not rendered as trapezoids",
     });
     expect(report.unsupported.map((item) => item.feature)).toContain("parallax tile or clip");
     expect(report.backgrounds.layers[0]?.renderObserved).toBe(false);
     expect(report.backgrounds.layers[1]?.renderObserved).toBe(false);
     expect(report.backgrounds.layers[2]?.renderObserved).toBe(false);
+    expect(report.backgrounds.layers[3]?.renderObserved).toBe(false);
   });
 
   it("reports missing animated frames and unsupported controllers without blanket success", () => {

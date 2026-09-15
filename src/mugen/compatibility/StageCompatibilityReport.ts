@@ -367,7 +367,7 @@ function describeBackgroundLayer(
           index: layer.spriteIndex,
           decoded,
         },
-        fallback: "Parallax clip or vertical tile combinations are not rendered as trapezoids",
+        fallback: "Parallax vertical tile combinations are not rendered as trapezoids",
       };
     }
     return {
@@ -449,7 +449,7 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
   push(
     "parallax tile or clip",
     stagePackage.stage.layers.filter((layer) => isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer)).length,
-    "Parallax trapezoid rendering is skipped when clip or vertical tile is authored",
+    "Parallax trapezoid rendering is skipped when vertical tile is authored",
   );
   push(
     "zoffsetlink target missing",
@@ -499,9 +499,6 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   }
   if (isParallaxLayer(layer) && layer.tile && layer.tile.y !== 0) {
     unsupported.push("tile+parallax");
-  }
-  if (isParallaxLayer(layer) && layer.clip) {
-    unsupported.push("clip+parallax");
   }
   if ((hasKey(rawSection, "window") || hasKey(rawSection, "maskwindow")) && !layer.clip) {
     unsupported.push("window clipping");
