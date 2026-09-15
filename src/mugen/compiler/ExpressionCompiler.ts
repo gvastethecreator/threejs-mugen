@@ -451,6 +451,7 @@ const supportedExpressionFunctions = new Set([
   "selfcommand",
   "selfanimexist",
   "selfstatenoexist",
+  "sysfvar",
   "sysvar",
   "var",
 ]);

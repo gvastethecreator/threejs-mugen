@@ -149,6 +149,7 @@ describe("RuntimeSnapshotWorld", () => {
 
     const snapshot = world.actor(actor);
     runtime.pos.x = 999;
+    runtime.sysfvars![0] = 9;
     actor.hitEffectEvents[0].offset = { x: 999, y: 999 };
     actor.hitEffectEvents[0].scale = { x: 999, y: 999 };
 
@@ -190,6 +191,7 @@ describe("RuntimeSnapshotWorld", () => {
       soundEvents: [{ type: "PlaySnd", group: 5, index: 0, stateNo: 200, tick: 3, runtimeTick: 12 }],
       envShakeEvents: [{ type: "EnvShake", time: 8, freq: 60, ampl: 4, phase: 0, stateNo: 200, tick: 3, runtimeTick: 14 }],
     });
+    expect(snapshot.runtime.sysfvars?.[0]).toBe(0.5);
     expect(snapshot.hitEffectEvents?.[0]?.offset).toEqual({ x: 8, y: -70 });
     expect(snapshot.hitEffectEvents?.[0]?.scale).toEqual({ x: 1.5, y: -0.5 });
     expect(snapshot.hitEffectEvents?.[0]?.assetFrames).toEqual([
@@ -524,6 +526,7 @@ function runtimeState(): CharacterRuntimeState {
     physics: "S",
     vars: [],
     fvars: [],
+    sysfvars: [0.5],
   };
 }
 

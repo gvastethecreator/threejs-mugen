@@ -186,6 +186,7 @@ export type CharacterRuntimeState = {
   physics: "S" | "C" | "A" | "N";
   vars: number[];
   sysvars?: number[];
+  sysfvars?: number[];
   fvars: number[];
   aiLevel?: number;
 };

@@ -219,6 +219,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     power: 0,
     vars: Array.from({ length: 60 }, () => 0),
     sysvars: [],
+    sysfvars: [],
     fvars: Array.from({ length: 40 }, () => 0),
     frameIndex: 0,
     frameElapsed: 0,
@@ -324,6 +325,32 @@ describe("HelperSystem", () => {
     expect(parent.fvars[0]).toBe(1.75);
   });
 
+  it("writes Helper ParentVarSet SysFVar 0.5 without growing the bank or other banks", () => {
+    const parent = helper({
+      serialId: "helper-a",
+      parentId: "p1",
+      fvars: [1.5, 0],
+      sysvars: [3],
+      sysfvars: [0],
+    });
+    const child = helper({
+      serialId: "helper-b",
+      parentId: "helper-a",
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ParentVarSet", [], { "sysfvar(0)": "0.5" }),
+          compiledControllerIr(6000, "ParentVarSet", [], { "sysfvar(5)": "9" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([parent, child], stage);
+
+    expect(parent.sysfvars?.[0]).toBe(0.5);
+    expect(parent.sysfvars?.[5]).toBeUndefined();
+    expect(parent.fvars[0]).toBe(1.5);
+    expect(parent.sysvars[0]).toBe(3);
+  });
+
   it("consumes a var assignment expression in the same helper step", () => {
     const child = helper({
       runtimeProgram: {
@@ -335,6 +362,24 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([child], stage);
 
     expect(child.vars[2]).toBe(7);
+  });
+
+  it("sets Helper-local SysFVar 0.5 through VarSet and keeps FVar and SysVar", () => {
+    const child = helper({
+      fvars: [1.5],
+      sysvars: [4],
+      sysfvars: [0],
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "VarSet", [], { "sysfvar(0)": "0.5" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([child], stage);
+
+    expect(child.sysfvars?.[0]).toBe(0.5);
+    expect(child.fvars[0]).toBe(1.5);
+    expect(child.sysvars[0]).toBe(4);
   });
 
   it("does not write ParentVarSet onto root when the parent helper is missing", () => {

@@ -1560,6 +1560,13 @@ class ExpressionParser {
     if (lower === "sysvar") {
       return taggedNumber("int", this.context.self.sysvars?.[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0);
     }
+    if (lower === "sysfvar") {
+      const index = Math.trunc(numeric(args[0] ?? 0));
+      if (index < 0 || index > 4) {
+        return taggedNumber("float", 0);
+      }
+      return taggedNumber("float", this.context.self.sysfvars?.[index] ?? 0);
+    }
     if (lower === "var") {
       return taggedNumber("int", this.context.self.vars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0);
     }

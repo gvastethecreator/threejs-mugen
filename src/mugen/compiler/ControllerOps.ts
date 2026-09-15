@@ -1390,28 +1390,28 @@ export type VariableControllerOp =
   | {
       kind: "variable";
       controllerType: "varset";
-      variableType: "var" | "fvar" | "sysvar";
+      variableType: "var" | "fvar" | "sysvar" | "sysfvar";
       index: number;
       value: number;
     }
   | {
       kind: "variable";
       controllerType: "parentvarset";
-      variableType: "var" | "fvar" | "sysvar";
+      variableType: "var" | "fvar" | "sysvar" | "sysfvar";
       index: number;
       value: number;
     }
   | {
       kind: "variable";
       controllerType: "varadd";
-      variableType: "var" | "fvar" | "sysvar";
+      variableType: "var" | "fvar" | "sysvar" | "sysfvar";
       index: number;
       value: number;
     }
   | {
       kind: "variable";
       controllerType: "parentvaradd";
-      variableType: "var" | "fvar" | "sysvar";
+      variableType: "var" | "fvar" | "sysvar" | "sysfvar";
       index: number;
       value: number;
     }
@@ -2479,8 +2479,21 @@ function compileVariableControllerOp(controller: MugenStateController, type: Var
   }
 
   const assignment = staticVariableAssignmentParam(controller);
-  const variableType = assignment?.variableType ?? (findParam(controller, "fv") !== undefined || findParam(controller, "fvar") !== undefined ? "fvar" : "var");
-  const index = assignment?.index ?? firstNumber(findParam(controller, variableType === "fvar" ? "fv" : "v") ?? findParam(controller, variableType));
+  const variableType =
+    assignment?.variableType ??
+    (findParam(controller, "fv") !== undefined || findParam(controller, "fvar") !== undefined
+      ? "fvar"
+      : findParam(controller, "sysfvar") !== undefined
+        ? "sysfvar"
+        : findParam(controller, "sysvar") !== undefined
+          ? "sysvar"
+          : "var");
+  const index =
+    assignment?.index ??
+    firstNumber(
+      findParam(controller, variableType === "fvar" ? "fv" : variableType === "sysfvar" ? "sysfvar" : variableType === "sysvar" ? "sysvar" : "v") ??
+        findParam(controller, variableType),
+    );
   const value = assignment?.value ?? firstNumber(findParam(controller, "value"));
   if (index === undefined || value === undefined || index < 0) {
     return undefined;
@@ -2498,9 +2511,9 @@ function compileVariableControllerOp(controller: MugenStateController, type: Var
   };
 }
 
-function staticVariableAssignmentParam(controller: MugenStateController): { variableType: "var" | "fvar" | "sysvar"; index: number; value: number } | undefined {
+function staticVariableAssignmentParam(controller: MugenStateController): { variableType: "var" | "fvar" | "sysvar" | "sysfvar"; index: number; value: number } | undefined {
   for (const [key, rawValue] of Object.entries(controller.params)) {
-    const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
+    const match = /^(sysfvar|sysvar|fvar|var)\((\d+)\)$/i.exec(key.trim());
     if (!match) {
       continue;
     }
@@ -2508,8 +2521,9 @@ function staticVariableAssignmentParam(controller: MugenStateController): { vari
     if (value === undefined) {
       continue;
     }
+    const bank = match[1]?.toLowerCase();
     return {
-      variableType: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
+      variableType: bank === "sysfvar" ? "sysfvar" : bank === "sysvar" ? "sysvar" : bank === "fvar" ? "fvar" : "var",
       index: Number(match[2]),
       value,
     };

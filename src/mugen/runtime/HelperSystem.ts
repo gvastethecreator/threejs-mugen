@@ -231,6 +231,7 @@ export type RuntimeHelper = {
   };
   vars: number[];
   sysvars: number[];
+  sysfvars?: number[];
   fvars: number[];
   aiLevel?: number;
   frameIndex: number;
@@ -567,6 +568,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     power: 0,
     vars: Array.from({ length: 60 }, () => 0),
     sysvars: [],
+    sysfvars: [],
     fvars: Array.from({ length: 40 }, () => 0),
     frameIndex: 0,
     frameElapsed: 0,
@@ -3757,12 +3759,19 @@ function applyHelperParentVariableController(
     operation && (operation.controllerType === "parentvarset" || operation.controllerType === "parentvaradd")
       ? operation
       : undefined;
-  let variableType: "var" | "fvar" | "sysvar" =
-    assignedOp?.variableType === "fvar" || assignedOp?.variableType === "sysvar" || assignedOp?.variableType === "var"
+  let variableType: "var" | "fvar" | "sysvar" | "sysfvar" =
+    assignedOp?.variableType === "fvar" ||
+    assignedOp?.variableType === "sysvar" ||
+    assignedOp?.variableType === "sysfvar" ||
+    assignedOp?.variableType === "var"
       ? assignedOp.variableType
       : findControllerParam(controller.source, "fv") !== undefined || findControllerParam(controller.source, "fvar") !== undefined
         ? "fvar"
-        : "var";
+        : findControllerParam(controller.source, "sysfvar") !== undefined
+          ? "sysfvar"
+          : findControllerParam(controller.source, "sysvar") !== undefined
+            ? "sysvar"
+            : "var";
   let index =
     assignedOp?.index ??
     readNumber(
@@ -3772,7 +3781,7 @@ function applyHelperParentVariableController(
   let value = assignedOp?.value ?? readNumber(findControllerParam(controller.source, "value"));
   if (index === undefined || value === undefined) {
     for (const [key, rawValue] of Object.entries(controller.params)) {
-      const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
+      const match = /^(sysfvar|sysvar|fvar|var)\((\d+)\)$/i.exec(key.trim());
       if (!match) {
         continue;
       }
@@ -3780,7 +3789,8 @@ function applyHelperParentVariableController(
       if (assigned === undefined) {
         continue;
       }
-      variableType = match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var";
+      const bank = match[1]?.toLowerCase();
+      variableType = bank === "sysfvar" ? "sysfvar" : bank === "sysvar" ? "sysvar" : bank === "fvar" ? "fvar" : "var";
       index = Number(match[2]);
       value = assigned;
       break;
@@ -3790,7 +3800,7 @@ function applyHelperParentVariableController(
     return;
   }
   const integerIndex = Math.trunc(index);
-  const maxIndex = variableType === "fvar" ? 39 : variableType === "sysvar" ? 4 : 59;
+  const maxIndex = variableType === "fvar" ? 39 : variableType === "sysvar" || variableType === "sysfvar" ? 4 : 59;
   if (integerIndex < 0 || integerIndex > maxIndex) {
     return;
   }
@@ -3799,7 +3809,7 @@ function applyHelperParentVariableController(
     {
       variableType,
       index: integerIndex,
-      value: variableType === "fvar" ? value : Math.trunc(value),
+      value: variableType === "fvar" || variableType === "sysfvar" ? value : Math.trunc(value),
     },
     additive,
   );
@@ -3819,6 +3829,7 @@ function resolveHelperParentVariableTarget(
       vars: parentHelper.vars,
       fvars: parentHelper.fvars,
       sysvars: parentHelper.sysvars,
+      sysfvars: parentHelper.sysfvars,
     };
   }
   if (helper.parentId === helper.rootId || helper.parentId === helper.ownerId) {
@@ -4022,6 +4033,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     physics: helper.physics,
     vars: [...helper.vars],
     sysvars: [...helper.sysvars],
+    sysfvars: [...(helper.sysfvars ?? [])],
     fvars: [...helper.fvars],
     aiLevel: helper.aiLevel ?? 0,
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
@@ -4069,6 +4081,7 @@ function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRu
     ...(state.combatDepth === undefined ? {} : { combatDepth: cloneRuntimeCombatDepth(state.combatDepth) }),
     vars: [...state.vars],
     sysvars: state.sysvars ? [...state.sysvars] : undefined,
+    sysfvars: state.sysfvars ? [...state.sysfvars] : undefined,
     fvars: [...state.fvars],
     ...(state.clsnOverrides === undefined
       ? {}
@@ -4129,6 +4142,7 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
   helper.runOrder = runtime.runOrder;
   helper.vars = [...runtime.vars];
   helper.sysvars = [...(runtime.sysvars ?? [])];
+  helper.sysfvars = [...(runtime.sysfvars ?? [])];
   helper.fvars = [...runtime.fvars];
   helper.clsnOverrides = runtime.clsnOverrides?.map((override) => ({ ...override, rect: { ...override.rect } }));
   helper.clsnScaleMultiplier = runtime.clsnScaleMultiplier

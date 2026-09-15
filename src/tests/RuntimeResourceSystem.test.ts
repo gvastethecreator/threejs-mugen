@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { evaluateExpressionNumeric } from "../mugen/runtime/ExpressionEvaluator";
 import {
   applyRuntimeControl,
   applyRuntimeDizzyPointsAdd,
@@ -255,10 +256,17 @@ describe("RuntimeResourceSystem", () => {
     applyRuntimeVariableAssignment(state, { variableType: "var", index: 0, value: 3 }, true);
     applyRuntimeVariableAssignment(state, { variableType: "fvar", index: 1, value: 1.25 }, false);
     applyRuntimeVariableAssignment(state, { variableType: "sysvar", index: 0, value: 7 }, false);
+    applyRuntimeVariableAssignment(state, { variableType: "sysfvar", index: 0, value: 0.5 }, false);
+    applyRuntimeVariableAssignment(state, { variableType: "sysfvar", index: 5, value: 9 }, false);
 
     expect(state.vars[0]).toBe(5);
     expect(state.fvars[1]).toBe(1.25);
     expect(state.sysvars?.[0]).toBe(7);
+    expect(state.sysfvars?.[0]).toBe(0.5);
+    expect(state.sysfvars?.[5]).toBeUndefined();
+    expect(state.fvars[0]).toBe(0.5);
+    expect(evaluateExpressionNumeric("sysfvar(0)", { self: state })).toEqual({ kind: "float", value: 0.5 });
+    expect(evaluateExpressionNumeric("sysfvar(5)", { self: state })).toEqual({ kind: "float", value: 0 });
   });
 
   it("applies clamped variable ranges in either direction", () => {

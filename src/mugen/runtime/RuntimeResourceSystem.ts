@@ -5,7 +5,7 @@ import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionCo
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
-export type RuntimeVariableType = "var" | "fvar" | "sysvar";
+export type RuntimeVariableType = "var" | "fvar" | "sysvar" | "sysfvar";
 
 export type RuntimeVariableAssignment = {
   variableType: RuntimeVariableType;
@@ -158,7 +158,7 @@ export class RuntimeResourceWorld {
   }
 
   applyVariableAssignment(state: CharacterRuntimeState, assignment: RuntimeVariableAssignment, additive: boolean): void {
-    if (assignment.index < 0) {
+    if (assignment.index < 0 || assignment.index > variableBankMax(assignment.variableType)) {
       return;
     }
     const target = runtimeVariableTarget(state, assignment.variableType);
@@ -359,9 +359,22 @@ export function resolveRuntimeResourceControllerOperation(
   return { kind: "resource", controllerType, value, ...redirect };
 }
 
+function variableBankMax(variableType: RuntimeVariableType): number {
+  if (variableType === "sysvar" || variableType === "sysfvar") {
+    return 4;
+  }
+  if (variableType === "fvar") {
+    return 39;
+  }
+  return 59;
+}
+
 function runtimeVariableTarget(state: CharacterRuntimeState, variableType: RuntimeVariableType): number[] {
   if (variableType === "sysvar") {
     return (state.sysvars ??= []);
+  }
+  if (variableType === "sysfvar") {
+    return (state.sysfvars ??= []);
   }
   if (variableType === "fvar") {
     return state.fvars;

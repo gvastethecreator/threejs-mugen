@@ -647,7 +647,7 @@ function variableAssignmentParam(
   context: RuntimeControllerEvaluationContext,
 ): RuntimeVariableAssignment | undefined {
   for (const [key, rawValue] of Object.entries(controller.params)) {
-    const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
+    const match = /^(sysfvar|sysvar|fvar|var)\((\d+)\)$/i.exec(key.trim());
     if (!match) {
       continue;
     }
@@ -655,8 +655,9 @@ function variableAssignmentParam(
     if (value === undefined) {
       continue;
     }
+    const bank = match[1]?.toLowerCase();
     return {
-      variableType: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
+      variableType: bank === "sysfvar" ? "sysfvar" : bank === "sysvar" ? "sysvar" : bank === "fvar" ? "fvar" : "var",
       index: Number(match[2]),
       value,
     };
