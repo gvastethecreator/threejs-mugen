@@ -355,9 +355,14 @@ type = JourneyUnknownController
 trigger1 = 1
 `;
 
-const ACTIONS = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200, 210, 930];
-const SPRITES = [...ACTIONS.filter((group) => group !== 210).map((group) => ({ group, index: 0 })), { group: 200, index: 1 }, { group: 210, index: 0 }];
-const JOURNEY_AIR = ACTIONS.map((action) => {
+const ACTIONS = [0, 10, 20, 40, 120, 130, 150, 200, 5000, 5050, 5100, 5200, 210];
+const SPRITES = [
+  ...ACTIONS.filter((group) => group !== 210).map((group) => ({ group, index: 0 })),
+  { group: 200, index: 1 },
+  { group: 210, index: 0 },
+  { group: 930, index: 0 },
+];
+const JOURNEY_AIR = [...ACTIONS, 930].map((action) => {
   const attacking = action === 200 || action === 210;
   const attackClsn1 = action === 210 ? "8,-48,128,-18" : "8,-48,72,-18";
   return `[Begin Action ${action}]

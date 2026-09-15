@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { CharacterRenderer } from "../game/render/CharacterRenderer";
+import type { TextureStore } from "../game/render/TextureStore";
+import * as THREE from "three";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { ZipCharacterSource } from "../mugen/loader/ZipCharacterSource";
+import { demoFighters } from "../mugen/runtime/demoFighters";
+import { trainingStage } from "../mugen/runtime/demoStage";
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
+import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
+import type { SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import {
   createMugenLiteJourneyVfs,
   createMugenLiteJourneyZipBytes,
@@ -62,13 +69,14 @@ describe("MUGEN-lite journey fixture", () => {
     expect(fighter?.runtimeProgram?.states.some((state) => state.id === 210)).toBe(true);
     expect(fighter?.animations.has(5200)).toBe(true);
     expect(fighter?.animations.has(210)).toBe(true);
-    expect(character.spriteArchive?.sprites).toHaveLength(14);
+    expect(character.spriteArchive?.sprites).toHaveLength(15);
     expect(character.spriteArchive?.sprites).toEqual(expect.arrayContaining([
       expect.objectContaining({ group: 0, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 200, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 200, index: 1, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 210, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
       expect.objectContaining({ group: 5100, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
+      expect.objectContaining({ group: 930, index: 0, width: 32, height: 64, axisX: 16, axisY: 62 }),
     ]));
     const posePixels = character.spriteArchive!.sprites.map((sprite) => sprite.indexed!.pixels);
     expect(new Set(posePixels.map((pixels) => Array.from(pixels).join(","))).size).toBe(14);
@@ -134,6 +142,60 @@ describe("MUGEN-lite journey fixture", () => {
   },
   30_000,
   );
+
+  it("presents fallen and recovery sprites from the same tick as runtime state", async () => {
+    const character = await new MugenCharacterLoader().load(MUGEN_LITE_JOURNEY_MANIFEST.entry, createMugenLiteJourneyVfs());
+    const imported = createImportedFighterDefinition(character);
+    if (!imported) throw new Error("MUGEN-lite journey did not produce a runtime fighter");
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, imported, closeStage, { runtimeProfile: "ikemen-go" });
+    const provider: SpriteProvider = {
+      async getSprite(group: number, index: number, _context: SpriteLookupContext = {}) {
+        return { group, index, width: 32, height: 64, axisX: 16, axisY: 62 };
+      },
+    };
+    const renderer = new CharacterRenderer(provider, { getTexture: () => new THREE.Texture() } as unknown as TextureStore);
+    let live = runtime.getSnapshot();
+    const seen: Partial<Record<number, { stateNo: number; group: number; index: number; x: number; y: number }>> = {};
+    for (let tick = 0; tick < 80; tick += 1) {
+      const p1Buttons = tick < 8 ? new Set(["F"]) : tick < 16 ? new Set(["x"]) : new Set<string>();
+      const p2Buttons = live.actors.find((actor) => actor.id === "p2")?.runtime.stateNo === 5100
+        ? new Set(["x", "y"])
+        : new Set<string>();
+      live = runtime.step({ p1: p1Buttons, p2: p2Buttons }, { force: true });
+      const p2 = live.actors.find((actor) => actor.id === "p2");
+      const stateNo = p2?.runtime.stateNo;
+      if (stateNo === 5000 || stateNo === 5050 || stateNo === 5100 || stateNo === 5200) {
+        await renderer.update([p2!]);
+        const presented = renderer.getDiagnostics()[0];
+        seen[stateNo] = {
+          stateNo,
+          group: presented?.frame.group ?? -1,
+          index: presented?.frame.index ?? -1,
+          x: presented?.actorPosition.x ?? Number.NaN,
+          y: presented?.actorPosition.y ?? Number.NaN,
+        };
+        expect(presented?.frame).toEqual({ group: stateNo, index: 0 });
+        expect(presented?.actorPosition).toEqual({ x: p2!.runtime.pos.x, y: p2!.runtime.pos.y });
+        expect(p2?.frame?.spriteGroup).toBe(stateNo);
+        expect(p2?.frame?.spriteIndex).toBe(0);
+      }
+      if (seen[5100] && seen[5200]) {
+        break;
+      }
+    }
+    expect(seen[5000]?.group).toBe(5000);
+    expect(seen[5050]?.group).toBe(5050);
+    expect(seen[5100]?.group).toBe(5100);
+    expect(seen[5200]?.group).toBe(5200);
+    renderer.dispose();
+  });
 
   it("runs the loaded package through a lethal NoKOSlow post-KO journey", async () => {
     const artifact = await createMugenLiteJourneyNoKoSlowTraceArtifact({ generatedAt: "2026-07-12T00:00:00.000Z" });
