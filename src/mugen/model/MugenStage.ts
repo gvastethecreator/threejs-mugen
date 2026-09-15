@@ -77,6 +77,14 @@ export type MugenStageLayer = {
   };
 };
 
+export function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
+  return layer.type?.trim().toLowerCase() === "parallax";
+}
+
+export function hasParallaxUnsupportedCombo(layer: Pick<MugenStageLayer, "tile" | "clip">): boolean {
+  return Boolean(layer.clip) || Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
+}
+
 export type MugenStageLayerSinusoid = {
   amplitude: number;
   period: number;

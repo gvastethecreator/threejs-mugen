@@ -1,4 +1,4 @@
-import type { MugenStageDefinition, MugenStageLayer } from "../model/MugenStage";
+import { hasParallaxUnsupportedCombo, isParallaxLayer, type MugenStageDefinition, type MugenStageLayer } from "../model/MugenStage";
 import type { MugenStagePackage } from "../model/MugenStagePackage";
 import { isPcmWave } from "../model/PcmWave";
 import type { UnsupportedFeature } from "./UnsupportedFeatureTracker";
@@ -29,7 +29,10 @@ export type StageBackgroundLayerReport = {
   sinusoid?: MugenStageLayer["sinusoid"];
   parallaxWidth?: MugenStageLayer["parallaxWidth"];
   parallaxXScale?: MugenStageLayer["parallaxXScale"];
+  /** stageProjection eligibility. Not an AxisRenderer observation. */
   projected: boolean;
+  /** AxisRenderer/ThreeMugenRenderer observation. The report never claims this. */
+  renderObserved?: false;
   targetedByUnsupportedControllers: string[];
   tiled: boolean;
   trans?: {
@@ -96,9 +99,13 @@ export type StageCompatibilityReport = {
     music: boolean;
   };
   audio: {
+    /** Loader resolved Music.bgmusic path. */
     fileFound: boolean;
+    /** Loader attached music bytes. */
     bytesLoaded: boolean;
+    /** PCM WAV fmt+data check. Not a decoder and not playback. */
     pcmWav: boolean;
+    /** Audible runtime playback. Always false until a named audio observation. */
     playbackObserved: false;
   };
   zOffsetLink?: {
@@ -304,6 +311,7 @@ function describeBackgroundLayer(
     ...(layer.parallaxWidth ? { parallaxWidth: layer.parallaxWidth } : {}),
     ...(layer.parallaxXScale ? { parallaxXScale: layer.parallaxXScale } : {}),
     projected: false,
+    renderObserved: false,
     targetedByUnsupportedControllers,
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
@@ -537,14 +545,6 @@ function describeStageAudio(stagePackage: MugenStagePackage): StageCompatibility
 
 function isSupportedStageLayerType(type: string): boolean {
   return type === "normal" || type === "anim" || type === "parallax";
-}
-
-function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
-  return layer.type?.trim().toLowerCase() === "parallax";
-}
-
-function hasParallaxUnsupportedCombo(layer: Pick<MugenStageLayer, "tile" | "clip">): boolean {
-  return Boolean(layer.clip) || Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
 }
 
 function formatStageDiagnostic(file: string | undefined, line: number | undefined, message: string): string {

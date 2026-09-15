@@ -14084,7 +14084,7 @@ export class App {
         label: `${report.stage} stage`,
         category: "compatibility",
         status: report.errors.length ? "fail" : report.warnings.length ? "warn" : "ok",
-        detail: `${report.backgrounds.renderedSprites}/${report.backgrounds.withSpriteRefs} BG sprite refs rendered, ${report.backgrounds.renderedAnimated}/${report.backgrounds.animated} animated`,
+        detail: `${report.backgrounds.renderedSprites}/${report.backgrounds.withSpriteRefs} BG sprite refs decoded, ${report.backgrounds.renderedAnimated}/${report.backgrounds.animated} animated`,
         tags: ["stage", "stage-def", "bg"],
         level: "Decoded",
       });

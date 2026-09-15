@@ -1,5 +1,10 @@
 import type { MugenSprite } from "../../mugen/model/MugenSprite";
-import type { MugenStageBgCtrl, MugenStageLayer } from "../../mugen/model/MugenStage";
+import {
+  hasParallaxUnsupportedCombo,
+  isParallaxLayer,
+  type MugenStageBgCtrl,
+  type MugenStageLayer,
+} from "../../mugen/model/MugenStage";
 import type { StageSnapshot } from "../../mugen/runtime/types";
 
 export type StageSpritePlacement = {
@@ -461,13 +466,7 @@ export function resolveStageZOffsetLink(
   return { floorY: stage.floorY + authoredStartY - resolvedStartY };
 }
 
-export function isParallaxLayer(layer: Pick<MugenStageLayer, "type">): boolean {
-  return layer.type?.trim().toLowerCase() === "parallax";
-}
-
-export function hasParallaxUnsupportedCombo(layer: Pick<MugenStageLayer, "tile" | "clip">): boolean {
-  return Boolean(layer.clip) || Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
-}
+export { hasParallaxUnsupportedCombo, isParallaxLayer };
 
 function resolveParallaxEdgeWidths(
   layer: MugenStageLayer,

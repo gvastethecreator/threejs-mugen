@@ -133,6 +133,7 @@ describe("createStageCompatibilityReport", () => {
         },
         unsupported: ["mask color-key semantics"],
         projected: true,
+        renderObserved: false,
         targetedByUnsupportedControllers: [],
       }),
       expect.objectContaining({
@@ -143,6 +144,7 @@ describe("createStageCompatibilityReport", () => {
         action: { id: 10, frames: 2, decodedFrames: 2, missingFrameRefs: [] },
         positionLink: { targetId: expect.stringContaining("BG Wall"), offsetX: 2, offsetY: 3 },
         projected: true,
+        renderObserved: false,
         targetedByUnsupportedControllers: ["zoomdelta"],
       }),
       expect.objectContaining({
@@ -319,6 +321,50 @@ tile = 1,0
       fallback: "Parallax tile or clip combinations are not rendered as trapezoids",
     });
     expect(report.unsupported.map((item) => item.feature)).toContain("parallax tile or clip");
+    expect(report.backgrounds.layers[0]?.renderObserved).toBe(false);
+    expect(report.backgrounds.layers[1]?.renderObserved).toBe(false);
+  });
+
+  it("reports missing animated frames and unsupported controllers without blanket success", () => {
+    const definition = parseStageDef(`
+[BGDef]
+spr = frames.sff
+[BG Partial]
+type = anim
+id = 20
+actionno = 10
+[Begin Action 10]
+2,0,0,0,4
+2,9,0,0,4
+[BGCtrlDef Zoom]
+ctrlid = 20
+[BGCtrl Mystery]
+type = ZoomDelta
+time = 0
+value = 2
+`, "stages/partial-anim.def");
+    const report = createStageCompatibilityReport({
+      sourceName: "partial.zip",
+      defPath: "stages/partial-anim.def",
+      definition,
+      stage: stageDefToRuntime(definition, "partial"),
+      files: { def: "stages/partial-anim.def", sprite: "stages/frames.sff", missing: [] },
+      spriteArchive: {
+        version: "v1",
+        sprites: [{ group: 2, index: 0, width: 60, height: 40, axisX: 0, axisY: 0 }],
+        warnings: [],
+      },
+      diagnostics: [],
+    });
+    expect(report.backgrounds.layers[0]).toMatchObject({
+      status: "animated",
+      projected: true,
+      renderObserved: false,
+      action: { id: 10, frames: 2, decodedFrames: 1, missingFrameRefs: ["2:9"] },
+      fallback: "Animated BG renders decoded frames and falls back when undecoded frames are active",
+      targetedByUnsupportedControllers: ["zoomdelta"],
+    });
+    expect(report.backgrounds.layers[0]?.status).not.toBe("rendered");
   });
 
   it("keeps a found music file distinct from audible playback", () => {
@@ -364,6 +410,19 @@ spriteno = 0,0
       fileFound: true,
       bytesLoaded: true,
       pcmWav: true,
+      playbackObserved: false,
+    });
+    expect(createStageCompatibilityReport({
+      sourceName: "music.zip",
+      defPath: "stages/music.def",
+      definition,
+      stage: stageDefToRuntime(definition, "music"),
+      files: { def: "stages/music.def", sprite: "stages/floor.sff", music: "stages/floor.wav", missing: [] },
+      diagnostics: [],
+    }).audio).toEqual({
+      fileFound: true,
+      bytesLoaded: false,
+      pcmWav: false,
       playbackObserved: false,
     });
     expect(createStageCompatibilityReport({

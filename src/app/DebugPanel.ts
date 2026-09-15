@@ -786,7 +786,7 @@ function renderStageCompatibility(stages: StageCompatibilityReport[]): string {
               <span class="badge ${stage.files.def ? "ok" : "error"}">DEF</span>
               <span class="badge ${stage.files.sff && stage.sff.decodedSprites > 0 ? "ok" : stage.files.sff ? "warn" : "error"}">SFF ${stage.sff.decodedSprites}/${stage.sff.totalSprites}</span>
               <span>${escapeHtml(stage.stage)}</span>
-              <span class="mono">BG ${stage.backgrounds.renderedSprites}/${stage.backgrounds.withSpriteRefs}</span>
+              <span class="mono">BG decoded ${stage.backgrounds.renderedSprites}/${stage.backgrounds.withSpriteRefs}</span>
               <span class="mono">anim ${stage.backgrounds.renderedAnimated}/${stage.backgrounds.animated}</span>
               <span class="mono">tile ${stage.backgrounds.tiled}</span>
               <span class="mono">warn ${stage.warnings.length}</span>
