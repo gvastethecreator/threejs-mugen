@@ -110,18 +110,14 @@ function resolveStageLayerForTickInternal(
   if (!layer) {
     return undefined;
   }
-  const sinusoidLayer = applyAuthoredSinusoid(layer, tick);
   const controllers = stage.bgControllers?.flatMap((group) => group.controllers) ?? [];
-  const targetedControllers = controllers.filter((controller) => targetsLayer(controller, sinusoidLayer));
+  const targetedControllers = controllers.filter((controller) => targetsLayer(controller, layer));
   const motionControllers = targetedControllers.filter((controller) => isMotionController(controller.type));
   let resolved = motionControllers.length > 0
-    ? resolveStageMotion(sinusoidLayer, motionControllers, tick)
-    : { ...sinusoidLayer };
-  const enabledControllers = controllers.filter((controller) =>
-    controller.type.toLowerCase() === "enabled" && targetsLayer(controller, sinusoidLayer),
-  );
+    ? resolveStageMotion(layer, motionControllers, tick)
+    : { ...layer };
   for (const controller of controllers) {
-    if (!targetsLayer(controller, sinusoidLayer) || !isControllerActive(controller, tick) || isMotionController(controller.type)) {
+    if (!targetsLayer(controller, layer) || !isControllerActive(controller, tick) || isMotionController(controller.type)) {
       continue;
     }
     const next = applyStageBgController(resolved, controller, tick);
@@ -130,8 +126,12 @@ function resolveStageLayerForTickInternal(
     }
     resolved = next;
   }
+  resolved = applyAuthoredSinusoid(resolved, tick);
+  const enabledControllers = controllers.filter((controller) =>
+    controller.type.toLowerCase() === "enabled" && targetsLayer(controller, layer),
+  );
   if (enabledControllers.length > 0) {
-    resolved.animationTick = countEnabledTicks(enabledControllers, tick);
+    resolved = { ...resolved, animationTick: countEnabledTicks(enabledControllers, tick) };
   }
   return resolved;
 }

@@ -5,7 +5,7 @@ import type { MugenStageLayer } from "../mugen/model/MugenStage";
 import type { StageSnapshot } from "../mugen/runtime/types";
 import { AxisRenderer, stageLayerMaterialParameters } from "../game/render/AxisRenderer";
 import type { TextureStore } from "../game/render/TextureStore";
-import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick, resolveStageLayerScale } from "../game/render/stageProjection";
+import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick, resolveStageLayerScale, resolveStageZOffsetLink } from "../game/render/stageProjection";
 import { bgCtrlLabStage } from "../mugen/runtime/demoStage";
 
 const sprite: MugenSprite = {
@@ -346,6 +346,66 @@ describe("projectStageSpriteLayer", () => {
     };
 
     expect(resolveStageLayerForTick(linkedLayer, linkedStage, 1)).toMatchObject({ startX: 15, startY: 27 });
+  });
+
+  it("adds authored sinusoid after PosSet and does not double it on a linked child", () => {
+    const parent: MugenStageLayer = {
+      id: "BG wave parent",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 10,
+      startY: 20,
+      controlId: 7,
+      sinusoid: { x: { amplitude: 10, period: 8, phase: 0 } },
+    };
+    const child: MugenStageLayer = {
+      id: "BG wave child",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 13,
+      startY: 24,
+      controlId: 8,
+      positionLink: { targetId: parent.id, offsetX: 3, offsetY: 4 },
+    };
+    const composed: StageSnapshot = {
+      ...stage,
+      floorY: -10,
+      zOffsetLink: 7,
+      layers: [parent, child],
+      bgControllers: [
+        {
+          name: "overwrite",
+          controllers: [
+            {
+              name: "base-position",
+              type: "posset",
+              timing: { start: 0, end: 0 },
+              ctrlIds: [7],
+              params: { value: "12,23" },
+              rawParams: { type: "PosSet", time: "0", value: "12,23" },
+            },
+          ],
+          rawParams: {},
+        },
+      ],
+    };
+    const first = resolveStageLayerForTick(parent, composed, 2);
+    const second = resolveStageLayerForTick(parent, composed, 2);
+    expect(first?.startX).toBeCloseTo(22);
+    expect(first?.startY).toBe(23);
+    expect(second?.startX).toBe(first?.startX);
+    expect(second?.startY).toBe(first?.startY);
+    expect(parent.startX).toBe(10);
+    expect(resolveStageLayerForTick(child, composed, 2)).toMatchObject({ startX: 25, startY: 27 });
+    expect(resolveStageZOffsetLink(composed, 2)).toEqual({ floorY: -13 });
   });
 });
 

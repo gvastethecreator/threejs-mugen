@@ -212,6 +212,32 @@ sin.y = 4,16,0
     });
   });
 
+  it("keeps sinusoid amplitudes in stage pixels for a 640 localcoord stage", () => {
+    const runtime = stageDefToRuntime(
+      parseStageDef(`
+[Info]
+name = "Wide Wave"
+[StageInfo]
+zoffset = 180
+zoffsetlink = 7
+localcoord = 640,480
+[BGDef]
+spr = sine.sff
+[BG Wave]
+type = normal
+id = 7
+spriteno = 0,0
+start = 10,20
+sin.x = 10,8,0
+`, "stages/wide-sine.def"),
+      "stage-wide-sine",
+    );
+
+    expect(runtime.localCoord).toEqual({ width: 640, height: 480 });
+    expect(runtime.zOffsetLink).toBe(7);
+    expect(runtime.layers[0]?.sinusoid).toEqual({ x: { amplitude: 10, period: 8, phase: 0 } });
+  });
+
   it("preserves parent and controller BGCtrl loop periods separately", () => {
     const parsed = parseStageDef(`
 [BGDef]
