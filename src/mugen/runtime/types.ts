@@ -1070,6 +1070,7 @@ export type RuntimeCommand =
   | { type: "set-playing"; playing: boolean }
   | { type: "step"; ticks?: number }
   | { type: "set-speed"; speed: number }
+  | { type: "reset" }
   | { type: "toggle"; key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"; value: boolean };
 
 export interface SnapshotRuntime {

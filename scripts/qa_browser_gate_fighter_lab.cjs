@@ -40,10 +40,30 @@ async function main() {
     assert(rocco.actionButtons === 17, `Expected 14 actions plus 3 VFX, found ${rocco.actionButtons}`);
     assert(rocco.frameButtons === 4, `Expected 4 light-strike frames, found ${rocco.frameButtons}`);
     assert(rocco.snapshot.action === 200 && rocco.snapshot.frame === 2 && rocco.snapshot.playing === false, "Deep-linked action/frame was not held paused");
+    assert(rocco.inspection?.schema === "FighterLabInspection/v0", "Lab inspection observation missing");
+    assert(rocco.inspection?.package?.id && rocco.inspection?.package?.digest, "Lab inspection is not package-bound");
+    assert(rocco.inspection?.identity?.actionNo === 200 && rocco.inspection?.identity?.frameIndex === 2, "Inspection frame does not match seek");
+    assert(rocco.inspection?.sprite, "Inspection sprite missing");
+    assert(rocco.inspection?.manualVerdict === undefined, "Mechanical atlas must not become a manual verdict");
     assert(rocco.atlasLoaded && rocco.renderCalls > 0, "Atlas or WebGL preview did not load");
     assert(JSON.stringify(rocco.activeRootIds) === JSON.stringify(["p1", "p2"]), "Active root bridge did not expose the initial pair");
     assert(Array.isArray(rocco.helperTeamResourceBindings), "Helper resource binding bridge is missing");
     await page.screenshot({ path: path.join(outDir, "rocco-light-strike-frame-3.png") });
+    await clickStable(page, '.fighter-lab-frame[data-lab-frame-index="0"]');
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.[0]?.runtime?.frameIndex === 0);
+    await clickStable(page, '.fighter-lab-frame[data-lab-frame-index="2"]');
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.actors?.[0]?.runtime?.frameIndex === 2);
+    const roccoAgain = await readState(page);
+    assert(JSON.stringify(roccoAgain.inspection?.sprite) === JSON.stringify(rocco.inspection?.sprite), "Second seek changed sprite metadata");
+    assert(roccoAgain.inspection?.identity?.spriteOwnerId === rocco.inspection?.identity?.spriteOwnerId, "Second seek changed resource owner");
+    assert(roccoAgain.inspection?.package?.digest === rocco.inspection?.package?.digest, "Package digest drifted on seek");
+    await clickStable(page, '.workspace-actions [data-action="play-pause"]');
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.snapshot?.playing === true);
+    await clickStable(page, '.workspace-actions [data-action="reset-round"]');
+    const reset = await readState(page);
+    assert(reset.snapshot.playing === false && reset.snapshot.frame === 0, "Reset did not restore paused frame 0");
+    assert(reset.inspection?.tick === 0, "Reset leaked previous tick");
+    assert((reset.inspection?.effects?.afterImageSamples ?? 0) === 0, "Reset leaked AfterImage samples");
 
     await clickStable(page, '[data-lab-fighter-id="nadia-arce"]');
     await page.waitForFunction(() => new URLSearchParams(location.search).get("fighter") === "nadia-arce");
@@ -236,6 +256,7 @@ async function readState(page) {
         frame: bridge?.snapshot?.actors?.[0]?.runtime?.frameIndex,
         playing: bridge?.snapshot?.playing,
       },
+      inspection: bridge?.fighterLabInspection,
     };
   });
 }

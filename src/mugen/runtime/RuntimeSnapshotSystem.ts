@@ -290,6 +290,96 @@ export function resolveFighterLabResourceIdentity(actor: ActorSnapshot | undefin
   };
 }
 
+export const FIGHTER_LAB_INSPECTION_SCHEMA = "FighterLabInspection/v0" as const;
+
+export type FighterLabInspectionCrop = {
+  meshPosition: { x: number; y: number; z: number };
+  meshScale: { x: number; y: number };
+  frame: { group: number; index: number };
+};
+
+export type FighterLabInspectionObservation = {
+  schema: typeof FIGHTER_LAB_INSPECTION_SCHEMA;
+  package: { id: string; digest: string };
+  tick: number;
+  playing: boolean;
+  speed: number;
+  identity: FighterLabResourceIdentity;
+  sprite?: { group: number; index: number; offsetX: number; offsetY: number };
+  crop?: FighterLabInspectionCrop;
+  effects: {
+    afterImageSamples: number;
+    explods: number;
+    paletteRemap?: ActorSnapshot["runtime"]["paletteRemap"];
+  };
+  mechanical: {
+    framePresent: boolean;
+    atlasPresent: boolean;
+  };
+  manualVerdict?: "pending" | "pass" | "fail";
+};
+
+export function fighterLabRevisionKey(input: {
+  id: string;
+  frames: Array<{ action: number; index: number; group: number; sprite: number }>;
+}): string {
+  return `${input.id}:${input.frames.map((frame) => `${frame.action}.${frame.index}=${frame.group},${frame.sprite}`).join(";")}`;
+}
+
+export function fighterLabInspectionIsStale(
+  observation: FighterLabInspectionObservation,
+  packageDigest: string,
+): boolean {
+  return observation.package.digest !== packageDigest;
+}
+
+export function createFighterLabInspectionObservation(input: {
+  snapshot: MugenSnapshot;
+  packageId: string;
+  packageDigest: string;
+  crop?: FighterLabInspectionCrop;
+  atlasPresent?: boolean;
+  manualVerdict?: "pending" | "pass" | "fail";
+}): FighterLabInspectionObservation | undefined {
+  const actor = input.snapshot.actors[0];
+  const identity = resolveFighterLabResourceIdentity(actor);
+  if (!identity) {
+    return undefined;
+  }
+  const frame = actor.frame;
+  return {
+    schema: FIGHTER_LAB_INSPECTION_SCHEMA,
+    package: { id: input.packageId, digest: input.packageDigest },
+    tick: input.snapshot.tick,
+    playing: input.snapshot.playing,
+    speed: input.snapshot.speed,
+    identity,
+    ...(frame
+      ? {
+          sprite: {
+            group: frame.spriteGroup,
+            index: frame.spriteIndex,
+            offsetX: frame.offsetX,
+            offsetY: frame.offsetY,
+          },
+        }
+      : {}),
+    ...(input.crop ? { crop: structuredClone(input.crop) } : {}),
+    effects: {
+      afterImageSamples: actor.runtime.afterImage?.samples.length ?? 0,
+      explods: (input.snapshot.effects ?? []).filter((effect) => effect.actorKind === "explod").length,
+      ...(actor.runtime.paletteRemap
+        ? { paletteRemap: { source: [...actor.runtime.paletteRemap.source], dest: [...actor.runtime.paletteRemap.dest] } }
+        : {}),
+    },
+    mechanical: {
+      framePresent: Boolean(frame),
+      atlasPresent: input.atlasPresent === true,
+    },
+    ...(input.manualVerdict ? { manualVerdict: input.manualVerdict } : {}),
+  };
+}
+
 export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {
   const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraX !== false);
   const source = cameraActors.length > 0 ? cameraActors : actors;

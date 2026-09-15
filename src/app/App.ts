@@ -95,7 +95,12 @@ import { fingerprintMugenStateSource } from "../mugen/compiler/StateSourceResolv
 import type { RuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { RuntimeTraceArtifactFrameSummary } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { MugenSnapshot } from "../mugen/runtime/types";
-import { resolveFighterLabResourceIdentity } from "../mugen/runtime/RuntimeSnapshotSystem";
+import {
+  createFighterLabInspectionObservation,
+  fighterLabRevisionKey,
+  resolveFighterLabResourceIdentity,
+  type FighterLabInspectionObservation,
+} from "../mugen/runtime/RuntimeSnapshotSystem";
 import { renderActorRegistry, renderDebugPanel, escapeHtml, type RuntimeRosterEntry } from "./DebugPanel";
 import { buildRuntimeA11ySummary } from "./RuntimeA11ySummary";
 import { FileDropZone } from "./FileDropZone";
@@ -4288,8 +4293,41 @@ export class App {
     const fighter = this.getSelectedLabFighter();
     this.selectedLabFighterId = fighter.id;
     this.fighterLabRuntime = new MugenRuntime(fighter.animations);
-    this.snapshot = this.fighterLabRuntime.getSnapshot();
+    this.snapshot = this.fighterLabRuntime.dispatch({ type: "reset" });
     this.log(`Fighter Lab loaded ${fighter.displayName}`);
+  }
+
+  private getFighterLabInspectionObservation(): FighterLabInspectionObservation | undefined {
+    if (this.mode !== "lab") {
+      return undefined;
+    }
+    const snapshot = this.getRenderableSnapshot();
+    const fighter = this.getSelectedLabFighter();
+    const digest = this.importedSourceBundle?.fingerprint.digest ?? fighterLabRevisionKey({
+      id: fighter.id,
+      frames: [...fighter.animations.values()].flatMap((action) =>
+        action.frames.map((frame, index) => ({
+          action: action.id,
+          index,
+          group: frame.spriteGroup,
+          sprite: frame.spriteIndex,
+        })),
+      ),
+    });
+    const presentation = this.renderer.getDiagnostics().characters.find((item) => item.actorId === snapshot.actors[0]?.id);
+    return createFighterLabInspectionObservation({
+      snapshot,
+      packageId: this.importedSourceBundle?.sourceName ?? fighter.id,
+      packageDigest: digest,
+      crop: presentation
+        ? {
+            meshPosition: presentation.meshPosition,
+            meshScale: presentation.meshScale,
+            frame: presentation.frame,
+          }
+        : undefined,
+      atlasPresent: this.atlasStatusByFighter.get(fighter.id) === "loaded",
+    });
   }
 
   private getRenderableSnapshot(): MugenSnapshot {
@@ -15738,6 +15776,7 @@ export class App {
         actorRegistry?: MatchWorldActorRegistrySnapshot;
         activeRootIds: readonly string[];
         helperTeamResourceBindings: ReturnType<MatchWorld["getHelperTeamResourceBindings"]>;
+        fighterLabInspection?: FighterLabInspectionObservation;
         studio: StudioProjectSummary;
         studioAssets: StudioAssetLibrarySummary;
         studioAssetReleasePolicies: AssetReleasePolicyRecord[];
@@ -15838,6 +15877,7 @@ export class App {
       actorRegistry: this.getActiveActorRegistry(),
       activeRootIds: this.matchRuntime.getActiveRootIds(),
       helperTeamResourceBindings: this.matchRuntime.getHelperTeamResourceBindings(),
+      fighterLabInspection: this.getFighterLabInspectionObservation(),
       studio,
       studioAssets: this.getStudioAssetLibrarySummary(),
       studioAssetReleasePolicies: this.getStudioAssetReleasePolicies(studio.assets),

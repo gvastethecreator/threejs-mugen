@@ -34,6 +34,11 @@ export class MugenRuntime implements SnapshotRuntime {
       this.step(command.ticks ?? 1);
     } else if (command.type === "set-speed") {
       this.speed = Math.max(0.1, Math.min(4, command.speed));
+    } else if (command.type === "reset") {
+      this.tick = 0;
+      this.playing = false;
+      this.speed = 1;
+      this.actor.resetPlayback();
     } else if (command.type === "toggle") {
       this.toggles = { ...this.toggles, [command.key]: command.value };
     }

@@ -4,6 +4,9 @@ import { trainingStage } from "../mugen/runtime/demoStage";
 import {
   cameraCenterX,
   cameraCenterY,
+  createFighterLabInspectionObservation,
+  fighterLabInspectionIsStale,
+  fighterLabRevisionKey,
   resolveFighterLabResourceIdentity,
   RuntimeSnapshotWorld,
   type RuntimePlayerSnapshotActor,
@@ -564,6 +567,59 @@ describe("RuntimeSnapshotWorld", () => {
       resolveFighterLabResourceIdentity(borrowedActor)?.spriteOwnerDefinitionId,
     );
     expect(resolveFighterLabResourceIdentity(missingFrame)?.missing).toContain("AIR frame");
+  });
+
+  it("binds Fighter Lab observations to package revision, frame, and owners without using atlas as a verdict", () => {
+    const world = new RuntimeSnapshotWorld();
+    const actor = world.actor(labPlayer("p1", runtimeState()));
+    const snapshot = {
+      tick: 12,
+      selectedActionId: 200,
+      playing: false,
+      speed: 1,
+      showClsn1: true,
+      showClsn2: true,
+      showAxis: false,
+      showGrid: false,
+      stage: world.stage({ stage: trainingStage, actors: [] }),
+      actors: [actor],
+      effects: [{ ...actor, id: "explod-1", actorKind: "explod" as const }],
+      logs: [],
+    };
+    const digest = fighterLabRevisionKey({
+      id: "rocco-vidal",
+      frames: [{ action: 200, index: 2, group: actor.frame!.spriteGroup, sprite: actor.frame!.spriteIndex }],
+    });
+    const first = createFighterLabInspectionObservation({
+      snapshot,
+      packageId: "rocco-vidal",
+      packageDigest: digest,
+      crop: {
+        meshPosition: { x: 1, y: 2, z: 3 },
+        meshScale: { x: 12, y: 16 },
+        frame: { group: actor.frame!.spriteGroup, index: actor.frame!.spriteIndex },
+      },
+      atlasPresent: true,
+    });
+    const second = createFighterLabInspectionObservation({
+      snapshot,
+      packageId: "rocco-vidal",
+      packageDigest: digest,
+      crop: {
+        meshPosition: { x: 1, y: 2, z: 3 },
+        meshScale: { x: 12, y: 16 },
+        frame: { group: actor.frame!.spriteGroup, index: actor.frame!.spriteIndex },
+      },
+      atlasPresent: true,
+    });
+    expect(first?.identity.actionNo).toBe(200);
+    expect(first?.sprite).toEqual(second?.sprite);
+    expect(first?.crop).toEqual(second?.crop);
+    expect(first?.effects.explods).toBe(1);
+    expect(first?.mechanical.atlasPresent).toBe(true);
+    expect(first?.manualVerdict).toBeUndefined();
+    expect(fighterLabInspectionIsStale(first!, digest)).toBe(false);
+    expect(fighterLabInspectionIsStale(first!, digest + "-changed")).toBe(true);
   });
 });
 

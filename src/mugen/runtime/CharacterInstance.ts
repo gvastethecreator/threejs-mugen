@@ -35,9 +35,13 @@ export class CharacterInstance {
 
   selectAction(actionId: number): void {
     this.state.animNo = actionId;
-    this.state.frameIndex = 0;
-    this.state.animTime = 0;
-    this.frameElapsed = 0;
+    this.resetPlaybackClock();
+    this.state.afterImage = undefined;
+    this.state.paletteFx = undefined;
+  }
+
+  resetPlayback(): void {
+    this.selectAction(this.state.animNo);
   }
 
   selectFrame(frameIndex: number): void {
@@ -47,6 +51,12 @@ export class CharacterInstance {
     this.state.animTime = action?.frames
       .slice(0, this.state.frameIndex)
       .reduce((total, frame) => total + Math.max(1, frame.duration), 0) ?? 0;
+    this.frameElapsed = 0;
+  }
+
+  private resetPlaybackClock(): void {
+    this.state.frameIndex = 0;
+    this.state.animTime = 0;
     this.frameElapsed = 0;
   }
 

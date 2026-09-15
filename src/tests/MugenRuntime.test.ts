@@ -3,6 +3,7 @@ import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import { tokenizeMugenExpression } from "../mugen/compiler/ExpressionLexer";
 import { evaluateExpression, evaluateExpressionNumeric } from "../mugen/runtime/ExpressionEvaluator";
+import { CharacterInstance } from "../mugen/runtime/CharacterInstance";
 import { MugenRuntime } from "../mugen/runtime/MugenRuntime";
 import { executeStateController } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -18,6 +19,52 @@ describe("MugenRuntime frame selection", () => {
     });
     expect(runtime.dispatch({ type: "select-frame", frameIndex: 99 }).actors[0]?.runtime.frameIndex).toBe(2);
     expect(runtime.dispatch({ type: "select-frame", frameIndex: -4 }).actors[0]?.runtime.frameIndex).toBe(0);
+  });
+
+  it("seeks the same frame twice with identical sprite metadata and resets trail playback", () => {
+    const runtime = new MugenRuntime(new Map<number, MugenAnimationAction>([[200, action(200, [3, 5, 7])]]));
+    const first = runtime.dispatch({ type: "select-frame", frameIndex: 2 });
+    runtime.dispatch({ type: "select-frame", frameIndex: 0 });
+    const second = runtime.dispatch({ type: "select-frame", frameIndex: 2 });
+    expect(second.actors[0]?.runtime.frameIndex).toBe(first.actors[0]?.runtime.frameIndex);
+    expect(second.actors[0]?.frame).toEqual(first.actors[0]?.frame);
+    expect(second.selectedActionId).toBe(200);
+
+    runtime.dispatch({ type: "set-playing", playing: true });
+    runtime.dispatch({ type: "set-speed", speed: 2 });
+    runtime.dispatch({ type: "step", ticks: 1 });
+    const reset = runtime.dispatch({ type: "reset" });
+    expect(reset.tick).toBe(0);
+    expect(reset.playing).toBe(false);
+    expect(reset.speed).toBe(1);
+    expect(reset.actors[0]?.runtime.frameIndex).toBe(0);
+
+    const instance = new CharacterInstance(new Map([[200, action(200, [3, 5, 7])]]), 200);
+    instance.selectFrame(2);
+    instance.state.afterImage = {
+      remaining: 8,
+      time: 8,
+      length: 2,
+      timeGap: 1,
+      frameGap: 1,
+      palAdd: [0, 0, 0],
+      palMul: [256, 256, 256],
+      opacity: 0.5,
+      elapsed: 2,
+      samples: [{ age: 1, pos: { x: 4, y: 0 }, facing: 1, spriteGroup: 200, spriteIndex: 0, offsetX: 0, offsetY: 0 }],
+    };
+    instance.state.paletteFx = {
+      remaining: 4,
+      time: 4,
+      add: [20, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    };
+    instance.resetPlayback();
+    expect(instance.state.frameIndex).toBe(0);
+    expect(instance.state.afterImage).toBeUndefined();
+    expect(instance.state.paletteFx).toBeUndefined();
   });
 
   it("consumes compact subtraction and refuses unconsumed expression tokens", () => {
