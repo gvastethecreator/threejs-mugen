@@ -68,7 +68,8 @@ export function projectStageSpriteLayer(
     return clipStagePlacements([base], layer, stage);
   }
 
-  const xStep = Math.max(1, width + (layer.tile.spacingX ?? 0) * scale.x);
+  const xTileSpan = isParallaxLayer(layer) && trapezoid && trapezoid.top > 0 ? trapezoid.top : width;
+  const xStep = Math.max(1, xTileSpan + (layer.tile.spacingX ?? 0) * scale.x);
   const yStep = Math.max(1, height + (layer.tile.spacingY ?? 0) * scale.y);
   const cameraX = stage.camera.x;
   const left = cameraX - viewportWidth;

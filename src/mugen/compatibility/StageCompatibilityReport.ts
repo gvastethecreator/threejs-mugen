@@ -367,7 +367,7 @@ function describeBackgroundLayer(
           index: layer.spriteIndex,
           decoded,
         },
-        fallback: "Parallax tile or clip combinations are not rendered as trapezoids",
+        fallback: "Parallax clip or vertical tile combinations are not rendered as trapezoids",
       };
     }
     return {
@@ -449,7 +449,7 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
   push(
     "parallax tile or clip",
     stagePackage.stage.layers.filter((layer) => isParallaxLayer(layer) && hasParallaxUnsupportedCombo(layer)).length,
-    "Parallax trapezoid rendering is skipped when tile or clip is authored",
+    "Parallax trapezoid rendering is skipped when clip or vertical tile is authored",
   );
   push(
     "zoffsetlink target missing",
@@ -497,7 +497,7 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   if (type && !isSupportedStageLayerType(type)) {
     unsupported.push(`type:${type}`);
   }
-  if (isParallaxLayer(layer) && layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)) {
+  if (isParallaxLayer(layer) && layer.tile && layer.tile.y !== 0) {
     unsupported.push("tile+parallax");
   }
   if (isParallaxLayer(layer) && layer.clip) {

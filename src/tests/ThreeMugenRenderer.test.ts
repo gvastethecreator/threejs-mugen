@@ -490,6 +490,89 @@ describe("ThreeMugenRenderer stage BGPalFX", () => {
     renderer.dispose();
   });
 
+  it("renders bounded horizontal parallax tiles as trapezoids and releases them on stage replacement", () => {
+    const textures = { getTexture: () => new THREE.Texture() } as unknown as TextureStore;
+    const renderer = new AxisRenderer(textures);
+    const sprite = { group: 0, index: 0, width: 100, height: 40, axisX: 50, axisY: 20 };
+    renderer.setStageSpriteArchives([{ stageId: "tiled", archive: { version: "v1", sprites: [sprite], warnings: [] } }]);
+    const tiledLayer = {
+      id: "floor",
+      type: "parallax",
+      color: "#fff",
+      y: 0,
+      width: 320,
+      height: 40,
+      deltaX: 1,
+      opacity: 1,
+      startX: 0,
+      startY: 0,
+      spriteGroup: 0,
+      spriteIndex: 0,
+      parallaxWidth: { top: 200, bottom: 80 },
+      tile: { x: 1, y: 0, spacingX: 20 },
+    };
+    renderer.update({
+      width: 320,
+      height: 240,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        id: "tiled",
+        displayName: "Tiled",
+        floorY: 0,
+        zOffset: 200,
+        camera: { x: 0, y: 0, zoom: 1 },
+        layers: [tiledLayer],
+      },
+    });
+    const tiles = renderer.group.children.filter((child): child is THREE.Mesh => {
+      if (!(child instanceof THREE.Mesh)) {
+        return false;
+      }
+      const pos = child.geometry.getAttribute("position") as THREE.BufferAttribute;
+      return pos.getX(1) - pos.getX(0) !== pos.getX(3) - pos.getX(2);
+    });
+    expect(tiles.length).toBeGreaterThan(1);
+    expect(renderer.getDiagnostics()[0]?.meshCount).toBe(tiles.length);
+    const widths = tiles.map((mesh) => {
+      const pos = mesh.geometry.getAttribute("position") as THREE.BufferAttribute;
+      return {
+        top: pos.getX(1) - pos.getX(0),
+        bottom: pos.getX(3) - pos.getX(2),
+      };
+    });
+    expect(widths.every((item) => item.top === 200 && item.bottom === 80)).toBe(true);
+    const xs = tiles.map((mesh) => mesh.position.x).sort((a, b) => a - b);
+    expect(new Set(xs.slice(1).map((x, index) => x - xs[index]!))).toEqual(new Set([220]));
+
+    renderer.update({
+      width: 320,
+      height: 240,
+      showAxis: false,
+      showGrid: false,
+      tick: 0,
+      stage: {
+        id: "empty",
+        displayName: "Empty",
+        floorY: 0,
+        zOffset: 200,
+        camera: { x: 0, y: 0, zoom: 1 },
+        layers: [],
+      },
+    });
+    const remainingTiles = renderer.group.children.filter((child): child is THREE.Mesh => {
+      if (!(child instanceof THREE.Mesh)) {
+        return false;
+      }
+      const pos = child.geometry.getAttribute("position") as THREE.BufferAttribute;
+      return pos.getX(1) - pos.getX(0) !== pos.getX(3) - pos.getX(2);
+    });
+    expect(remainingTiles).toHaveLength(0);
+    expect(renderer.getDiagnostics()).toHaveLength(0);
+    renderer.dispose();
+  });
+
   it("renders a nine-layer loaded stage with sinusoid, trapezoid and linked floor together", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile("stages/composition-nine/stage.def", new TextEncoder().encode(NINE_LAYER_COMPOSITION_DEF));

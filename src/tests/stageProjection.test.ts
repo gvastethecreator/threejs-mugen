@@ -166,11 +166,46 @@ describe("projectStageSpriteLayer", () => {
     expect(moved?.x).toBe(140);
     expect(moved).toMatchObject({ topWidth: 200, bottomWidth: 80 });
     expect(projectStageSpriteLayer(
-      { ...parallax, tile: { x: 1, y: 0 } },
+      { ...parallax, tile: { x: 0, y: 1 } },
       sprite,
       stage,
       640,
     )).toEqual([]);
+  });
+
+  it("emits bounded horizontal parallax tiles that keep trapezoid edges at a camera seam", () => {
+    const parallax: MugenStageLayer = {
+      id: "BG Floor",
+      type: "parallax",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 0.5,
+      opacity: 1,
+      startX: 20,
+      startY: 30,
+      spriteGroup: 1,
+      spriteIndex: 0,
+      parallaxWidth: { top: 200, bottom: 80 },
+      tile: { x: 1, y: 0, spacingX: 20 },
+    };
+    const placements = projectStageSpriteLayer(parallax, sprite, stage, 180);
+    const xs = placements.map((placement) => placement.x).sort((a, b) => a - b);
+    const steps = xs.slice(1).map((x, index) => x - xs[index]!);
+
+    expect(placements.length).toBeGreaterThan(1);
+    expect(placements.length).toBeLessThanOrEqual(49);
+    expect(new Set(steps)).toEqual(new Set([220]));
+    expect(placements.every((placement) => placement.topWidth === 200 && placement.bottomWidth === 80)).toBe(true);
+    expect(xs.some((x) => x < stage.camera.x)).toBe(true);
+    expect(xs.some((x) => x > stage.camera.x)).toBe(true);
+
+    const moved = projectStageSpriteLayer(parallax, sprite, { ...stage, camera: { ...stage.camera, x: 160 } }, 180);
+    const movedXs = moved.map((placement) => placement.x).sort((a, b) => a - b);
+    expect(moved.every((placement) => placement.topWidth === 200 && placement.bottomWidth === 80)).toBe(true);
+    expect(new Set(movedXs.slice(1).map((x, index) => x - movedXs[index]!))).toEqual(new Set([220]));
+    expect(movedXs).not.toEqual(xs);
   });
 
   it("resolves camera movement scale and keeps zoomdelta=0 screen-stable", () => {
