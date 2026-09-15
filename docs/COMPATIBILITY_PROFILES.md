@@ -188,6 +188,24 @@ These are compilation, creation, mutation, and payload observations. They do
 not establish complete rebound trajectories, recovery windows, nested Helper
 contact parity, or upstream differential parity.
 
+## Bounded expression query support
+
+These names were admitted or repaired in the current port series. The compiler
+table in `ExpressionCompiler.expressionQuerySupportTable` is the admission list.
+Scanner visibility is not a runtime claim.
+
+| Name | Compiler | Consumer | Profile |
+| --- | --- | --- | --- |
+| `Cond` | Compiled / executed partial | Evaluator lazy `Cond` branch | `mugen-1.1` |
+| `IfElse` | Compiled / executed partial | Evaluator eager `IfElse` args | `mugen-1.1` |
+| `WinPerfect` | Compiled / executed partial | Settled `roundDecision.winPerfect` | `mugen-1.1` |
+| `TeamMode` | Compiled / executed partial | Match-owned `ExpressionContext.teamMode` | `mugen-1.1` |
+| `AILevel` | Compiled / executed partial | Evaluated actor `aiLevel` (0–8) | `mugen-1.1` |
+| `AILevelF` | Recognized / unsupported | none; `ailevelF(no-consumer)` | `ikemen-go-scan` |
+
+Missing `teamMode` does not become Single. Missing `roundDecision` does not
+become WinPerfect. `AILevelF` stays a scanner name.
+
 ## Support levels
 
 Use these labels from [QA_AND_ACCEPTANCE_GATES.md](QA_AND_ACCEPTANCE_GATES.md):

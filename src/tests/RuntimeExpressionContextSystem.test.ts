@@ -94,6 +94,22 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("Parent, AILevel", { actor, opponent, owner, characters: [actor, opponent, owner] })).toBe(8);
   });
 
+  it("routes Cond, WinPerfect and TeamMode through the match-owned context", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    actor.runtime.aiLevel = 0;
+
+    expect(world.evaluateNumber("Cond(1, 8, 9)", { actor, opponent })).toBe(8);
+    expect(world.evaluateNumber("WinPerfect", {
+      actor,
+      opponent,
+      roundDecision: { settled: true, win: true, winKO: true, winPerfect: true },
+    })).toBe(1);
+    expect(world.evaluateNumber("TeamMode = Turns", { actor, opponent, teamMode: "turns" })).toBe(1);
+    expect(world.evaluateNumber("TeamMode = Single", { actor, opponent })).toBe(0);
+  });
+
   it("binds Win/Lose and animation queries to the redirected actor", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

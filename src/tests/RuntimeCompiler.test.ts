@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compileCommandIr } from "../mugen/compiler/CommandCompiler";
-import { compileExpression } from "../mugen/compiler/ExpressionCompiler";
+import { compileExpression, expressionQuerySupportTable } from "../mugen/compiler/ExpressionCompiler";
 import { compileControllerIr, compileRuntimeProgram, getControllerSupport, isRuntimeExecutableController } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
@@ -357,6 +357,13 @@ command = F, >x
     expect(teamMode.supportLevel).toBe("executable");
     expect(animExist.supportLevel).toBe("executable");
     expect(animElemNo.supportLevel).toBe("executable");
+    for (const row of expressionQuerySupportTable) {
+      const compiled = compileExpression(row.sample);
+      expect(compiled.supportLevel, row.sample).toBe(row.compiler);
+      if (row.compiler === "unsupported") {
+        expect(compiled.unsupportedFeatures).toContain(row.reason);
+      }
+    }
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

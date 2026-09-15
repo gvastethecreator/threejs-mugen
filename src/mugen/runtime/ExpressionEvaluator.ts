@@ -1274,7 +1274,11 @@ class ExpressionParser {
       return this.context.roundDecision?.settled && this.context.roundDecision.draw ? 1 : 0;
     }
     if (lower === "teammode") {
-      return this.context.teamMode ?? "single";
+      if (this.context.teamMode === undefined) {
+        this.context.reportUnsupported?.("teammode");
+        return failedRedirectMarker;
+      }
+      return this.context.teamMode;
     }
     if (lower === "teamside") {
       return Math.max(0, Math.trunc(this.context.teamSide ?? 0));

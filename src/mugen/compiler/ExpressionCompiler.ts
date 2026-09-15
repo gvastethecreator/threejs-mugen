@@ -1,6 +1,70 @@
 import { isMalformedMugenExpression, tokenizeMugenExpression } from "./ExpressionLexer";
 import type { CompileSupportLevel, ExpressionIr } from "./RuntimeIr";
 
+export type ExpressionQuerySupportRow = {
+  name: string;
+  kind: "identifier" | "function";
+  compiler: Extract<CompileSupportLevel, "executable" | "unsupported">;
+  sample: string;
+  consumer: string;
+  profile: "mugen-1.1" | "ikemen-go" | "ikemen-go-scan";
+  reason?: string;
+};
+
+export const expressionQuerySupportTable: readonly ExpressionQuerySupportRow[] = [
+  {
+    name: "cond",
+    kind: "function",
+    compiler: "executable",
+    sample: "Cond(1, 8, 9)",
+    consumer: "ExpressionEvaluator.evaluateFunction/cond",
+    profile: "mugen-1.1",
+  },
+  {
+    name: "ifelse",
+    kind: "function",
+    compiler: "executable",
+    sample: "IfElse(1, 8, 9)",
+    consumer: "ExpressionEvaluator.evaluateFunction/ifelse",
+    profile: "mugen-1.1",
+  },
+  {
+    name: "winperfect",
+    kind: "identifier",
+    compiler: "executable",
+    sample: "WinPerfect",
+    consumer: "ExpressionContext.roundDecision.winPerfect",
+    profile: "mugen-1.1",
+  },
+  {
+    name: "teammode",
+    kind: "identifier",
+    compiler: "executable",
+    sample: "TeamMode",
+    consumer: "ExpressionContext.teamMode",
+    profile: "mugen-1.1",
+  },
+  {
+    name: "ailevel",
+    kind: "identifier",
+    compiler: "executable",
+    sample: "AILevel",
+    consumer: "CharacterRuntimeState.aiLevel",
+    profile: "mugen-1.1",
+  },
+  {
+    name: "ailevelf",
+    kind: "identifier",
+    compiler: "unsupported",
+    sample: "AILevelF",
+    consumer: "",
+    profile: "ikemen-go-scan",
+    reason: "ailevelF(no-consumer)",
+  },
+];
+
+const expressionQuerySupportByName = new Map(expressionQuerySupportTable.map((row) => [row.name, row]));
+
 export function normalizeMugenExpression(expression: string): string {
   let normalized = expression.trim();
   normalized = normalized.replace(/\b(vel|pos)\s+([xyz])\b/gi, (_match, base: string, axis: string) => {
@@ -78,7 +142,10 @@ export function compileExpression(expression: string): ExpressionIr {
     }
     if (isFunctionCall(withoutStrings, identifier, match.index)) {
       functions.add(identifier);
-      if (!supportedExpressionFunctions.has(lower)) {
+      const query = expressionQuerySupportByName.get(lower);
+      if (query?.compiler === "unsupported") {
+        unsupportedFeatures.add(query.reason ?? identifier);
+      } else if (!supportedExpressionFunctions.has(lower)) {
         unsupportedFeatures.add(identifier);
       }
       const expectedArity = mathFunctionArity(lower);
@@ -91,7 +158,10 @@ export function compileExpression(expression: string): ExpressionIr {
       continue;
     }
     identifiers.add(identifier);
-    if (!supportedExpressionIdentifiers.has(lower)) {
+    const query = expressionQuerySupportByName.get(lower);
+    if (query?.compiler === "unsupported") {
+      unsupportedFeatures.add(query.reason ?? identifier);
+    } else if (!supportedExpressionIdentifiers.has(lower)) {
       unsupportedFeatures.add(identifier);
     }
   }
