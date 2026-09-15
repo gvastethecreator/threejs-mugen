@@ -12,6 +12,7 @@ import {
   applyRuntimeStateToHelper,
   createRuntimeHelper,
   helperRuntimeState,
+  resolveRuntimeHelperIntegerScalarParam,
   runtimeHelperCanDirectlyInteract,
   runtimeHelpersToSnapshots,
   runtimeHelperTargetActor,
@@ -380,6 +381,14 @@ describe("HelperSystem", () => {
     expect(child.sysfvars?.[0]).toBe(0.5);
     expect(child.fvars[0]).toBe(1.5);
     expect(child.sysvars[0]).toBe(4);
+  });
+
+  it("resolves Helper Projectile p1stateno from helper vars, not the root bank", () => {
+    const root = helperRuntimeState(helper({ vars: [0] }));
+    const child = helper({ vars: Array.from({ length: 60 }, (_, index) => (index === 0 ? 776 : 0)) });
+    const controller = compiledControllerIr(1200, "Projectile", [], { projanim: "6100", p1stateno: "var(0) + 1" });
+    expect(controller.operation).toMatchObject({ kind: "projectile", p1StateNoExpression: "var(0) + 1" });
+    expect(resolveRuntimeHelperIntegerScalarParam(child, controller, "p1stateno", { parentState: root, rootState: root })).toBe(777);
   });
 
   it("does not write ParentVarSet onto root when the parent helper is missing", () => {

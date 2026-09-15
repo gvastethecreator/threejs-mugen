@@ -1291,6 +1291,43 @@ describe("ProjectileSystem", () => {
     expect(spawn()).toMatchObject({ p2StateNo: 777, p2GetP1State: true });
   });
 
+  it("resolves Projectile p1stateno once in the creator context and ignores later changes", () => {
+    const source = controller({ projanim: "1005", p1stateno: "var(0)" });
+    const operation = compileControllerIr(source).operation as ProjectileControllerOp;
+    expect(operation.p1StateNoExpression).toBe("var(0)");
+    let stateNo = 776.9;
+    const spawn = () => createRuntimeProjectile({
+      serialId: "p1-projectile-p1state",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveP1StateNo: () => stateNo,
+    });
+    const projectile = spawn();
+    stateNo = 200;
+    expect(projectile.p1StateNo).toBe(776);
+    expect(spawn().p1StateNo).toBe(200);
+    expect(createRuntimeProjectile({
+      serialId: "p1-projectile-p1state-missing",
+      controller: source,
+      operation,
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      resolveP1StateNo: () => Number.NaN,
+    }).p1StateNo).toBeUndefined();
+  });
+
   it("resolves Projectile kill and guard.kill once and does not treat a missing result as true", () => {
     const source = controller({ projanim: "1005", kill: "var(0)", "guard.kill": "var(1)" });
     const operation = compileControllerIr(source).operation as ProjectileControllerOp;

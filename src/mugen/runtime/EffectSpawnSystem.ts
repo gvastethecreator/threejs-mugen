@@ -104,6 +104,7 @@ export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEf
   resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"];
   resolveProjectileGuardPoints?: RuntimeProjectileSpawnInput["resolveGuardPoints"];
   resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"];
+  resolveProjectileP1StateNo?: RuntimeProjectileSpawnInput["resolveP1StateNo"];
   resolveProjectileP2StateNo?: RuntimeProjectileSpawnInput["resolveP2StateNo"];
   resolveProjectileP2GetP1State?: RuntimeProjectileSpawnInput["resolveP2GetP1State"];
   resolveProjectileKeepState?: RuntimeProjectileSpawnInput["resolveKeepState"];
@@ -311,6 +312,7 @@ export class RuntimeEffectSpawnWorld {
     resolveProjectileGetPower?: RuntimeProjectileSpawnInput["resolveProjectileGetPower"],
     resolveProjectileGivePower?: RuntimeProjectileSpawnInput["resolveProjectileGivePower"],
     resolveProjectileP2Facing?: RuntimeProjectileSpawnInput["resolveP2Facing"],
+    resolveP1StateNo?: RuntimeProjectileSpawnInput["resolveP1StateNo"],
     resolveP2StateNo?: RuntimeProjectileSpawnInput["resolveP2StateNo"],
     resolveP2GetP1State?: RuntimeProjectileSpawnInput["resolveP2GetP1State"],
     resolveProjectileAnimation?: () => number | undefined,
@@ -398,6 +400,7 @@ export class RuntimeEffectSpawnWorld {
       resolveProjectileGetPower,
       resolveProjectileGivePower,
       resolveP2Facing: resolveProjectileP2Facing,
+      resolveP1StateNo,
       resolveP2StateNo,
       resolveP2GetP1State,
       resolveKeepState: resolveProjectileKeepState,
@@ -717,6 +720,7 @@ function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
         options.resolveProjectileGetPower,
         options.resolveProjectileGivePower,
         options.resolveProjectileP2Facing,
+        options.resolveProjectileP1StateNo,
         options.resolveProjectileP2StateNo,
         options.resolveProjectileP2GetP1State,
         options.resolveProjectileAnimation,

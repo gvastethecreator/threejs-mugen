@@ -769,6 +769,8 @@ export type ProjectileControllerOp = {
   /** Dynamic Projectile fall, air-fall, and deferred KO policy evaluated in caller context. */
   fallFlags?: MugenHitDefFallFlagsOp;
   attackDepth?: [number, number];
+  p1StateNo?: number;
+  p1StateNoExpression?: number | string;
   p2StateNo?: number;
   p2StateNoExpression?: number | string;
   p2GetP1State?: boolean;
@@ -4178,6 +4180,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   if (projAnimValue === false) return undefined;
   const p2FacingValue = optionalIntegerExpressionParam(controller, "p2facing");
   if (p2FacingValue === false) return undefined;
+  const p1StateNoValue = optionalIntegerExpressionParam(controller, "p1stateno");
+  if (p1StateNoValue === false) return undefined;
   const p2StateNoValue = optionalIntegerExpressionParam(controller, "p2stateno");
   if (p2StateNoValue === false) return undefined;
   const p2GetP1StateValue = optionalIntegerExpressionParam(controller, "p2getp1state");
@@ -4338,7 +4342,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     chainId: firstNumber(findParam(controller, "chainid")),
     noChainIds: staticIntegerList(findParam(controller, "nochainid"), 8),
     hitDefHitCount: firstNumber(findParam(controller, "numhits")),
-    p1StateNo: firstNumber(findParam(controller, "p1stateno")),
+    p1StateNo: typeof p1StateNoValue === "number" ? p1StateNoValue : undefined,
+    ...(typeof p1StateNoValue === "string" ? { p1StateNoExpression: p1StateNoValue } : {}),
     affectTeam: normalizeMugenAffectTeam(findParam(controller, "affectteam")),
     teamSide: normalizeMugenTeamSide(firstNumber(findParam(controller, "teamside"))),
     projAnim: typeof projAnimValue === "number"

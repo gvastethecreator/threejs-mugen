@@ -7143,6 +7143,78 @@ p2getp1state = Time + 1
     expect(rejectedSnapshot.actors[1]?.runtime.customState).toBeUndefined();
   });
 
+  it("applies fresh Projectile p1stateno once in the creator context", () => {
+    const attacker = createImportedFixture({
+      id: "dynamic-projectile-p1state",
+      withStateMove: false,
+      withProjectile: true,
+      extraStateNos: [777],
+      projectileHitDefParams: `
+p1stateno = Time + 777
+`,
+    });
+    const defender = createImportedFixture({
+      id: "dynamic-projectile-p1state-defender",
+      withStateMove: false,
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    };
+    const acceptedWorld = new RuntimeEffectActorWorld();
+    const accepted = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: acceptedWorld });
+    let snapshot = accepted.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(acceptedWorld.projectiles("p1")[0]?.p1StateNo).toBe(777);
+    for (let frame = 0; frame < 12 && snapshot.actors[0]?.runtime.stateNo !== 777; frame += 1) {
+      snapshot = accepted.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(777);
+
+    const helperAttacker = createImportedFixture({
+      id: "helper-projectile-p1state",
+      withStateMove: false,
+      withHelper: true,
+      extraStateNos: [777],
+      helperStateControllers: `
+[State 1200, Seed]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 776
+
+[State 1200, Proj]
+type = Projectile
+trigger1 = Time = 0
+projid = 93
+projanim = 910
+offset = 0,-20
+velocity = 3,0
+projremovetime = 20
+p1stateno = var(0) + 1
+`,
+    });
+    const helperWorld = new RuntimeEffectActorWorld();
+    const helperMatch = new PlayableMatchRuntime(helperAttacker, defender, closeStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld: helperWorld,
+    });
+    helperMatch.step({ p1: new Set(["x"]), p2: new Set() });
+    const helperActor = helperWorld.helpers("p1")[0];
+    const helperProjectile = helperWorld.projectiles("p1").find((projectile) => projectile.parentId === helperActor?.serialId);
+    expect(helperProjectile?.p1StateNo).toBe(777);
+
+    const guardedWorld = new RuntimeEffectActorWorld();
+    const guarded = new PlayableMatchRuntime(attacker, defender, closeStage, { effectActorWorld: guardedWorld });
+    let guardedSnapshot = guarded.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+    for (let frame = 0; frame < 12; frame += 1) {
+      guardedSnapshot = guarded.step({ p1: new Set(), p2: new Set(["B"]) });
+    }
+    expect(guardedSnapshot.actors[0]?.runtime.stateNo).not.toBe(777);
+  });
+
   it("uses simple HitDef p1stateno and p2stateno as a partial custom-state bridge", () => {
     const imported = createImportedFixture({
       withStateMove: false,

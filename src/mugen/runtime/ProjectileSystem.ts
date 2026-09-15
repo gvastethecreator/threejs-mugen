@@ -416,6 +416,7 @@ export type RuntimeProjectileSpawnInput = {
   resolveGuardPoints?: () => number | undefined;
   /** Resolves fresh Projectile p2facing in the original caller context. */
   resolveP2Facing?: () => number | undefined;
+  resolveP1StateNo?: () => number | undefined;
   resolveP2StateNo?: () => number | undefined;
   resolveP2GetP1State?: () => number | undefined;
   /** Resolves fresh Projectile keepstate in the original caller context. */
@@ -735,6 +736,16 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     : operation?.p2FacingExpression !== undefined
       ? (dynamicP2Facing === undefined || !Number.isFinite(dynamicP2Facing) ? undefined : Math.trunc(dynamicP2Facing))
       : firstNumber(findControllerParam(input.controller, "p2facing"));
+  const dynamicP1StateNo = operation?.p1StateNoExpression === undefined
+    ? undefined
+    : typeof operation.p1StateNoExpression === "number"
+      ? operation.p1StateNoExpression
+      : input.resolveP1StateNo?.();
+  const authoredP1StateNo = operation?.p1StateNoExpression === undefined
+    ? operation?.p1StateNo ?? firstNumber(findControllerParam(input.controller, "p1stateno"))
+    : dynamicP1StateNo === undefined || !Number.isFinite(dynamicP1StateNo)
+      ? undefined
+      : Math.trunc(dynamicP1StateNo);
   const dynamicP2StateNo = operation?.p2StateNoExpression === undefined
     ? undefined
     : typeof operation.p2StateNoExpression === "number"
@@ -1241,7 +1252,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     ...(forceStand === undefined ? {} : { forceStand }),
     ...(forceCrouch === undefined ? {} : { forceCrouch }),
     ...(fall === undefined ? {} : { fall }),
-    p1StateNo: operation?.p1StateNo ?? firstNumber(findControllerParam(input.controller, "p1stateno")),
+    p1StateNo: authoredP1StateNo,
     p2StateNo: authoredP2StateNo,
     p2GetP1State: authoredP2GetP1State,
     p2ClsnCheck: operation?.p2ClsnCheck ?? normalizeMugenCollisionBoxType(findControllerParam(input.controller, "p2clsncheck")),

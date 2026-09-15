@@ -1058,6 +1058,17 @@ value = 1
     expect(malformed.operation).toBeUndefined();
   });
 
+  it("compiles fresh Projectile p1stateno expressions and rejects malformed values", () => {
+    const authored = compileControllerIr(controller(200, "Projectile", [], { p1stateno: "777" }));
+    const dynamic = compileControllerIr(controller(200, "Projectile", [], { p1stateno: "var(0) + 1" }));
+    const malformed = compileControllerIr(controller(200, "Projectile", [], { p1stateno: "var(" }));
+
+    expect(authored.operation).toMatchObject({ kind: "projectile", p1StateNo: 777 });
+    expect(authored.operation).not.toHaveProperty("p1StateNoExpression");
+    expect(dynamic.operation).toMatchObject({ kind: "projectile", p1StateNoExpression: "var(0) + 1" });
+    expect(malformed.operation).toBeUndefined();
+  });
+
   it("compiles fresh Projectile projhits expressions and rejects malformed values", () => {
     const authored = compileControllerIr(controller(200, "Projectile", [], { projhits: "4" }));
     const dynamic = compileControllerIr(controller(200, "Projectile", [], { projhits: "var(0) + 1" }));
