@@ -2248,6 +2248,7 @@ export class PlayableMatchRuntime {
                 gameSpace,
                 stageTime: this.tick,
                 runtimeTick: this.tick,
+                ownerAnimations: owner.definition.animations,
                 opponents: [opponent],
                 teamMode: this.teamRoundMode,
                 roundDecision: (candidate) => this.actorRoundDecision(this.rootForHelper(candidate)),

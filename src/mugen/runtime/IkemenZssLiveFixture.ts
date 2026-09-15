@@ -299,6 +299,7 @@ if time = 0 {
 }
 
 [StateDef 105; type: S; movetype: I; physics: N; anim: 0; ctrl: 0;]
+changeAnim2{value: 930;}
 parentVarAdd{v: 3; value: 1;}
 if time >= 2 {
   destroySelf{}

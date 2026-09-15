@@ -315,7 +315,7 @@ export type RuntimeHelperAdvanceOptions = {
   projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   projectileCancelTime?: (helper: RuntimeHelper, projectileId?: number) => number;
-  ownerAnimations?: Pick<Map<number, MugenAnimationAction>, "has">;
+  ownerAnimations?: Pick<Map<number, MugenAnimationAction>, "has" | "get">;
   teamMode?: string;
   roundDecision?: ExpressionContext["roundDecision"] | ((helper: RuntimeHelper) => ExpressionContext["roundDecision"] | undefined);
   targetCandidates?: RuntimeTargetWorldActor[];
@@ -805,7 +805,11 @@ export function runRuntimeHelperStateControllers(
         continue;
       }
       options.onController?.(helper, controller);
-      changeHelperAction(helper, actionId);
+      changeHelperAction(
+        helper,
+        actionId,
+        dispatch.animationSource === "state-owner" ? options.ownerAnimations : undefined,
+      );
       continue;
     }
     if (dispatch.kind === "runtime-controller") {
@@ -3639,8 +3643,12 @@ function resetHelperContactState(helper: RuntimeHelper, stateNo: number, state?:
   });
 }
 
-function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
-  const action = helper.animations?.get(animNo);
+function changeHelperAction(
+  helper: RuntimeHelper,
+  animNo: number,
+  borrowedAnimations?: Pick<Map<number, MugenAnimationAction>, "get">,
+): void {
+  const action = borrowedAnimations ? borrowedAnimations.get(animNo) : helper.animations?.get(animNo);
   if (!action) {
     return;
   }

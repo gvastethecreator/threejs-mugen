@@ -448,6 +448,25 @@ describe("HelperSystem", () => {
     expect(switching.vars[4]).toBe(0);
   });
 
+  it("resolves Helper ChangeAnim2 from the owner AIR when the helper table lacks that action", () => {
+    const borrowedAction: MugenAnimationAction = { ...action, id: 930 };
+    const own = new Map<number, MugenAnimationAction>([[6100, action]]);
+    const borrowed = new Map<number, MugenAnimationAction>([[930, borrowedAction]]);
+    const active = helper({
+      animations: own,
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "ChangeAnim2", [], { value: "930" }),
+          compiledControllerIr(6000, "ChangeAnim", [], { value: "930" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([active], stage, { ownerAnimations: borrowed });
+    expect(active.animNo).toBe(930);
+    expect(active.action.id).toBe(930);
+    expect(own.has(930)).toBe(false);
+  });
+
   it("truncates ParentVar index toward zero and refuses invalid index or value writes", () => {
     const root = helperRuntimeState(helper({ vars: [10, 11, 12], fvars: [1, 2] }));
     const parent = helper({

@@ -13,6 +13,7 @@ import {
 import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 import { demoFighters } from "../mugen/runtime/demoFighters";
+import { trainingStage } from "../mugen/runtime/demoStage";
 import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import {
   createIkemenZssFallbackTraceArtifact,
@@ -46,6 +47,7 @@ describe("IKEMEN ZSS live fixture", () => {
     );
     expect(character.runtimeProgram?.states.map((state) => state.id)).toEqual(expect.arrayContaining([0, 100, 101, 102, 104, 105]));
     expect(character.states.find((state) => state.id === 105)?.controllers.map((controller) => controller.type)).toEqual([
+      "changeAnim2",
       "parentVarAdd",
       "destroySelf",
     ]);
@@ -109,7 +111,7 @@ describe("IKEMEN ZSS live fixture", () => {
       compiled: {
         sourcePaths: [IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.directStatePath],
         stateIds: [-2, 0, 100, 101, 102, 104, 105],
-        controllers: 33,
+        controllers: 34,
       },
       executed: { stateIds: [], controllers: 0 },
       blocked: { count: 0 },
@@ -264,6 +266,69 @@ describe("IKEMEN ZSS live fixture", () => {
         expect.objectContaining({ stateNo: 102, controller: "posSet", stateSource: expect.objectContaining({ path: IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.fallbackStatePath }) }),
       ]),
     );
+  });
+
+  it("proves ZSS projectile contact, helper parent writes, borrowed anim, explod and sound at consumers", async () => {
+    const character = await new MugenCharacterLoader().load(
+      IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      createIkemenZssLiveFixtureVfs(),
+    );
+    const p1 = createImportedFighterDefinition(character);
+    if (!p1) throw new Error("IKEMEN ZSS fixture did not produce a runtime fighter");
+    expect(p1.animations.has(930)).toBe(true);
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(p1, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+    });
+    const observed = {
+      explod: 0,
+      helperAnim: 0,
+      parentVar: 0,
+      playSnd: false,
+      stopSnd: false,
+    };
+    let live = runtime.getSnapshot();
+    for (let tick = 0; tick < 24; tick += 1) {
+      live = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+      observed.explod = Math.max(observed.explod, effectActorWorld.countExplods("p1"));
+      for (const helper of effectActorWorld.helpers("p1")) {
+        observed.helperAnim = Math.max(observed.helperAnim, helper.animNo);
+      }
+      observed.parentVar = Math.max(observed.parentVar, live.actors[0]?.runtime.vars[3] ?? 0);
+      const sounds = live.actors.find((actor) => actor.id === "p1")?.soundEvents ?? [];
+      if (sounds.some((event) => event.type === "PlaySnd" && event.channel === 2)) {
+        observed.playSnd = true;
+      }
+      if (sounds.some((event) => event.type === "StopSnd" && event.channel === 2)) {
+        observed.stopSnd = true;
+      }
+    }
+    const p1Session = live.compatibilitySession?.actors.find((actor) => actor.actorId === "p1");
+    const p2 = live.actors.find((actor) => actor.id === "p2");
+    expect(p1Session?.executedControllers).toMatchObject({
+      helper: expect.any(Number),
+      projectile: expect.any(Number),
+      explod: expect.any(Number),
+      playSnd: expect.any(Number),
+      stopSnd: expect.any(Number),
+      removeExplod: expect.any(Number),
+    });
+    expect(p1Session?.executedStates).toEqual(expect.arrayContaining([100, 104, 105]));
+    expect(observed.explod).toBeGreaterThan(0);
+    expect(observed.helperAnim).toBe(930);
+    expect(observed.parentVar).toBeGreaterThan(0);
+    expect(observed.playSnd).toBe(true);
+    expect(observed.stopSnd).toBe(true);
+    expect(effectActorWorld.countExplods("p1")).toBe(0);
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(p2?.runtime.life).toBeLessThan(1000);
+    expect(live.logs).toEqual(expect.arrayContaining([expect.stringMatching(/projectile hit/i)]));
+    runtime.dispatch({ type: "reset" });
+    const reset = runtime.getSnapshot();
+    expect(reset.effects ?? []).toEqual([]);
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(effectActorWorld.countExplods("p1")).toBe(0);
   });
 
   it("runs one imported ZSS duel on a nine-layer stage and clears effects on reset", async () => {
