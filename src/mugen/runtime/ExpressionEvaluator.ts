@@ -786,12 +786,19 @@ class ExpressionParser {
         left = combineArithmetic(left, this.parseUnary(), (a, b) => a * b);
       } else if (this.matchOperator("/")) {
         const right = this.parseUnary();
-        const divisor = numeric(right);
-        left = isFailedRedirect(left) || isFailedRedirect(right)
-          ? failedRedirectMarker
-          : divisor === 0
-            ? taggedNumber("int", 0)
-            : combineArithmetic(left, right, (a, b) => a / b);
+        if (isFailedRedirect(left) || isFailedRedirect(right)) {
+          left = failedRedirectMarker;
+        } else {
+          const divisor = numeric(right);
+          if (divisor === 0) {
+            this.context.reportUnsupported?.("div(0)");
+            left = failedRedirectMarker;
+          } else if (numericKindOf(left) !== "float" && numericKindOf(right) !== "float") {
+            left = taggedNumber("int", Math.trunc(numeric(left) / divisor));
+          } else {
+            left = combineArithmetic(left, right, (a, b) => a / b);
+          }
+        }
       } else if (this.matchOperator("%")) {
         const right = this.parseUnary();
         if (isFailedRedirect(left) || isFailedRedirect(right)) {
@@ -802,7 +809,7 @@ class ExpressionParser {
             this.context.reportUnsupported?.("mod(0)");
             left = failedRedirectMarker;
           } else {
-            left = Math.trunc(numeric(left)) % divisor;
+            left = taggedNumber("int", Math.trunc(numeric(left)) % divisor);
           }
         }
       } else {

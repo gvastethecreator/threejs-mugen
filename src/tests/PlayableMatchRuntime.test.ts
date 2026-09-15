@@ -26,6 +26,20 @@ describe("PlayableMatchRuntime", () => {
     expect(runtime.getActiveRootIds()).toEqual(["p1", "p2"]);
   });
 
+  it("writes imported integer division through a periodic TimeMod trigger", () => {
+    const imported = createImportedFixture({
+      id: "imported-typed-division",
+      withStateMove: false,
+      passiveVarSet: { trigger: "TimeMod = 2, 0", index: 0, value: "7 / 2" },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, trainingStage, {
+      runtimeProfile: "ikemen-go",
+    });
+
+    const snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.vars[0]).toBe(3);
+  });
+
   it("routes an imported Helper Life/Power write into the Ikemen team bank", () => {
     const imported = createImportedFixture({
       id: "imported-helper-team-resource",
