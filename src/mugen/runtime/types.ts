@@ -467,6 +467,8 @@ export type RuntimeAfterImageSample = {
   spriteIndex: number;
   offsetX: number;
   offsetY: number;
+  paletteRemap?: RuntimePaletteRemap;
+  paletteFx?: Pick<RuntimePaletteFxState, "remaining" | "time" | "add" | "mul" | "color" | "invert">;
 };
 
 export type RuntimeHitDefContactKind = "hit" | "guard";

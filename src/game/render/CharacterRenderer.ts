@@ -59,7 +59,7 @@ export class CharacterRenderer {
 
     for (const actor of actors) {
       this.updateShadow(actor);
-      await this.updateAfterImages(actor);
+      await this.updateAfterImages(actor, allPalFx);
       const ownerContext = spriteLookupContext(actor);
       const frame = actor.frame;
       const sprite = frame
@@ -269,7 +269,7 @@ export class CharacterRenderer {
     this.reflectionMeshes.delete(actorId);
   }
 
-  private async updateAfterImages(actor: ActorSnapshot): Promise<void> {
+  private async updateAfterImages(actor: ActorSnapshot, allPalFx?: ActorSnapshot["runtime"]["paletteFx"]): Promise<void> {
     const effect = actor.runtime.afterImage;
     const samples = effect?.samples ?? [];
     const meshes = this.afterimageMeshes.get(actor.id) ?? [];
@@ -283,7 +283,7 @@ export class CharacterRenderer {
       const sampleOwnerId = sample.spriteOwnerId ?? actor.spriteOwnerId ?? actor.id;
       const sprite = await this.spriteProvider.getSprite(sample.spriteGroup, sample.spriteIndex, {
         ownerId: sampleOwnerId,
-        paletteRemap: actor.runtime.paletteRemap,
+        paletteRemap: sample.paletteRemap,
       });
       if (!sprite || !effect) {
         continue;
@@ -299,7 +299,8 @@ export class CharacterRenderer {
       }
       const ghostActor = createAfterImageActor(actor, sample);
       const projected = projectSprite(ghostActor, sprite);
-      mesh.material.map = this.textures.getTexture(sprite, sampleOwnerId);
+      mesh.material.map = this.textures.getTexture(sprite, `${sampleOwnerId}:afterimage:${index}`);
+      applyPaletteFxMaterial(mesh.material, sample.paletteFx, 1, allPalFx);
       applyAfterImageMaterial(mesh.material, effect, index);
       mesh.material.needsUpdate = true;
       const priority = actor.runtime.spritePriority ?? (actor.id === "p2" ? 1 : 2);

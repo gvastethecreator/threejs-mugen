@@ -55,6 +55,54 @@ describe("RuntimeAfterImageSampleSystem", () => {
       spriteIndex: 1,
     });
   });
+
+  it("captures RemapPal and local PalFX at sample time and ignores later actor mutation", () => {
+    const world = new RuntimeAfterImageSampleWorld();
+    const source = actor();
+    source.runtime.paletteRemap = { source: [1, 1], dest: [1, 2] };
+    source.runtime.paletteFx = {
+      remaining: 8,
+      time: 8,
+      add: [40, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    };
+
+    const sample = world.create({ actor: source, frame: frame() });
+    expect(sample?.paletteRemap).toEqual({ source: [1, 1], dest: [1, 2] });
+    expect(sample?.paletteFx).toEqual({
+      remaining: 1,
+      time: 8,
+      add: [40, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    });
+
+    source.runtime.paletteRemap.dest[1] = 9;
+    source.runtime.paletteFx.add[0] = 99;
+    source.runtime.paletteFx.remaining = 0;
+    expect(sample?.paletteRemap).toEqual({ source: [1, 1], dest: [1, 2] });
+    expect(sample?.paletteFx?.add).toEqual([40, 0, 0]);
+    expect(sample?.paletteFx?.remaining).toBe(1);
+  });
+
+  it("omits inactive local PalFX from the sample", () => {
+    const world = new RuntimeAfterImageSampleWorld();
+    const source = actor();
+    source.runtime.paletteFx = {
+      remaining: 0,
+      time: 8,
+      add: [40, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    };
+
+    const sample = world.create({ actor: source, frame: frame() });
+    expect(sample?.paletteFx).toBeUndefined();
+  });
 });
 
 function actor(

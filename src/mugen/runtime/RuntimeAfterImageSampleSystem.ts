@@ -10,7 +10,7 @@ export type RuntimeAfterImageSampleOwner = {
 };
 
 export type RuntimeAfterImageSampleActor = RuntimeAfterImageSampleOwner & {
-  runtime: Pick<CharacterRuntimeState, "pos" | "facing">;
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "paletteRemap" | "paletteFx">;
   stateOwner?: RuntimeAfterImageSampleOwner;
 };
 
@@ -34,6 +34,8 @@ export class RuntimeAfterImageSampleWorld {
     }
 
     const owner = input.actor.stateOwner ?? input.actor;
+    const remap = input.actor.runtime.paletteRemap;
+    const paletteFx = input.actor.runtime.paletteFx;
     return {
       age: 0,
       pos: { ...input.actor.runtime.pos },
@@ -45,6 +47,21 @@ export class RuntimeAfterImageSampleWorld {
       spriteIndex: frame.spriteIndex,
       offsetX: frame.offsetX,
       offsetY: frame.offsetY,
+      ...(remap === undefined
+        ? {}
+        : { paletteRemap: { source: [...remap.source], dest: [...remap.dest] } }),
+      ...(paletteFx === undefined || paletteFx.remaining <= 0
+        ? {}
+        : {
+            paletteFx: {
+              remaining: 1,
+              time: paletteFx.time,
+              add: [...paletteFx.add] as [number, number, number],
+              mul: [...paletteFx.mul] as [number, number, number],
+              color: paletteFx.color,
+              invert: paletteFx.invert,
+            },
+          }),
     };
   }
 }

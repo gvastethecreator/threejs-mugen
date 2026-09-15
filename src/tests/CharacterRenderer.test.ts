@@ -512,6 +512,124 @@ describe("CharacterRenderer", () => {
     expect(remaining).toHaveLength(1);
     renderer.dispose();
   });
+
+  it("keeps two AfterImage samples on their captured remaps after the live actor remaps again", async () => {
+    const provider = new RecordingSpriteProvider();
+    const textures = recordingTextureStore();
+    const renderer = new CharacterRenderer(provider, textures);
+    const sampleA = afterImageSample({
+      pos: { x: -20, y: 0 },
+      spriteGroup: 200,
+      spriteIndex: 0,
+      paletteRemap: { source: [1, 1], dest: [1, 2] },
+    });
+    const sampleB = afterImageSample({
+      pos: { x: -40, y: 0 },
+      spriteGroup: 200,
+      spriteIndex: 1,
+      paletteRemap: { source: [1, 1], dest: [1, 3] },
+    });
+    const source = actor({
+      paletteRemap: { source: [1, 1], dest: [1, 9] },
+      afterImage: afterImageEffect([sampleA, sampleB]),
+    });
+
+    await renderer.update([source]);
+
+    expect(provider.lookups).toEqual([
+      { group: 200, index: 0, ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 2] } },
+      { group: 200, index: 1, ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 3] } },
+      { group: 10, index: 0, ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 9] } },
+    ]);
+    expect(textures.namespaces).toEqual(["p1:afterimage:0", "p1:afterimage:1", "p1"]);
+    expect(sampleA.paletteRemap).toEqual({ source: [1, 1], dest: [1, 2] });
+    expect(sampleB.paletteRemap).toEqual({ source: [1, 1], dest: [1, 3] });
+
+    source.runtime.paletteRemap = { source: [1, 1], dest: [1, 4] };
+    provider.lookups.length = 0;
+    await renderer.update([source]);
+    expect(provider.lookups.slice(0, 2)).toEqual([
+      { group: 200, index: 0, ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 2] } },
+      { group: 200, index: 1, ownerId: "p1", paletteRemap: { source: [1, 1], dest: [1, 3] } },
+    ]);
+    renderer.dispose();
+  });
+
+  it("applies sample-time local PalFX and draw-time AllPalFX on AfterImage ghosts, not live PalFX", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), palFxTextureStore([40, 80, 120, 255]));
+    const sampleLocal = {
+      remaining: 1,
+      time: 8,
+      add: [-80, 0, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const liveLocal = {
+      remaining: 8,
+      time: 8,
+      add: [0, 0, 200] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const allPalFx = {
+      remaining: 3,
+      time: 3,
+      add: [0, -80, 0] as [number, number, number],
+      mul: [256, 256, 256] as [number, number, number],
+      color: 256,
+      invert: false,
+    };
+    const sourcePixels = [40, 80, 120, 255] as const;
+    const ghostExpected = composePaletteFxRgba(sourcePixels[0], sourcePixels[1], sourcePixels[2], sourcePixels[3], sampleLocal, allPalFx);
+    const liveExpected = composePaletteFxRgba(sourcePixels[0], sourcePixels[1], sourcePixels[2], sourcePixels[3], liveLocal, allPalFx);
+
+    await renderer.update(
+      [
+        actor({
+          paletteFx: liveLocal,
+          afterImage: afterImageEffect([
+            afterImageSample({
+              paletteFx: sampleLocal,
+              paletteRemap: { source: [1, 1], dest: [1, 2] },
+            }),
+          ]),
+        }),
+      ],
+      allPalFx,
+    );
+
+    const planes = renderer.group.children.filter(
+      (child): child is THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> =>
+        child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry,
+    );
+    const ghost = planes.find((mesh) => mesh.material.opacity < 1);
+    const live = planes.find((mesh) => mesh.material.opacity === 1);
+    expect(sampledRgba(ghost?.material.map ?? null)).toEqual(ghostExpected.map((value) => Math.max(0, Math.min(255, Math.round(value)))));
+    expect(sampledRgba(live?.material.map ?? null)).toEqual(liveExpected.map((value) => Math.max(0, Math.min(255, Math.round(value)))));
+    expect(sampledRgba(ghost?.material.map ?? null)).not.toEqual(sampledRgba(live?.material.map ?? null));
+    renderer.dispose();
+  });
+
+  it("disposes AfterImage meshes on actor removal without mutating the sample archive", async () => {
+    const renderer = new CharacterRenderer(new RecordingSpriteProvider(), fakeTextureStore());
+    const samples = [
+      afterImageSample({ pos: { x: -8, y: 0 }, spriteIndex: 0 }),
+      afterImageSample({ pos: { x: -16, y: 0 }, spriteIndex: 1 }),
+    ];
+    const source = actor({ afterImage: afterImageEffect(samples) });
+    await renderer.update([source]);
+    const withTrail = renderer.group.children.filter((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    expect(withTrail).toHaveLength(3);
+
+    await renderer.update([]);
+    const afterRemoval = renderer.group.children.filter((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.PlaneGeometry);
+    expect(afterRemoval).toHaveLength(0);
+    expect(samples[0]?.spriteIndex).toBe(0);
+    expect(samples[1]?.spriteIndex).toBe(1);
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {
@@ -582,6 +700,50 @@ function fakeTextureStore(): TextureStore {
   return {
     getTexture: () => new THREE.Texture(),
   } as unknown as TextureStore;
+}
+
+function recordingTextureStore(): TextureStore & { namespaces: string[] } {
+  const namespaces: string[] = [];
+  return {
+    namespaces,
+    getTexture: (_sprite: MugenSprite, namespace?: string) => {
+      namespaces.push(namespace ?? "");
+      return new THREE.Texture();
+    },
+  } as unknown as TextureStore & { namespaces: string[] };
+}
+
+function afterImageSample(
+  overrides: Partial<NonNullable<ActorSnapshot["runtime"]["afterImage"]>["samples"][number]> = {},
+): NonNullable<ActorSnapshot["runtime"]["afterImage"]>["samples"][number] {
+  return {
+    age: 0,
+    pos: { x: 0, y: 0 },
+    facing: 1,
+    spriteOwnerId: "p1",
+    spriteGroup: 200,
+    spriteIndex: 0,
+    offsetX: 0,
+    offsetY: 0,
+    ...overrides,
+  };
+}
+
+function afterImageEffect(
+  samples: NonNullable<ActorSnapshot["runtime"]["afterImage"]>["samples"],
+): NonNullable<ActorSnapshot["runtime"]["afterImage"]> {
+  return {
+    remaining: 20,
+    time: 20,
+    length: 4,
+    timeGap: 2,
+    frameGap: 1,
+    palAdd: [0, 0, 0],
+    palMul: [256, 256, 256],
+    opacity: 0.5,
+    elapsed: 4,
+    samples,
+  };
 }
 
 function palFxTextureStore(texels: number[]): TextureStore {
