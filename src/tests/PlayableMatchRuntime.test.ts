@@ -2,8 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import { parseCmd } from "../mugen/parsers/CmdParser";
 import { parseCns } from "../mugen/parsers/CnsParser";
+import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { parseStageDef, stageDefToRuntime } from "../mugen/parsers/StageDefParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "../mugen/runtime/demoFighters";
+import {
+  IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST,
+  createIkemenZssDuelFixtureVfs,
+} from "../mugen/runtime/IkemenZssLiveFixture";
+import { createImportedFighterDefinition } from "../mugen/runtime/importedFighter";
 import { bgCtrlLabStage, trainingStage } from "../mugen/runtime/demoStage";
 import { createRuntimeEffectActorStores, RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import { runtimeWorldBox } from "../mugen/runtime/CombatResolver";
@@ -4800,6 +4806,64 @@ ${extraLayers}
     expect(effectActorWorld.helpers("p1").length).toBeGreaterThan(0);
     runtime.dispatch({ type: "reset" });
     expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(runtime.getSnapshot().effects ?? []).toEqual([]);
+    expect(runtime.getSnapshot().stage.layers).toHaveLength(9);
+  });
+
+  it("settles an imported ZSS duel after contact and keeps the nine-layer stage on reset", async () => {
+    const character = await new MugenCharacterLoader().load(
+      IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+      createIkemenZssDuelFixtureVfs(),
+    );
+    const p1 = createImportedFighterDefinition(character);
+    if (!p1) throw new Error("IKEMEN ZSS duel fixture did not produce a runtime fighter");
+    const extraLayers = Array.from({ length: 6 }, (_, index) => `
+[BG Extra ${index}]
+type = normal
+id = ${index + 3}
+spriteno = 0,0
+`).join("\n");
+    const stage = stageDefToRuntime(
+      parseStageDef(`
+[StageInfo]
+zoffset = 200
+localcoord = 320,240
+[PlayerInfo]
+p1startx = -20
+p2startx = 35
+[BGDef]
+spr = stage.sff
+[BG 0]
+type = normal
+spriteno = 0,0
+[BG 1]
+type = normal
+spriteno = 0,0
+[BG Dummy]
+type = dummy
+spriteno = 0,0
+${extraLayers}
+`, "stages/duel.def"),
+      "duel-nine",
+    );
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const runtime = new PlayableMatchRuntime(p1, demoFighters[1]!, stage, {
+      runtimeProfile: "ikemen-go",
+      effectActorWorld,
+      roundTiming: { overHitTimeFrames: 1, postKoPhase4StartFrames: 4, winPoseFrames: 2, postKoFrames: 8 },
+    });
+    let live = runtime.getSnapshot();
+    for (let tick = 0; tick < 320 && !(live.round?.state === "ko" && live.round.roundPhase === 4); tick += 1) {
+      live = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    }
+    expect(live.round).toMatchObject({ state: "ko", roundPhase: 4 });
+    expect(live.actors.find((actor) => actor.id === "p2")?.runtime.life).toBe(0);
+    expect(runtime.getHitDefContactMemory().actors.find((actor) => actor.actorId === "p1")?.committed).toContain("p2");
+    expect(stage.layers).toHaveLength(9);
+    runtime.dispatch({ type: "reset" });
+    expect(effectActorWorld.helpers("p1")).toEqual([]);
+    expect(effectActorWorld.projectiles("p1")).toEqual([]);
+    expect(effectActorWorld.countExplods("p1")).toBe(0);
     expect(runtime.getSnapshot().effects ?? []).toEqual([]);
     expect(runtime.getSnapshot().stage.layers).toHaveLength(9);
   });

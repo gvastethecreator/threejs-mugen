@@ -75,6 +75,12 @@ export function createIkemenZssMalformedExpressionFixtureVfs(): VirtualFileSyste
   return vfs;
 }
 
+export function createIkemenZssDuelFixtureVfs(): VirtualFileSystem {
+  const vfs = createIkemenZssLiveFixtureVfs("direct");
+  vfs.addFile("chars/mugen-lite-journey/live.zss", text(DUEL_ZSS));
+  return vfs;
+}
+
 export function createMugenProfileZssFixtureVfs(mode: IkemenZssFixtureMode = "direct"): VirtualFileSystem {
   const vfs = createIkemenZssLiveFixtureVfs(mode);
   const root = "chars/mugen-lite-journey";
@@ -326,6 +332,8 @@ const MALFORMED_EXPRESSION_ZSS = `[StateDef 0; type: S; physics: S; anim: 0; ctr
 changeAnim{value: 200;}
 projectile{projanim: 200; velocity: 12, 0; forcestand: Sin();}
 `;
+
+const DUEL_ZSS = LIVE_ZSS.replace("damage: var(0), 0;", "damage: 2000, 0;");
 
 const HITPAUSE_CNS = `[Statedef 200]
 type = S

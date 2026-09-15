@@ -5,6 +5,7 @@ import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { parseStageDef, stageDefToRuntime } from "../mugen/parsers/StageDefParser";
 import {
   IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST,
+  createIkemenZssDuelFixtureVfs,
   createIkemenZssLiveFixtureVfs,
   createIkemenZssMalformedFixtureVfs,
   createIkemenZssMalformedExpressionFixtureVfs,
@@ -365,6 +366,26 @@ describe("IKEMEN ZSS live fixture", () => {
     expect(effectActorWorld.countExplods("p1")).toBe(0);
   });
 
+  it("finishes an imported ZSS duel through contact, recovery, settled round and reset twice", async () => {
+    const first = await observeImportedZssDuel();
+    const second = await observeImportedZssDuel();
+    expect(first).toEqual(second);
+    expect(first.executedStates).toEqual(expect.arrayContaining([100, 104, 105]));
+    expect(first.projectileHit).toBe(true);
+    expect(first.hitDefContact).toBe(true);
+    expect(first.p2MinLife).toBe(0);
+    expect(first.helperMax).toBeGreaterThan(0);
+    expect(first.explodMax).toBeGreaterThan(0);
+    expect(first.recoveryState).toBeGreaterThan(0);
+    expect(first.round).toMatchObject({ state: "ko", roundPhase: 4, winner: "IKEMEN ZSS Live" });
+    expect(first.layerCount).toBe(9);
+    expect(first.resetEffects).toBe(0);
+    expect(first.resetHelpers).toBe(0);
+    expect(first.resetExplods).toBe(0);
+    expect(first.resetProjectiles).toBe(0);
+    expect(first.resetLayers).toBe(9);
+  });
+
   it("runs one imported ZSS duel on a nine-layer stage and clears effects on reset", async () => {
     const character = await new MugenCharacterLoader().load(
       IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
@@ -466,3 +487,104 @@ ${extraLayers}
     expect(reset.actors[0]?.runtime.pos.y).toBe(0);
   });
 });
+
+async function observeImportedZssDuel() {
+  const character = await new MugenCharacterLoader().load(
+    IKEMEN_ZSS_LIVE_FIXTURE_MANIFEST.entry,
+    createIkemenZssDuelFixtureVfs(),
+  );
+  const p1 = createImportedFighterDefinition(character);
+  if (!p1) throw new Error("IKEMEN ZSS duel fixture did not produce a runtime fighter");
+  const extraLayers = Array.from({ length: 6 }, (_, index) => `
+[BG Extra ${index}]
+type = normal
+id = ${index + 10}
+spriteno = 0,0
+start = 0,${index * 8}
+`).join("\n");
+  const stage = stageDefToRuntime(
+    parseStageDef(`
+[StageInfo]
+zoffset = 200
+zoffsetlink = 4
+localcoord = 320,240
+[PlayerInfo]
+p1startx = -20
+p2startx = 35
+[BGDef]
+spr = stage.sff
+[BG Sky]
+type = normal
+spriteno = 0,0
+[BG Floor]
+type = parallax
+id = 4
+spriteno = 0,0
+width = 200,80
+[BG Dummy]
+type = dummy
+spriteno = 0,0
+${extraLayers}
+`, "stages/imported-duel.def"),
+    "imported-duel",
+  );
+  const effectActorWorld = new RuntimeEffectActorWorld();
+  const runtime = new PlayableMatchRuntime(p1, demoFighters[1]!, stage, {
+    runtimeProfile: "ikemen-go",
+    effectActorWorld,
+    roundTiming: { overHitTimeFrames: 1, postKoPhase4StartFrames: 4, winPoseFrames: 2, postKoFrames: 8 },
+  });
+  const observed = {
+    helperMax: 0,
+    explodMax: 0,
+    p2MinLife: 1000,
+    recoveryState: 0,
+    projectileHit: false,
+    hitDefContact: false,
+  };
+  let live = runtime.getSnapshot();
+  for (let tick = 0; tick < 320; tick += 1) {
+    live = runtime.step({ p1: new Set(), p2: new Set() }, { force: true });
+    observed.helperMax = Math.max(observed.helperMax, effectActorWorld.helpers("p1").length);
+    observed.explodMax = Math.max(observed.explodMax, effectActorWorld.countExplods("p1"));
+    const p2Life = live.actors.find((actor) => actor.id === "p2")?.runtime.life ?? 1000;
+    observed.p2MinLife = Math.min(observed.p2MinLife, p2Life);
+    const p2 = live.actors.find((actor) => actor.id === "p2");
+    if (p2Life < 1000 && (p2?.runtime.stateNo || p2?.runtime.animNo)) {
+      observed.recoveryState = p2?.runtime.stateNo || p2?.runtime.animNo || 0;
+    }
+    if ((live.logs ?? []).some((line) => /projectile hit/i.test(line))) {
+      observed.projectileHit = true;
+    }
+    if (runtime.getHitDefContactMemory().actors.find((actor) => actor.actorId === "p1")?.committed.includes("p2")) {
+      observed.hitDefContact = true;
+    }
+    if (live.round?.state === "ko" && live.round.roundPhase === 4) {
+      break;
+    }
+  }
+  const p1Session = live.compatibilitySession?.actors.find((actor) => actor.actorId === "p1");
+  runtime.dispatch({ type: "reset" });
+  const reset = runtime.getSnapshot();
+  return {
+    executedStates: [...(p1Session?.executedStates ?? [])].sort((left, right) => left - right),
+    helperMax: observed.helperMax,
+    explodMax: observed.explodMax,
+    p2MinLife: observed.p2MinLife,
+    recoveryState: observed.recoveryState,
+    projectileHit: observed.projectileHit,
+    hitDefContact: observed.hitDefContact,
+    round: {
+      state: live.round?.state,
+      roundPhase: live.round?.roundPhase,
+      winner: live.round?.winner,
+    },
+    tick: live.tick,
+    layerCount: live.stage.layers.length,
+    resetEffects: (reset.effects ?? []).length,
+    resetHelpers: effectActorWorld.helpers("p1").length,
+    resetExplods: effectActorWorld.countExplods("p1"),
+    resetProjectiles: effectActorWorld.projectiles("p1").length,
+    resetLayers: reset.stage.layers.length,
+  };
+}
