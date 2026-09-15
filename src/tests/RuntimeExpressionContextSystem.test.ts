@@ -80,6 +80,20 @@ describe("RuntimeExpressionContextWorld", () => {
     })).toBe(0);
   });
 
+  it("exposes configured AILevel on the evaluated actor and redirects", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    const owner = runtimeActor("p3", "Owner");
+    actor.runtime.aiLevel = 0;
+    opponent.runtime.aiLevel = 4;
+    owner.runtime.aiLevel = 8;
+
+    expect(world.evaluateNumber("AILevel", { actor, opponent, owner, characters: [actor, opponent, owner] })).toBe(0);
+    expect(world.evaluateNumber("EnemyNear, AILevel", { actor, opponent, owner, characters: [actor, opponent, owner] })).toBe(4);
+    expect(world.evaluateNumber("Parent, AILevel", { actor, opponent, owner, characters: [actor, opponent, owner] })).toBe(8);
+  });
+
   it("binds Win/Lose and animation queries to the redirected actor", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author");

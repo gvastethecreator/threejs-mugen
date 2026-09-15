@@ -187,6 +187,7 @@ export type CharacterRuntimeState = {
   vars: number[];
   sysvars?: number[];
   fvars: number[];
+  aiLevel?: number;
 };
 
 export type RuntimeCombatDepth = {

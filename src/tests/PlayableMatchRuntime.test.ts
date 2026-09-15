@@ -26,6 +26,22 @@ describe("PlayableMatchRuntime", () => {
     expect(runtime.getActiveRootIds()).toEqual(["p1", "p2"]);
   });
 
+  it("keeps configured AILevel per match and per actor", () => {
+    const humanVsAi = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      p1AiLevel: 0,
+      p2AiLevel: 4,
+    });
+    const aiVsHuman = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, {
+      p1AiLevel: 8,
+      p2AiLevel: 0,
+    });
+
+    expect(humanVsAi.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.aiLevel).toBe(0);
+    expect(humanVsAi.step({ p1: new Set(), p2: new Set() }).actors[1]?.runtime.aiLevel).toBe(4);
+    expect(aiVsHuman.step({ p1: new Set(), p2: new Set() }).actors[0]?.runtime.aiLevel).toBe(8);
+    expect(aiVsHuman.step({ p1: new Set(), p2: new Set() }).actors[1]?.runtime.aiLevel).toBe(0);
+  });
+
   it("writes imported integer division through a periodic TimeMod trigger", () => {
     const imported = createImportedFixture({
       id: "imported-typed-division",

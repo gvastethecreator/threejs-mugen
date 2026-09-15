@@ -232,6 +232,7 @@ export type RuntimeHelper = {
   vars: number[];
   sysvars: number[];
   fvars: number[];
+  aiLevel?: number;
   frameIndex: number;
   frameElapsed: number;
   age: number;
@@ -4022,6 +4023,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     vars: [...helper.vars],
     sysvars: [...helper.sysvars],
     fvars: [...helper.fvars],
+    aiLevel: helper.aiLevel ?? 0,
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
     ...(helper.clsnOverrides === undefined
       ? {}

@@ -1054,6 +1054,9 @@ class ExpressionParser {
     if (lower === "time") {
       return this.context.stateTime ?? this.context.self.animTime;
     }
+    if (lower === "ailevel") {
+      return taggedNumber("int", clampAiLevel(this.context.self.aiLevel ?? 0));
+    }
     if (lower === "stagetime" || lower === "gametime") {
       return this.context.stageTime ?? 0;
     }
@@ -2394,6 +2397,13 @@ function normalizePlayerId(value: number, context: ExpressionContext): number | 
     return "unsupported";
   }
   return playerId;
+}
+
+function clampAiLevel(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(8, Math.trunc(value)));
 }
 
 function taggedNumber(kind: ExpressionNumericKind, value: number): TaggedNumber {

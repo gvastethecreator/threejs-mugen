@@ -536,6 +536,8 @@ export type PlayableMatchRuntimeOptions = {
   teamLifeShare?: boolean;
   teamPowerShare?: boolean;
   helperResourceShareContractEnabled?: boolean;
+  p1AiLevel?: number;
+  p2AiLevel?: number;
 };
 
 type PauseControllerHandler = (
@@ -731,6 +733,8 @@ export class PlayableMatchRuntime {
   private readonly teamLifeShare: boolean;
   private readonly teamPowerShare: boolean;
   private readonly helperResourceShareContractEnabled: boolean;
+  private readonly p1AiLevel: number;
+  private readonly p2AiLevel: number;
   private lastP2Controlled = false;
   private readonly superPauseTargetDefenseValue?: number;
   private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
@@ -761,6 +765,8 @@ export class PlayableMatchRuntime {
     this.teamLifeShare = options.teamLifeShare === true;
     this.teamPowerShare = options.teamPowerShare === true;
     this.helperResourceShareContractEnabled = options.helperResourceShareContractEnabled === true;
+    this.p1AiLevel = clampMatchAiLevel(options.p1AiLevel ?? 0);
+    this.p2AiLevel = clampMatchAiLevel(options.p2AiLevel ?? 0);
     this.superPauseTargetDefenseValue = defaultSuperPauseTargetDefenseValue(
       this.runtimeProfile,
       options.superPauseTargetDefenseValue,
@@ -809,6 +815,8 @@ export class PlayableMatchRuntime {
     });
     this.bindMatchExpressionOwnership(this.p1);
     this.bindMatchExpressionOwnership(this.p2);
+    this.p1.runtime.aiLevel = this.p1AiLevel;
+    this.p2.runtime.aiLevel = this.p2AiLevel;
     this.reserveRoots = this.runtimeProfile === "ikemen-go"
       ? options.reserveFighters?.slice(0, 6).map((definition, index) => {
           const playerNumber = index + 3;
@@ -842,7 +850,11 @@ export class PlayableMatchRuntime {
     if (this.runtimeProfile === "ikemen-go") {
       this.initializeCharacterIdentity();
       this.effectActorWorld.observeHelperLifecycle({
-        onSpawn: (helper) => this.registerHelperCharacterIdentity(helper),
+        onSpawn: (helper) => {
+          const owner = this.characterRoots().find((root) => root.id === helper.ownerId || root.id === helper.rootId);
+          helper.aiLevel = owner?.runtime.aiLevel ?? 0;
+          this.registerHelperCharacterIdentity(helper);
+        },
         onRemove: (helper) => this.unregisterHelperCharacterIdentity(helper),
       });
     }
@@ -4631,6 +4643,7 @@ export class PlayableMatchRuntime {
       contactWorld: this.contactWorld,
     });
     this.bindMatchExpressionOwnership(fighter);
+    fighter.runtime.aiLevel = id === "p2" || identity.playerNo === 2 ? this.p2AiLevel : this.p1AiLevel;
     return fighter;
   }
 
@@ -4676,6 +4689,13 @@ function roundState5900Actor(root: FighterMatchState) {
     ],
     ...(root.definition.stateSources === undefined ? {} : { stateSources: root.definition.stateSources }),
   };
+}
+
+function clampMatchAiLevel(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(8, Math.trunc(value)));
 }
 
 function nextRuntimeRandom(fighter: FighterMatchState): number {

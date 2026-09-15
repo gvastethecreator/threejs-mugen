@@ -228,6 +228,7 @@ function expressionForSupportScan(expression: string): { expression: string; uns
 }
 
 const supportedExpressionIdentifiers = new Set([
+  "ailevel",
   "alive",
   "anim",
   "animelem",
