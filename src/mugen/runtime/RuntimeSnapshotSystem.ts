@@ -251,6 +251,45 @@ function presentationProfile(profile: RuntimeHitDefPriorityProfile | undefined):
   return profile === "mugen-1.1" || profile === "ikemen-go" ? profile : "unknown";
 }
 
+export type FighterLabResourceIdentity = {
+  actorId: string;
+  actionNo: number;
+  frameIndex: number;
+  spriteGroup?: number;
+  spriteIndex?: number;
+  spriteOwnerId: string;
+  spriteOwnerDefinitionId?: string;
+  animationSource: "self" | "state-owner";
+  paletteRemap?: ActorSnapshot["runtime"]["paletteRemap"];
+  missing: string[];
+};
+
+export function resolveFighterLabResourceIdentity(actor: ActorSnapshot | undefined): FighterLabResourceIdentity | undefined {
+  if (!actor) {
+    return undefined;
+  }
+  const missing: string[] = [];
+  if (!actor.frame) {
+    missing.push("AIR frame");
+  }
+  const animationSource = actor.runtime.animationSource === "state-owner" ? "state-owner" : "self";
+  const spriteOwnerId = actor.spriteOwnerId ?? (animationSource === "state-owner" ? actor.runtime.customState?.ownerId : undefined) ?? actor.id;
+  if (animationSource === "state-owner" && !actor.spriteOwnerDefinitionId && !actor.spriteOwnerId) {
+    missing.push("borrowed SFF owner");
+  }
+  return {
+    actorId: actor.id,
+    actionNo: actor.runtime.animNo,
+    frameIndex: actor.runtime.frameIndex,
+    ...(actor.frame ? { spriteGroup: actor.frame.spriteGroup, spriteIndex: actor.frame.spriteIndex } : {}),
+    spriteOwnerId,
+    ...(actor.spriteOwnerDefinitionId ? { spriteOwnerDefinitionId: actor.spriteOwnerDefinitionId } : {}),
+    animationSource,
+    ...(actor.runtime.paletteRemap ? { paletteRemap: { source: [...actor.runtime.paletteRemap.source], dest: [...actor.runtime.paletteRemap.dest] } } : {}),
+    missing,
+  };
+}
+
 export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {
   const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraX !== false);
   const source = cameraActors.length > 0 ? cameraActors : actors;

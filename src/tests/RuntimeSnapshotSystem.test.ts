@@ -4,6 +4,7 @@ import { trainingStage } from "../mugen/runtime/demoStage";
 import {
   cameraCenterX,
   cameraCenterY,
+  resolveFighterLabResourceIdentity,
   RuntimeSnapshotWorld,
   type RuntimePlayerSnapshotActor,
   type RuntimeSnapshotActor,
@@ -530,7 +531,72 @@ describe("RuntimeSnapshotWorld", () => {
     expect(reserveGlobalSnapshot.actors.map((actor) => actor.shadowVisible)).toEqual([false, false]);
     expect(reserveGlobalSnapshot.reserveActors?.[0]?.shadowVisible).toBe(false);
   });
+
+  it("distinguishes self and borrowed Fighter Lab resource identity from the displayed snapshot", () => {
+    const world = new RuntimeSnapshotWorld();
+    const selfActor = world.actor(labPlayer("p1", runtimeState()));
+    const borrowedRuntime = runtimeState();
+    borrowedRuntime.animNo = 0;
+    borrowedRuntime.animationSource = "state-owner";
+    borrowedRuntime.paletteRemap = { source: [1, 1], dest: [1, 2] };
+    const borrowedActor = world.actor(labPlayer("p2", borrowedRuntime, {
+      id: "p1",
+      label: "Select Alpha",
+      definition: { id: "select-alpha" },
+    }));
+    const missingFrame = { ...selfActor, frame: undefined };
+
+    expect(resolveFighterLabResourceIdentity(selfActor)).toMatchObject({
+      actorId: "p1",
+      animationSource: "self",
+      spriteOwnerId: "p1",
+      actionNo: 200,
+      missing: [],
+    });
+    expect(resolveFighterLabResourceIdentity(borrowedActor)).toMatchObject({
+      actorId: "p2",
+      animationSource: "state-owner",
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "select-alpha",
+      paletteRemap: { dest: [1, 2] },
+    });
+    expect(resolveFighterLabResourceIdentity(selfActor)?.spriteOwnerId).not.toBe(
+      resolveFighterLabResourceIdentity(borrowedActor)?.spriteOwnerDefinitionId,
+    );
+    expect(resolveFighterLabResourceIdentity(missingFrame)?.missing).toContain("AIR frame");
+  });
 });
+
+function labPlayer(
+  id: string,
+  runtime: CharacterRuntimeState,
+  stateOwner?: RuntimePlayerSnapshotActor["stateOwner"],
+): RuntimePlayerSnapshotActor {
+  return {
+    id,
+    label: id,
+    definition: { id, source: "imported" },
+    ...(stateOwner ? { stateOwner } : {}),
+    runtime,
+    currentAction: {
+      id: runtime.animNo,
+      frames: [frame()],
+      rawLines: [],
+    },
+    currentMove: { activeStart: 0, activeEnd: 0, hitbox: { x1: 0, y1: 0, x2: 0, y2: 0 } },
+    moveTick: 0,
+    hitPause: 0,
+    targets: [],
+    targetBindings: [],
+    targetWorld: {
+      snapshot: () => ({ targets: [], bindings: [] }),
+      count: () => 0,
+    },
+    soundEvents: [],
+    hitEffectEvents: [],
+    envShakeEvents: [],
+  };
+}
 
 function actorAt(
   x: number,

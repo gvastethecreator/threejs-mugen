@@ -95,6 +95,7 @@ import { fingerprintMugenStateSource } from "../mugen/compiler/StateSourceResolv
 import type { RuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { RuntimeTraceArtifactFrameSummary } from "../mugen/runtime/RuntimeTraceArtifact";
 import type { MugenSnapshot } from "../mugen/runtime/types";
+import { resolveFighterLabResourceIdentity } from "../mugen/runtime/RuntimeSnapshotSystem";
 import { renderActorRegistry, renderDebugPanel, escapeHtml, type RuntimeRosterEntry } from "./DebugPanel";
 import { buildRuntimeA11ySummary } from "./RuntimeA11ySummary";
 import { FileDropZone } from "./FileDropZone";
@@ -4621,6 +4622,27 @@ export class App {
     `;
   }
 
+  private renderFighterLabResourceIdentity(): string {
+    const actor = this.snapshot.actors.find((candidate) => candidate.id === "p1") ?? this.snapshot.actors[0];
+    const identity = resolveFighterLabResourceIdentity(actor);
+    if (!identity) {
+      return `<p class="section-copy fighter-lab-resource-identity" data-fighter-lab-resource-identity="missing">No displayed snapshot actor is available for resource identity.</p>`;
+    }
+    const remap = identity.paletteRemap
+      ? `${identity.paletteRemap.source.join(",")} → ${identity.paletteRemap.dest.join(",")}`
+      : "none";
+    const sprite = identity.spriteGroup === undefined ? "missing" : `${identity.spriteGroup},${identity.spriteIndex}`;
+    const missing = identity.missing.length ? identity.missing.join("; ") : "none";
+    return `
+      <dl class="kv fighter-lab-resource-identity" data-fighter-lab-resource-identity="${escapeHtml(identity.animationSource)}">
+        <dt>Resource owner</dt><dd class="mono">${escapeHtml(identity.spriteOwnerId)}${identity.spriteOwnerDefinitionId ? ` / ${escapeHtml(identity.spriteOwnerDefinitionId)}` : ""} / ${escapeHtml(identity.animationSource)}</dd>
+        <dt>Action / frame</dt><dd class="mono">${identity.actionNo} / ${identity.frameIndex} / spr ${escapeHtml(sprite)}</dd>
+        <dt>Remap</dt><dd class="mono">${escapeHtml(remap)}</dd>
+        <dt>Missing</dt><dd class="mono">${escapeHtml(missing)}</dd>
+      </dl>
+    `;
+  }
+
   private renderFighterLabNavigator(): string {
     if (this.fighterLabView === "gallery") {
       return this.renderFighterGalleryNavigator();
@@ -4664,6 +4686,7 @@ export class App {
             <button type="button" data-lab-view="testbench" aria-pressed="false">Testbench</button>
           </div>
           <p class="section-copy">Select one fighter, then inspect every authored action, frame, collision box, atlas row, and shared effect in isolation.</p>
+          ${this.renderFighterLabResourceIdentity()}
           <div class="fighter-lab-fighter-list">
             ${fighters.map((candidate) => `
               <button
@@ -5022,6 +5045,7 @@ export class App {
             <button type="button" class="is-active" data-lab-view="testbench" aria-pressed="true">Testbench</button>
           </div>
           <p class="section-copy">Una mesa de prueba para recorrer todos los movimientos, frames, colisiones, VFX y enlaces del personaje sin entrar en un combate.</p>
+          ${this.renderFighterLabResourceIdentity()}
         </section>
 
         <section class="section fighter-testbench-roster" aria-labelledby="fighter-testbench-roster-title">
