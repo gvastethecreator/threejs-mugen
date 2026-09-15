@@ -55,6 +55,16 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("2 = (1,3]", { self })).toBe(1);
     expect(evaluateExpression("Parent,Var(0)", { self, parent: expressionSelf({ vars: [11] }) })).toBe(11);
     expect(evaluateExpression("Cond(1, 8, 9)", { self })).toBe(8);
+    const condWrite = expressionSelf({ vars: [0, 0] });
+    expect(evaluateExpression("Cond(1, var(0) := 7, var(1) := 8)", { self: condWrite })).toBe(7);
+    expect(condWrite.vars[0]).toBe(7);
+    expect(condWrite.vars[1]).toBe(0);
+    const ifElseWrite = expressionSelf({ vars: [0, 0] });
+    expect(evaluateExpression("IfElse(1, var(0) := 7, var(1) := 8)", { self: ifElseWrite })).toBe(7);
+    expect(ifElseWrite.vars[0]).toBe(7);
+    expect(ifElseWrite.vars[1]).toBe(8);
+    expect(evaluateExpression("Cond(1, 1 +, 0) = 0", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpressionNumeric("Cond(1, 1 +, 0)", { self, reportUnsupported: report }).kind).toBe("invalid");
     expect(evaluateExpression("GetHitVar(fall.recover)", { self, getHitVar: (name) => (name === "fall.recover" ? 1 : 0) })).toBe(1);
     expect(evaluateExpression("animelem = 1", { self })).toBe(1);
     expect(evaluateExpression('command = "x"', { self, commandActive: (name) => name === "x" })).toBe(1);

@@ -359,6 +359,7 @@ const supportedExpressionFunctions = new Set([
   "gethitvar",
   "helpervar",
   "hitdefattr",
+  "cond",
   "ifelse",
   "ishelper",
   "numexplod",
@@ -426,6 +427,8 @@ const MATH_FUNCTION_ARITY: Record<string, number> = {
   floor: 1,
   ceil: 1,
   log: 2,
+  cond: 3,
+  ifelse: 3,
 };
 
 export function mathFunctionArity(identifier: string): number | undefined {

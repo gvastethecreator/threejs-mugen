@@ -123,6 +123,9 @@ command = F, >x
     const integerDivision = compileExpression("7 / 2");
     const power = compileExpression("2**3");
     const assignment = compileExpression("var(0) := 7");
+    const cond = compileExpression("Cond(1, 8, 9)");
+    const condArity = compileExpression("Cond(1, 8)");
+    const ifElseArity = compileExpression("IfElse(1, 8)");
     const bitwise = compileExpression("6 & 3 | 1");
     const logicalXor = compileExpression("0 ^^ 1");
     const trig = compileExpression("Sin(Pi/2)");
@@ -327,6 +330,11 @@ command = F, >x
     expect(integerDivision.supportLevel).toBe("executable");
     expect(power.supportLevel).toBe("executable");
     expect(assignment.supportLevel).toBe("executable");
+    expect(cond.supportLevel).toBe("executable");
+    expect(condArity.supportLevel).toBe("unsupported");
+    expect(condArity.unsupportedFeatures).toContain("cond(arity)");
+    expect(ifElseArity.supportLevel).toBe("unsupported");
+    expect(ifElseArity.unsupportedFeatures).toContain("ifelse(arity)");
     expect(bitwise.supportLevel).toBe("executable");
     expect(logicalXor.supportLevel).toBe("executable");
     expect(trig.supportLevel).toBe("executable");
