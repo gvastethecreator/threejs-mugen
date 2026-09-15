@@ -16,7 +16,7 @@ export type TokenizedMugenExpression = {
 };
 
 const expressionTokenPattern =
-  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||\^\^|!=|<=|>=|[=<>+\-*/!%&|^~])|([()])|([\[\]])|(,))/gy;
+  /\s*(?:((?:\d+(?:\.\d+)?|\.\d+))|"(.*?)"|([A-Za-z_][A-Za-z0-9_.]*)|(&&|\|\||\^\^|\*\*|!=|<=|>=|[=<>+\-*/!%&|^~])|([()])|([\[\]])|(,))/gy;
 
 export function tokenizeMugenExpression(expression: string): TokenizedMugenExpression {
   const tokens: ExpressionLexToken[] = [];

@@ -780,12 +780,12 @@ class ExpressionParser {
   }
 
   private parseFactor(): ExpressionValue {
-    let left = this.parseUnary();
+    let left = this.parsePower();
     while (true) {
       if (this.matchOperator("*")) {
-        left = combineArithmetic(left, this.parseUnary(), (a, b) => a * b);
+        left = combineArithmetic(left, this.parsePower(), (a, b) => a * b);
       } else if (this.matchOperator("/")) {
-        const right = this.parseUnary();
+        const right = this.parsePower();
         if (isFailedRedirect(left) || isFailedRedirect(right)) {
           left = failedRedirectMarker;
         } else {
@@ -800,7 +800,7 @@ class ExpressionParser {
           }
         }
       } else if (this.matchOperator("%")) {
-        const right = this.parseUnary();
+        const right = this.parsePower();
         if (isFailedRedirect(left) || isFailedRedirect(right)) {
           left = failedRedirectMarker;
         } else {
@@ -816,6 +816,15 @@ class ExpressionParser {
         return left;
       }
     }
+  }
+
+  private parsePower(): ExpressionValue {
+    let left = this.parseUnary();
+    while (this.matchOperator("**")) {
+      const right = this.parseUnary();
+      left = combinePower(left, right, this.context.reportUnsupported);
+    }
+    return left;
   }
 
   private parseUnary(): ExpressionValue {
@@ -2349,6 +2358,27 @@ function numericKindOf(value: ExpressionValue): ExpressionNumericKind {
     return Number.isInteger(value) ? "int" : "float";
   }
   return "int";
+}
+
+function combinePower(
+  left: ExpressionValue,
+  right: ExpressionValue,
+  reportUnsupported?: (feature: string) => void,
+): ExpressionValue {
+  if (isFailedRedirect(left) || isFailedRedirect(right)) {
+    return failedRedirectMarker;
+  }
+  const exponent = numeric(right);
+  const useFloat = numericKindOf(left) === "float" || numericKindOf(right) === "float" || exponent < 0;
+  const result = Math.pow(numeric(left), exponent);
+  if (!Number.isFinite(result)) {
+    reportUnsupported?.("pow(domain)");
+    return failedRedirectMarker;
+  }
+  if (useFloat) {
+    return taggedNumber("float", result);
+  }
+  return taggedNumber("int", result);
 }
 
 function combineArithmetic(

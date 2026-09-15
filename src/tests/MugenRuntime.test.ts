@@ -25,6 +25,7 @@ describe("MugenRuntime frame selection", () => {
     const malformed: string[] = [];
     const report = (feature: string) => malformed.push(feature);
 
+    expect(tokenizeMugenExpression("2**3").tokens[1]).toMatchObject({ type: "operator", value: "**" });
     expect(tokenizeMugenExpression("7").tokens[0]).toMatchObject({ type: "number", value: "7", kind: "int" });
     expect(tokenizeMugenExpression("7.0").tokens[0]).toMatchObject({ type: "number", value: "7.0", kind: "float" });
     expect(evaluateExpressionNumeric("7", { self })).toEqual({ kind: "int", value: 7 });
@@ -98,6 +99,16 @@ describe("MugenRuntime frame selection", () => {
     expect(evaluateExpression("6 & 3", { self })).toBe(2);
     expect(evaluateExpression("6 | 3", { self })).toBe(7);
     expect(evaluateExpression("6 ^ 3", { self })).toBe(5);
+    expect(evaluateExpression("2^3", { self })).toBe(1);
+    expect(evaluateExpressionNumeric("2**3", { self })).toEqual({ kind: "int", value: 8 });
+    expect(evaluateExpressionNumeric("2.0**3", { self })).toEqual({ kind: "float", value: 8 });
+    expect(evaluateExpression("-2**2", { self })).toBe(4);
+    expect(evaluateExpression("2**3**2", { self })).toBe(64);
+    expect(evaluateExpression("(-1)**0.5", { self, reportUnsupported: report })).toBe(0);
+    expect(evaluateExpressionNumeric("(-1)**0.5", { self, reportUnsupported: report }).kind).toBe("invalid");
+    expect(malformed).toContain("pow(domain)");
+    const powered = executeStateController(controller("PosAdd", { x: "2**3" }), expressionSelf(), () => undefined);
+    expect(powered.pos.x).toBe(8);
     expect(evaluateExpression("~0", { self })).toBe(-1);
     expect(evaluateExpression("6 && 3", { self })).toBe(1);
     expect(evaluateExpression("1 & Parent,Var(0)", { self, reportUnsupported: report })).toBe(0);
