@@ -324,6 +324,19 @@ describe("HelperSystem", () => {
     expect(parent.fvars[0]).toBe(1.75);
   });
 
+  it("consumes a var assignment expression in the same helper step", () => {
+    const child = helper({
+      runtimeProgram: {
+        states: [stateProgram(stateDef(6000), [
+          compiledControllerIr(6000, "VarSet", [], { v: "2", value: "var(0) := 7" }),
+        ])],
+      },
+    });
+    advanceRuntimeHelpers([child], stage);
+
+    expect(child.vars[2]).toBe(7);
+  });
+
   it("does not write ParentVarSet onto root when the parent helper is missing", () => {
     const root = helperRuntimeState(helper({ vars: [10] }));
     const child = helper({

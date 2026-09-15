@@ -122,6 +122,7 @@ command = F, >x
     const remainder = compileExpression("Time % 4 = 0");
     const integerDivision = compileExpression("7 / 2");
     const power = compileExpression("2**3");
+    const assignment = compileExpression("var(0) := 7");
     const bitwise = compileExpression("6 & 3 | 1");
     const logicalXor = compileExpression("0 ^^ 1");
     const trig = compileExpression("Sin(Pi/2)");
@@ -325,6 +326,7 @@ command = F, >x
     expect(remainder.supportLevel).toBe("executable");
     expect(integerDivision.supportLevel).toBe("executable");
     expect(power.supportLevel).toBe("executable");
+    expect(assignment.supportLevel).toBe("executable");
     expect(bitwise.supportLevel).toBe("executable");
     expect(logicalXor.supportLevel).toBe("executable");
     expect(trig.supportLevel).toBe("executable");

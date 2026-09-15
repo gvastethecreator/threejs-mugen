@@ -149,6 +149,7 @@ export type ExpressionContext = {
   };
   teamMode?: string;
   reportUnsupported?: (feature: string) => void;
+  allowVariableAssignment?: boolean;
   receivedDamage?: () => number;
   receivedHits?: () => number;
   lifeMax?: number;
@@ -516,6 +517,7 @@ type Token = ExpressionLexToken;
 class ExpressionParser {
   private cursor = 0;
   private malformed = false;
+  private suppressWrites = 0;
 
   constructor(
     private readonly tokens: Token[],
@@ -545,7 +547,14 @@ class ExpressionParser {
   private parseOr(): ExpressionValue {
     let left = this.parseBoolXor();
     while (this.matchOperator("||")) {
+      const skip = !isFailedRedirect(left) && truthy(left);
+      if (skip) {
+        this.suppressWrites += 1;
+      }
       const right = this.parseBoolXor();
+      if (skip) {
+        this.suppressWrites -= 1;
+      }
       left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) || truthy(right) ? 1 : 0;
     }
     return left;
@@ -563,7 +572,14 @@ class ExpressionParser {
   private parseAnd(): ExpressionValue {
     let left = this.parseBitOr();
     while (this.matchOperator("&&")) {
+      const skip = !isFailedRedirect(left) && !truthy(left);
+      if (skip) {
+        this.suppressWrites += 1;
+      }
       const right = this.parseBitOr();
+      if (skip) {
+        this.suppressWrites -= 1;
+      }
       left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) && truthy(right) ? 1 : 0;
     }
     return left;
@@ -886,7 +902,11 @@ class ExpressionParser {
         if (!this.matchParen(")")) {
           this.malformed = true;
         }
-        return this.evaluateFunction(token.value, args);
+        const result = this.evaluateFunction(token.value, args);
+        if (this.matchOperator(":=")) {
+          return this.assignVariable(token.value, args, this.parseEquality());
+        }
+        return result;
       }
       return this.evaluateIdentifier(token.value);
     }
@@ -985,6 +1005,38 @@ class ExpressionParser {
       tokens.push(token);
     }
     return tokens.map(tokenToText).join("").trim();
+  }
+
+  private assignVariable(name: string, args: ExpressionValue[], assigned: ExpressionValue): ExpressionValue {
+    const lower = name.toLowerCase();
+    if (lower !== "var" && lower !== "fvar") {
+      this.context.reportUnsupported?.(`${lower}(:=)`);
+      return failedRedirectMarker;
+    }
+    if (isFailedRedirect(assigned) || isFailedRedirect(args[0] ?? 0)) {
+      return failedRedirectMarker;
+    }
+    if (this.suppressWrites > 0) {
+      return assigned;
+    }
+    if (this.context.allowVariableAssignment === false) {
+      this.context.reportUnsupported?.(`${lower}(:=redirect)`);
+      return failedRedirectMarker;
+    }
+    const index = Math.trunc(numeric(args[0] ?? 0));
+    const maxIndex = lower === "fvar" ? 39 : 59;
+    if (index < 0 || index > maxIndex) {
+      this.context.reportUnsupported?.(`${lower}(index)`);
+      return failedRedirectMarker;
+    }
+    if (lower === "var") {
+      const value = Math.trunc(numeric(assigned));
+      this.context.self.vars[index] = value;
+      return taggedNumber("int", value);
+    }
+    const value = numeric(assigned);
+    this.context.self.fvars[index] = value;
+    return taggedNumber("float", value);
   }
 
   private withContext(context: ExpressionContext, evaluate: () => ExpressionValue): ExpressionValue {
@@ -2146,6 +2198,7 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     opponentAuthorName: context.authorName,
     teamSide: context.opponentTeamSide,
     opponentTeamSide: context.teamSide,
+    allowVariableAssignment: false,
   };
 }
 
@@ -2228,6 +2281,7 @@ function redirectedTargetContext(context: ExpressionContext, redirected: Express
     opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
     teamSide: redirected.teamSide,
     opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
+    allowVariableAssignment: false,
   };
 }
 

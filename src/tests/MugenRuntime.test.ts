@@ -25,6 +25,7 @@ describe("MugenRuntime frame selection", () => {
     const malformed: string[] = [];
     const report = (feature: string) => malformed.push(feature);
 
+    expect(tokenizeMugenExpression("var(0) := 7").tokens.some((token) => token.type === "operator" && token.value === ":=")).toBe(true);
     expect(tokenizeMugenExpression("2**3").tokens[1]).toMatchObject({ type: "operator", value: "**" });
     expect(tokenizeMugenExpression("7").tokens[0]).toMatchObject({ type: "number", value: "7", kind: "int" });
     expect(tokenizeMugenExpression("7.0").tokens[0]).toMatchObject({ type: "number", value: "7.0", kind: "float" });
@@ -109,6 +110,23 @@ describe("MugenRuntime frame selection", () => {
     expect(malformed).toContain("pow(domain)");
     const powered = executeStateController(controller("PosAdd", { x: "2**3" }), expressionSelf(), () => undefined);
     expect(powered.pos.x).toBe(8);
+    const assigned = expressionSelf({ vars: [], fvars: [] });
+    expect(evaluateExpressionNumeric("var(0) := 7", { self: assigned })).toEqual({ kind: "int", value: 7 });
+    expect(assigned.vars[0]).toBe(7);
+    expect(evaluateExpressionNumeric("fvar(1) := 1.5", { self: assigned })).toEqual({ kind: "float", value: 1.5 });
+    expect(assigned.fvars[1]).toBe(1.5);
+    const skipped = expressionSelf({ vars: [0] });
+    expect(evaluateExpression("0 && var(0) := 9", { self: skipped })).toBe(0);
+    expect(skipped.vars[0]).toBe(0);
+    const parentBank = expressionSelf({ vars: [3] });
+    const childBank = expressionSelf({ vars: [] });
+    expect(evaluateExpression("Parent, var(0) := 9", { self: childBank, parent: parentBank, reportUnsupported: report })).toBe(0);
+    expect(parentBank.vars[0]).toBe(3);
+    expect(childBank.vars[0]).toBeUndefined();
+    expect(malformed).toContain("var(:=redirect)");
+    expect(evaluateExpression("var(60) := 1", { self: assigned, reportUnsupported: report })).toBe(0);
+    expect(assigned.vars[60]).toBeUndefined();
+    expect(malformed).toContain("var(index)");
     expect(evaluateExpression("~0", { self })).toBe(-1);
     expect(evaluateExpression("6 && 3", { self })).toBe(1);
     expect(evaluateExpression("1 & Parent,Var(0)", { self, reportUnsupported: report })).toBe(0);
